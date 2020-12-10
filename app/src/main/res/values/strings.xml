@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">ShoppingList</string>
+    <string name="AddNewList">New List</string>
+    <string name="ListsTitle">My Lists</string>
+    <string name="AddNewEntry">New Entry</string>
+    <string name="options">Options</string>
+    <string name="deleteAllEntries">Delete All Entries</string>
+    <string name="flushChecked">Flush All Checked</string>
+    <string name="share">Share</string>
+    <string name="deleteAllLists">Delete All Lists</string>
+</resources>

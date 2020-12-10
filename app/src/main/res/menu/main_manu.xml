@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/Main_options"
+        android:title="@string/options"
+        android:orderInCategory="101"
+        app:showAsAction="always"
+        android:icon="@drawable/vertical_dot_options">
+
+        <menu>
+            <group android:id="@+id/grp1">
+                <item android:id="@+id/Main_menu_item_share"
+                    android:title="@string/share"
+                    android:icon="@drawable/share"
+                    app:showAsAction="ifRoom" />
+            </group>
+
+            <group android:id="@+id/gr2">
+                <item android:id="@+id/Main_menuItemDeleteAllLists"
+                    android:title="@string/deleteAllLists"
+                    android:icon="@drawable/delete_all"
+                    app:showAsAction="ifRoom" />
+            </group>
+        </menu>
+    </item>
+</menu>
