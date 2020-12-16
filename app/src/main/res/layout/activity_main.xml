@@ -9,36 +9,12 @@
     android:weightSum="10">
 
 
-
-
-
-    <TextView
-        android:id="@+id/ListsTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/ListsTitle"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/listOfLists"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_host_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight = "8.5"/>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight = "1.5">
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/AddNewListButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="15dp"
-            android:layout_marginRight="15dp"
-            android:src="@drawable/plus_icon"
-            android:backgroundTint="@android:color/black"
-            />
-    </RelativeLayout>
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_graph"
+        />
 </LinearLayout>
