@@ -11,6 +11,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,10 +29,6 @@ public class ShoppingListsFragment extends Fragment implements ShoppingListsRecV
     private RecyclerView listOfListsView;
     private FloatingActionButton newListButton;
     private ShoppingListsRecViewAdapter adapter;
-
-    public ShoppingListsFragment(){
-        super(R.layout.fragment_shoppinglists);
-    }
 
     @Nullable
     @Override
@@ -67,6 +67,8 @@ public class ShoppingListsFragment extends Fragment implements ShoppingListsRecV
 
     @Override
     public void onListClick(int position) {
-        //TODO:
+        NavController navController = NavHostFragment.findNavController(this);
+        NavDirections openSelectedList = ShoppingListsFragmentDirections.actionShoppingListsFragmentToShoppingListFragment();
+        navController.navigate(openSelectedList);
     }
 }
