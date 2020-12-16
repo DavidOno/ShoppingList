@@ -41,8 +41,6 @@ public class ShoppingListsActivity extends AppCompatActivity implements Shopping
     }
 
     private void openNewListActivity() {
-//        Intent newListIntent = new Intent(this, NewListActivity.class);
-//        startActivityForResult(newListIntent, NEW_LIST_REQUEST);
         NewListDialog dialog = new NewListDialog(adapter);
         dialog.show(getSupportFragmentManager(), "test dialog");
     }
