@@ -8,4 +8,6 @@
     <string name="flushChecked">Flush All Checked</string>
     <string name="share">Share</string>
     <string name="deleteAllLists">Delete All Lists</string>
+    <string name="done">Done</string>
+    <string name="name_of_the_list">Name of the list</string>
 </resources>

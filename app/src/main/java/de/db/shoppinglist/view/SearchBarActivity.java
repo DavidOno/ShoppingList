@@ -1,4 +1,4 @@
-package de.db.shoppinglist;
+package de.db.shoppinglist.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 
