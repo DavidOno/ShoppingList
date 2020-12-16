@@ -1,5 +1,7 @@
 package de.db.shoppinglist.model;
 
+import androidx.annotation.NonNull;
+
 public class ShoppingEntry {
 
     private String amount;
@@ -16,5 +18,9 @@ public class ShoppingEntry {
         this.amount = other.amount;
         this.shoppingElement = other.shoppingElement;
         done = false;
+    }
+
+    public String getName() {
+        return shoppingElement.getName();
     }
 }

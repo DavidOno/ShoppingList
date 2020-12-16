@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/flushChecked"
+        android:title="@string/flushChecked"
+        android:icon="@drawable/flush_checked"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/options"
+        android:title="@string/options"
+        android:orderInCategory="101"
+        app:showAsAction="always"
+        android:icon="@drawable/vertical_dot_options">
+
+        <menu>
+            <item android:id="@+id/menu_item_share"
+                android:title="@string/share"
+                android:icon="@drawable/share"
+                app:showAsAction="ifRoom"/>
+
+            <item android:id="@+id/menuItemDeleteAllEntries"
+                android:title="@string/deleteAllEntries"
+                android:icon="@drawable/delete_all"
+                app:showAsAction="ifRoom" />
+        </menu>
+    </item>
+</menu>

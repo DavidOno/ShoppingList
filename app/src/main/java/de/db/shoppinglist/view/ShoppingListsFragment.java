@@ -25,7 +25,6 @@ import de.db.shoppinglist.adapter.ShoppingListsRecViewAdapter;
 
 public class ShoppingListsFragment extends Fragment implements ShoppingListsRecViewAdapter.OnListListener{
 
-    private static final int NEW_LIST_REQUEST = 1000;
     private RecyclerView listOfListsView;
     private FloatingActionButton newListButton;
     private ShoppingListsRecViewAdapter adapter;

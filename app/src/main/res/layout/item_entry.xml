@@ -3,13 +3,13 @@
     android:layout_width="match_parent" android:layout_height="wrap_content">
 
     <CheckBox
-        android:id="@+id/checkBox"
+        android:id="@+id/isDoneCheckbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"/>
 
     <TextView
-        android:id="@+id/shoppingList_ListItem"
+        android:id="@+id/entryTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
