@@ -10,8 +10,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,7 +25,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.adapter.ShoppingListRecViewAdapter;
-import de.db.shoppinglist.adapter.ShoppingListsRecViewAdapter;
 
 public class ShoppingListFragment extends Fragment implements ShoppingListRecViewAdapter.OnEntryListener{
 
@@ -40,7 +45,10 @@ public class ShoppingListFragment extends Fragment implements ShoppingListRecVie
     }
 
     private void openNewEntryFragment() {
-
+        NavController navController = NavHostFragment.findNavController(this);
+        NavigationUI.setupActionBarWithNavController((AppCompatActivity) this.getActivity(), navController);
+        NavDirections newEntry = ShoppingListFragmentDirections.actionShoppingListFragmentToNewEntryFragment();
+        navController.navigate(newEntry);
     }
 
     @Override

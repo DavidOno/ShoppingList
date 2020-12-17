@@ -17,5 +17,14 @@
         android:id="@+id/shoppingListFragment"
         android:name="de.db.shoppinglist.view.ShoppingListFragment"
         android:label="fragment_shoppinglist"
-        tools:layout="@layout/fragment_shoppinglist" />
+        tools:layout="@layout/fragment_shoppinglist" >
+        <action
+            android:id="@+id/action_shoppingListFragment_to_newEntryFragment"
+            app:destination="@id/newEntryFragment"/>
+    </fragment>
+    <fragment
+        android:id="@+id/newEntryFragment"
+        android:name="de.db.shoppinglist.view.NewEntryFragment"
+        android:label="fragment_new_entry"
+        tools:layout="@layout/fragment_new_entry" />
 </navigation>

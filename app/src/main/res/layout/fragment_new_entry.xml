@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="15dp"
+    tools:context=".view.NewEntryFragment">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_shopping"
+        android:layout_centerHorizontal="true"/>
+
+    <EditText
+        android:id="@+id/nameOfProductEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Name of Product"
+        android:maxLines="1"
+        android:layout_below="@id/imageView"
+        android:layout_centerHorizontal="true"
+        />
+
+    <LinearLayout
+        android:id="@+id/quantitySection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/nameOfProductEditText"
+        android:layout_marginTop="30dp"
+        android:divider="@drawable/empty_new_entry_divider"
+        android:showDividers="middle"
+        >
+
+    <EditText
+        android:id="@+id/quantityEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Quantity"
+        android:inputType="number"
+        android:maxLines="1"
+        android:layout_weight="0.5"
+        />
+
+    <EditText
+        android:id="@+id/unitOfQuantityEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Unit of Quantity"
+        android:maxLines="1"
+        android:layout_weight="0.5"
+        />
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/detailsEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Details"
+        android:layout_below="@id/quantitySection"
+        android:inputType="textMultiLine"
+        android:layout_marginTop="30dp"
+        android:gravity="bottom"
+        />
+
+</RelativeLayout>
