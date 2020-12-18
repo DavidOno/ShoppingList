@@ -23,4 +23,16 @@ public class ShoppingEntry {
     public String getName() {
         return shoppingElement.getName();
     }
+
+    public float getQuantity() {
+        return quantity;
+    }
+
+    public String getUnitOfQuantity() {
+        return unitOfQuantity;
+    }
+
+    public String getDetails(){
+        return shoppingElement.getDetails();
+    }
 }

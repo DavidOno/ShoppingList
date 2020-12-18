@@ -13,5 +13,9 @@ public class ShoppingElement {
     public String getName() {
         return name;
     }
+
+    public String getDetails() {
+        return details;
+    }
     //image
 }

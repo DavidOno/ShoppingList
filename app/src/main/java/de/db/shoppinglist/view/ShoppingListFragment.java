@@ -24,6 +24,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.adapter.ShoppingListRecViewAdapter;
 import de.db.shoppinglist.ifc.NewEntrySVM;
+import de.db.shoppinglist.model.ShoppingElement;
+import de.db.shoppinglist.model.ShoppingEntry;
 
 public class ShoppingListFragment extends Fragment implements ShoppingListRecViewAdapter.OnEntryListener{
 
@@ -44,6 +46,11 @@ public class ShoppingListFragment extends Fragment implements ShoppingListRecVie
         NewEntrySVM newEntrymodel = new ViewModelProvider(requireActivity()).get(NewEntrySVM.class);
         newEntrymodel.getProvided().observe(getViewLifecycleOwner(), item -> {
             Toast.makeText(getContext(), "item", Toast.LENGTH_LONG).show();
+            String name = item.getName();
+            float quantity = item.getQuantity();
+            String unitOfQuantity = item.getUnitOfQuantity();
+            String details = item.getDetails();
+            adapter.addEntry(new ShoppingEntry(quantity, unitOfQuantity, new ShoppingElement(name, details)));
         });
         return view;
     }
