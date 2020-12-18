@@ -10,4 +10,7 @@
     <string name="deleteAllLists">Delete All Lists</string>
     <string name="done">Done</string>
     <string name="name_of_the_list">Name of the list</string>
+    <string name="ShoppingListFragmentTitle">Shopping List</string>
+    <string name="ShoppingListsFragmentTitle">Shopping Lists</string>
+    <string name="newEntryFragmentTitle">New Shopping Entry</string>
 </resources>
