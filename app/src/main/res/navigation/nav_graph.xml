@@ -21,10 +21,17 @@
         <action
             android:id="@+id/action_shoppingListFragment_to_newEntryFragment"
             app:destination="@id/newEntryFragment"/>
+        <action
+            android:id="@+id/action_shoppingListFragment_to_newEntryFragment2"
+            app:destination="@id/newEntryFragment" />
     </fragment>
     <fragment
         android:id="@+id/newEntryFragment"
         android:name="de.db.shoppinglist.view.NewEntryFragment"
         android:label="@string/newEntryFragmentTitle"
-        tools:layout="@layout/fragment_new_entry" />
+        tools:layout="@layout/fragment_new_entry" >
+        <action
+            android:id="@+id/action_newEntryFragment_to_shoppingListFragment"
+            app:destination="@id/shoppingListFragment" />
+    </fragment>
 </navigation>

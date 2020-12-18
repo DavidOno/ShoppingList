@@ -1,29 +1,38 @@
 package de.db.shoppinglist.view;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
+import androidx.navigation.fragment.NavHostFragment;
 
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.adapter.ShoppingListRecViewAdapter;
+import de.db.shoppinglist.ifc.NewEntrySVM;
+import de.db.shoppinglist.model.ShoppingElement;
+import de.db.shoppinglist.model.ShoppingEntry;
 
 public class NewEntryFragment extends Fragment {
 
-    private EditText nameOfProduct;
-    private EditText quantity;
-    private EditText unitOfQuantity;
-    private EditText details;
+
+    private EditText nameOfProductEditText;
+    private EditText quantityEditText;
+    private EditText unitOfQuantityEditText;
+    private EditText detailsEditText;
+    private MenuItem doneMenuItem;
 
     @Nullable
     @Override
@@ -37,7 +46,6 @@ public class NewEntryFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-//        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -47,10 +55,41 @@ public class NewEntryFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.doneButton){
+            finishFragment();
+        }
+        return true;
+    }
+
+    private void finishFragment() {
+        float quantity = Float.parseFloat(quantityEditText.getText().toString());
+        String unitOfQuantity = unitOfQuantityEditText.getText().toString();
+        String nameOfProduct = nameOfProductEditText.getText().toString();
+        String details = detailsEditText.getText().toString();
+        ShoppingEntry entry = new ShoppingEntry(quantity, unitOfQuantity, new ShoppingElement(nameOfProduct, details));
+        NewEntrySVM svm = new ViewModelProvider(requireActivity()).get(NewEntrySVM.class);
+        svm.provide(entry);
+        closeKeyBoard();
+        closeFragment();
+    }
+
+    private void closeKeyBoard() {
+        final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+    }
+
+    private void closeFragment() {
+        NavController navController = NavHostFragment.findNavController(this);
+        NavDirections shoppingList = NewEntryFragmentDirections.actionNewEntryFragmentToShoppingListFragment();
+        navController.navigate(shoppingList);
+    }
+
     private void findViewsById(View view) {
-        nameOfProduct = view.findViewById(R.id.nameOfProductEditText);
-        quantity = view.findViewById(R.id.quantityEditText);
-        unitOfQuantity = view.findViewById(R.id.unitOfQuantityEditText);
-        details = view.findViewById(R.id.detailsEditText);
+        nameOfProductEditText = view.findViewById(R.id.nameOfProductEditText);
+        quantityEditText = view.findViewById(R.id.quantityEditText);
+        unitOfQuantityEditText = view.findViewById(R.id.unitOfQuantityEditText);
+        detailsEditText = view.findViewById(R.id.detailsEditText);
     }
 }

@@ -10,14 +10,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,8 +23,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.adapter.ShoppingListRecViewAdapter;
+import de.db.shoppinglist.ifc.NewEntrySVM;
 
 public class ShoppingListFragment extends Fragment implements ShoppingListRecViewAdapter.OnEntryListener{
+
 
     private RecyclerView entriesView;
     private FloatingActionButton newEntryButton;
@@ -41,6 +41,10 @@ public class ShoppingListFragment extends Fragment implements ShoppingListRecVie
         adapter = new ShoppingListRecViewAdapter(this);
         entriesView.setAdapter(adapter);
         entriesView.setLayoutManager(new LinearLayoutManager(getContext()));
+        NewEntrySVM newEntrymodel = new ViewModelProvider(requireActivity()).get(NewEntrySVM.class);
+        newEntrymodel.getProvided().observe(getViewLifecycleOwner(), item -> {
+            Toast.makeText(getContext(), "item", Toast.LENGTH_LONG).show();
+        });
         return view;
     }
 
