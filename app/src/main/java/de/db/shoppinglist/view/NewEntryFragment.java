@@ -60,7 +60,7 @@ public class NewEntryFragment extends Fragment {
         if(item.getItemId() == R.id.doneButton){
             finishFragment();
         }
-        return true;
+        return false;
     }
 
     private void finishFragment() {
