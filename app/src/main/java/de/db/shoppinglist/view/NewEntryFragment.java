@@ -71,8 +71,13 @@ public class NewEntryFragment extends Fragment {
         ShoppingEntry entry = new ShoppingEntry(quantity, unitOfQuantity, new ShoppingElement(nameOfProduct, details));
         NewEntrySVM svm = new ViewModelProvider(requireActivity()).get(NewEntrySVM.class);
         svm.provide(entry);
-        closeKeyBoard();
         closeFragment();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        closeKeyBoard();
     }
 
     private void closeKeyBoard() {
