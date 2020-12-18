@@ -46,10 +46,11 @@ public class ShoppingListFragment extends Fragment implements ShoppingListRecVie
 
     private void openNewEntryFragment() {
         NavController navController = NavHostFragment.findNavController(this);
-        NavigationUI.setupActionBarWithNavController((AppCompatActivity) this.getActivity(), navController);
         NavDirections newEntry = ShoppingListFragmentDirections.actionShoppingListFragmentToNewEntryFragment();
         navController.navigate(newEntry);
     }
+
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
