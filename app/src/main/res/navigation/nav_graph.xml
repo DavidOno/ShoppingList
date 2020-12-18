@@ -32,6 +32,8 @@
         tools:layout="@layout/fragment_new_entry" >
         <action
             android:id="@+id/action_newEntryFragment_to_shoppingListFragment"
-            app:destination="@id/shoppingListFragment" />
+            app:destination="@id/shoppingListFragment"
+            app:popUpTo="@id/shoppingListFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>
