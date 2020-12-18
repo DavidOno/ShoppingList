@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".view.ShoppingListsActivity"
-    android:weightSum="10">
+    android:weightSum="10"
+    android:background="@drawable/toolbar_background_gradient">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
