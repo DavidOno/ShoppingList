@@ -43,7 +43,9 @@
         tools:layout="@layout/fragment_modify_entry" >
         <action
             android:id="@+id/action_modifyEntryFragment_to_shoppingListFragment"
-            app:destination="@id/shoppingListFragment" />
+            app:destination="@id/shoppingListFragment"
+            app:popUpTo="@id/shoppingListFragment"
+            app:popUpToInclusive="true" />
         <argument
             android:name="entry"
             app:argType="de.db.shoppinglist.model.ShoppingEntry" />
