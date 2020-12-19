@@ -7,13 +7,13 @@
     android:orientation="vertical"
     tools:context=".view.ShoppingListsActivity"
     android:weightSum="10"
-    android:background="@drawable/gradient_blue">
+    >
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/gradient_blue"
+        android:background="@drawable/gradient_grey"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/Theme.AppCompat.Light"
         />
@@ -28,5 +28,6 @@
         android:name="androidx.navigation.fragment.NavHostFragment"
         app:navGraph="@navigation/nav_graph"
         app:defaultNavHost="true"
+        android:background="@drawable/gradient_grey"
         />
 </LinearLayout>
