@@ -44,9 +44,9 @@ public class NewListDialog extends AppCompatDialogFragment {
         View view = inflater.inflate(R.layout.new_list_dialog, null);
         builder.setView(view);
         listNameEditText = view.findViewById(R.id.editText_list_name);
-        doneButton = view.findViewById(R.id.doneButton);
+        doneButton = view.findViewById(R.id.new_list_dialog_doneButton);
         doneButton.setEnabled(false);
-        backButton = view.findViewById(R.id.backButton);
+        backButton = view.findViewById(R.id.new_list_dialog_backButton);
         listNameEditText.addTextChangedListener(enableDoneMenuItemOnTextChange());
 
         listNameEditText.requestFocus();

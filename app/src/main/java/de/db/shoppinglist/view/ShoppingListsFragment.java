@@ -13,7 +13,6 @@ import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -59,7 +58,7 @@ public class ShoppingListsFragment extends Fragment implements ShoppingListsRecV
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.main_manu, menu);
+        inflater.inflate(R.menu.menu_main, menu);
         MenuCompat.setGroupDividerEnabled(menu, true);
         super.onCreateOptionsMenu(menu, inflater);
     }

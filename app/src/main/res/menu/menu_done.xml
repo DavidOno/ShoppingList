@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/doneButton"
+        android:id="@+id/menu_done_doneButton"
         android:title="@string/done"
         android:orderInCategory="101"
         app:showAsAction="always"

@@ -2,6 +2,8 @@ package de.db.shoppinglist.view;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,7 +34,6 @@ public class NewEntryFragment extends Fragment {
     private EditText quantityEditText;
     private EditText unitOfQuantityEditText;
     private EditText detailsEditText;
-    private MenuItem doneMenuItem;
 
     @Nullable
     @Override
@@ -41,6 +42,8 @@ public class NewEntryFragment extends Fragment {
         findViewsById(view);
         return view;
     }
+
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,15 +55,45 @@ public class NewEntryFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_done, menu);
         MenuCompat.setGroupDividerEnabled(menu, true);
+        MenuItem done = getDoneMenuItem(menu);
+        nameOfProductEditText.addTextChangedListener(enableDoneMenuItemOnTextChange(done));
+        done.setEnabled(false);
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private MenuItem getDoneMenuItem(Menu menu) {
+       return menu.findItem(R.id.menu_done_doneButton);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId() == R.id.doneButton){
+        if(item.getItemId() == R.id.menu_done_doneButton){
             finishFragment();
         }
         return false;
+    }
+
+    private TextWatcher enableDoneMenuItemOnTextChange(MenuItem doneMenuItem) {
+        return new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(nameOfProductEditText.getText().toString().isEmpty()){
+                    doneMenuItem.setEnabled(false);
+                }else{
+                    doneMenuItem.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        };
     }
 
     private void finishFragment() {

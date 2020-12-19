@@ -61,8 +61,6 @@ public class ShoppingListFragment extends Fragment implements ShoppingListRecVie
         navController.navigate(newEntry);
     }
 
-
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
