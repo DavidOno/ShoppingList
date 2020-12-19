@@ -11,6 +11,7 @@ public class ShoppingEntry implements Parcelable {
     private ShoppingElement shoppingElement;
 
     public ShoppingEntry(float quantity, String unitOfQuantity, ShoppingElement shoppingElement) {
+        this.quantity = quantity;
         this.unitOfQuantity = unitOfQuantity;
         this.shoppingElement = shoppingElement;
         done = false;

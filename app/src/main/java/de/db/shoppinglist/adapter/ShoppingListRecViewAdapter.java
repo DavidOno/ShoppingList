@@ -1,8 +1,10 @@
 package de.db.shoppinglist.adapter;
 
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -34,6 +36,17 @@ public class ShoppingListRecViewAdapter extends RecyclerView.Adapter<ShoppingLis
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.nameOfEntry.setText(entries.get(position).getName());
+        holder.quantity.setText(getQuantityText(entries.get(position).getQuantity()));
+        holder.unitOfQuantity.setText(entries.get(position).getUnitOfQuantity());
+        holder.isDone.setChecked(entries.get(position).isDone());
+    }
+
+    private String getQuantityText(float quantity) {
+        if(quantity - 0 < 0.0001){
+            return "";
+        }else{
+            return String.valueOf(quantity) + " x ";
+        }
     }
 
     @Override
@@ -62,12 +75,29 @@ public class ShoppingListRecViewAdapter extends RecyclerView.Adapter<ShoppingLis
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private TextView nameOfEntry;
+        private TextView quantity;
+        private TextView unitOfQuantity;
+        private CheckBox isDone;
         private OnEntryListener onEntryListener;
 
         public ViewHolder(@NonNull View itemView, OnEntryListener onEntryListener) {
             super(itemView);
-            nameOfEntry = itemView.findViewById(R.id.entryTextView);
+            nameOfEntry = itemView.findViewById(R.id.entry_name_textview);
+            quantity = itemView.findViewById(R.id.entry_quantity_textview);
+            unitOfQuantity = itemView.findViewById(R.id.entry_unit_of_quantity_textview);
+            isDone = itemView.findViewById(R.id.entry_isDoneCheckbox);
             this.onEntryListener = onEntryListener;
+            isDone.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if(isChecked) {
+                    nameOfEntry.setPaintFlags(nameOfEntry.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                    quantity.setPaintFlags(quantity.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                    unitOfQuantity.setPaintFlags(unitOfQuantity.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                }else{
+                    nameOfEntry.setPaintFlags(nameOfEntry.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                    quantity.setPaintFlags(quantity.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                    unitOfQuantity.setPaintFlags(unitOfQuantity.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                }
+            });
             itemView.setOnClickListener(this);
         }
 

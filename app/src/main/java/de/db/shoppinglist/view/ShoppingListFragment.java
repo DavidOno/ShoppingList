@@ -43,6 +43,7 @@ public class ShoppingListFragment extends Fragment implements ShoppingListRecVie
         adapter = new ShoppingListRecViewAdapter(this);
         entriesView.setAdapter(adapter);
         entriesView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         NewEntrySVM newEntrymodel = new ViewModelProvider(requireActivity()).get(NewEntrySVM.class);
         newEntrymodel.getProvided().observe(getViewLifecycleOwner(), item -> {
             String name = item.getName();
