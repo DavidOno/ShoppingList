@@ -85,7 +85,6 @@ public class NewListDialog extends AppCompatDialogFragment {
 
     private void returnResult() {
         closeDialog();
-        Toast.makeText(getContext(), listNameEditText.getText().toString(), Toast.LENGTH_LONG).show();
         adapter.addShoppingList(listNameEditText.getText().toString());
     }
 }

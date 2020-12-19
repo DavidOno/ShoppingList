@@ -45,7 +45,6 @@ public class ShoppingListFragment extends Fragment implements ShoppingListRecVie
         entriesView.setLayoutManager(new LinearLayoutManager(getContext()));
         NewEntrySVM newEntrymodel = new ViewModelProvider(requireActivity()).get(NewEntrySVM.class);
         newEntrymodel.getProvided().observe(getViewLifecycleOwner(), item -> {
-            Toast.makeText(getContext(), "item", Toast.LENGTH_LONG).show();
             String name = item.getName();
             float quantity = item.getQuantity();
             String unitOfQuantity = item.getUnitOfQuantity();
