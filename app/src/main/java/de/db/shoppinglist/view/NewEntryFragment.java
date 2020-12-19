@@ -22,6 +22,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
+import java.util.Optional;
+
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.ifc.NewEntrySVM;
 import de.db.shoppinglist.model.ShoppingElement;
@@ -97,14 +99,31 @@ public class NewEntryFragment extends Fragment {
     }
 
     private void finishFragment() {
-        float quantity = Float.parseFloat(quantityEditText.getText().toString());
-        String unitOfQuantity = unitOfQuantityEditText.getText().toString();
-        String nameOfProduct = nameOfProductEditText.getText().toString();
-        String details = detailsEditText.getText().toString();
-        ShoppingEntry entry = new ShoppingEntry(quantity, unitOfQuantity, new ShoppingElement(nameOfProduct, details));
+        ShoppingEntry entry = createNewEntry();
         NewEntrySVM svm = new ViewModelProvider(requireActivity()).get(NewEntrySVM.class);
         svm.provide(entry);
         closeFragment();
+    }
+
+    private ShoppingEntry createNewEntry() {
+        float quantity = getQuantity();
+        String unitOfQuantity = getString(unitOfQuantityEditText);
+        String nameOfProduct = getString(nameOfProductEditText);
+        String details = getString(detailsEditText);
+        return new ShoppingEntry(quantity, unitOfQuantity, new ShoppingElement(nameOfProduct, details));
+    }
+
+    private float getQuantity(){
+        String numberText = quantityEditText.getText().toString();
+        if(numberText.isEmpty()){
+            return 0f;
+        }else{
+            return Float.parseFloat(numberText);
+        }
+    }
+
+    private String getString(EditText editText){
+        return editText.getText().toString();
     }
 
     @Override
