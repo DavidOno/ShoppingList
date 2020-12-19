@@ -23,13 +23,13 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.adapter.ShoppingListRecViewAdapter;
-import de.db.shoppinglist.ifc.EntrySVM;
+import de.db.shoppinglist.ifc.NewEntrySVM;
 import de.db.shoppinglist.model.ShoppingElement;
 import de.db.shoppinglist.model.ShoppingEntry;
 
 public class ShoppingListFragment extends Fragment implements ShoppingListRecViewAdapter.OnEntryListener{
 
-
+    private int positionToByModified;
     private RecyclerView entriesView;
     private FloatingActionButton newEntryButton;
     private ShoppingListRecViewAdapter adapter;
@@ -43,7 +43,7 @@ public class ShoppingListFragment extends Fragment implements ShoppingListRecVie
         adapter = new ShoppingListRecViewAdapter(this);
         entriesView.setAdapter(adapter);
         entriesView.setLayoutManager(new LinearLayoutManager(getContext()));
-        EntrySVM newEntrymodel = new ViewModelProvider(requireActivity()).get(EntrySVM.class);
+        NewEntrySVM newEntrymodel = new ViewModelProvider(requireActivity()).get(NewEntrySVM.class);
         newEntrymodel.getProvided().observe(getViewLifecycleOwner(), item -> {
             Toast.makeText(getContext(), "item", Toast.LENGTH_LONG).show();
             String name = item.getName();
@@ -81,8 +81,10 @@ public class ShoppingListFragment extends Fragment implements ShoppingListRecVie
 
     @Override
     public void onEntryClick(int position) {
+        positionToByModified = position;
+        ShoppingEntry entry = adapter.getEntryByPosition(position);
         NavController navController = NavHostFragment.findNavController(this);
-        NavDirections openSelectedEntry = ShoppingListFragmentDirections.actionShoppingListFragmentToModifyEntryFragment();
+        NavDirections openSelectedEntry = ShoppingListFragmentDirections.actionShoppingListFragmentToModifyEntryFragment(entry);
         navController.navigate(openSelectedEntry);
     }
 }

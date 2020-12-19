@@ -23,7 +23,7 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.ifc.EntrySVM;
+import de.db.shoppinglist.ifc.NewEntrySVM;
 import de.db.shoppinglist.model.ShoppingElement;
 import de.db.shoppinglist.model.ShoppingEntry;
 
@@ -102,7 +102,7 @@ public class NewEntryFragment extends Fragment {
         String nameOfProduct = nameOfProductEditText.getText().toString();
         String details = detailsEditText.getText().toString();
         ShoppingEntry entry = new ShoppingEntry(quantity, unitOfQuantity, new ShoppingElement(nameOfProduct, details));
-        EntrySVM svm = new ViewModelProvider(requireActivity()).get(EntrySVM.class);
+        NewEntrySVM svm = new ViewModelProvider(requireActivity()).get(NewEntrySVM.class);
         svm.provide(entry);
         closeFragment();
     }

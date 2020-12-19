@@ -19,12 +19,14 @@ import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavArgs;
+import androidx.navigation.NavArgument;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.ifc.EntrySVM;
+import de.db.shoppinglist.ifc.NewEntrySVM;
 import de.db.shoppinglist.model.ShoppingElement;
 import de.db.shoppinglist.model.ShoppingEntry;
 
@@ -45,6 +47,23 @@ public class ModifyEntryFragment extends Fragment {
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if(getArguments() != null){
+            ShoppingEntry entry = ModifyEntryFragmentArgs.fromBundle(getArguments()).getEntry();
+            initFields(entry);
+        }
+    }
+
+    private void initFields(ShoppingEntry entry) {
+        nameOfProductEditText.setText(entry.getName());
+        quantityEditText.setText(String.valueOf(entry.getQuantity()));
+        unitOfQuantityEditText.setText(entry.getUnitOfQuantity());
+        detailsEditText.setText(entry.getDetails());
+        doneCheckbox.setChecked(entry.isDone());
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
@@ -56,7 +75,7 @@ public class ModifyEntryFragment extends Fragment {
         MenuCompat.setGroupDividerEnabled(menu, true);
         MenuItem done = getDoneMenuItem(menu);
         nameOfProductEditText.addTextChangedListener(enableDoneMenuItemOnTextChange(done));
-        done.setEnabled(false);
+        done.setEnabled(true);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -104,7 +123,7 @@ public class ModifyEntryFragment extends Fragment {
         boolean done = doneCheckbox.isChecked();
         ShoppingEntry entry = new ShoppingEntry(quantity, unitOfQuantity, new ShoppingElement(nameOfProduct, details));
         entry.setDone(done);
-        EntrySVM svm = new ViewModelProvider(requireActivity()).get(EntrySVM.class);
+        NewEntrySVM svm = new ViewModelProvider(requireActivity()).get(NewEntrySVM.class);
         svm.provide(entry);
         closeFragment();
     }

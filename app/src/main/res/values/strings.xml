@@ -15,4 +15,5 @@
     <string name="newEntryFragmentTitle">New Shopping Entry</string>
     <string name="bought">Bought</string>
     <string name="modifyEntryFragmentTitle">Modify Entry</string>
+    <string name="deleteEntry">Delete Entry</string>
 </resources>

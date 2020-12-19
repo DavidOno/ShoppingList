@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 import de.db.shoppinglist.model.ShoppingEntry;
 
-public class EntrySVM extends ViewModel {
+public class NewEntrySVM extends ViewModel {
 
     private final MutableLiveData<ShoppingEntry> selected = new MutableLiveData<>();
 

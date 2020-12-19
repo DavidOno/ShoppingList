@@ -51,6 +51,10 @@ public class ShoppingListRecViewAdapter extends RecyclerView.Adapter<ShoppingLis
         notifyDataSetChanged();
     }
 
+    public ShoppingEntry getEntryByPosition(int position){
+        return entries.get(position);
+    }
+
     public interface OnEntryListener {
         void onEntryClick(int position);
     }

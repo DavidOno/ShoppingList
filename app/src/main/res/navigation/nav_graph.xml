@@ -44,5 +44,8 @@
         <action
             android:id="@+id/action_modifyEntryFragment_to_shoppingListFragment"
             app:destination="@id/shoppingListFragment" />
+        <argument
+            android:name="entry"
+            app:argType="de.db.shoppinglist.model.ShoppingEntry" />
     </fragment>
 </navigation>

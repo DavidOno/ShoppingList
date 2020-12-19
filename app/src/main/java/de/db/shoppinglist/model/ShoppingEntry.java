@@ -1,6 +1,9 @@
 package de.db.shoppinglist.model;
 
-public class ShoppingEntry {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class ShoppingEntry implements Parcelable {
 
     private float quantity;
     private String unitOfQuantity;
@@ -20,6 +23,24 @@ public class ShoppingEntry {
         done = false;
     }
 
+    protected ShoppingEntry(Parcel in) {
+        quantity = in.readFloat();
+        unitOfQuantity = in.readString();
+        done = in.readByte() != 0;
+    }
+
+    public static final Creator<ShoppingEntry> CREATOR = new Creator<ShoppingEntry>() {
+        @Override
+        public ShoppingEntry createFromParcel(Parcel in) {
+            return new ShoppingEntry(in);
+        }
+
+        @Override
+        public ShoppingEntry[] newArray(int size) {
+            return new ShoppingEntry[size];
+        }
+    };
+
     public void setDone(boolean done){
         this.done = done;
     }
@@ -38,5 +59,21 @@ public class ShoppingEntry {
 
     public String getDetails(){
         return shoppingElement.getDetails();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeFloat(quantity);
+        dest.writeString(unitOfQuantity);
+        dest.writeByte((byte) (done ? 1 : 0));
+    }
+
+    public boolean isDone() {
+        return done;
     }
 }
