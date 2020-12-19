@@ -23,7 +23,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.adapter.ShoppingListRecViewAdapter;
-import de.db.shoppinglist.ifc.NewEntrySVM;
+import de.db.shoppinglist.ifc.EntrySVM;
 import de.db.shoppinglist.model.ShoppingElement;
 import de.db.shoppinglist.model.ShoppingEntry;
 
@@ -43,7 +43,7 @@ public class ShoppingListFragment extends Fragment implements ShoppingListRecVie
         adapter = new ShoppingListRecViewAdapter(this);
         entriesView.setAdapter(adapter);
         entriesView.setLayoutManager(new LinearLayoutManager(getContext()));
-        NewEntrySVM newEntrymodel = new ViewModelProvider(requireActivity()).get(NewEntrySVM.class);
+        EntrySVM newEntrymodel = new ViewModelProvider(requireActivity()).get(EntrySVM.class);
         newEntrymodel.getProvided().observe(getViewLifecycleOwner(), item -> {
             Toast.makeText(getContext(), "item", Toast.LENGTH_LONG).show();
             String name = item.getName();
@@ -65,7 +65,6 @@ public class ShoppingListFragment extends Fragment implements ShoppingListRecVie
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        Toast.makeText(getContext(), "Hurra", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -82,6 +81,8 @@ public class ShoppingListFragment extends Fragment implements ShoppingListRecVie
 
     @Override
     public void onEntryClick(int position) {
-
+        NavController navController = NavHostFragment.findNavController(this);
+        NavDirections openSelectedEntry = ShoppingListFragmentDirections.actionShoppingListFragmentToModifyEntryFragment();
+        navController.navigate(openSelectedEntry);
     }
 }

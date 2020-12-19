@@ -13,4 +13,6 @@
     <string name="ShoppingListFragmentTitle">Shopping List</string>
     <string name="ShoppingListsFragmentTitle">Shopping Lists</string>
     <string name="newEntryFragmentTitle">New Shopping Entry</string>
+    <string name="bought">Bought</string>
+    <string name="modifyEntryFragmentTitle">Modify Entry</string>
 </resources>

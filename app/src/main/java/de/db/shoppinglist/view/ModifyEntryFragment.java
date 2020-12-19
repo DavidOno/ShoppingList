@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -27,23 +28,21 @@ import de.db.shoppinglist.ifc.EntrySVM;
 import de.db.shoppinglist.model.ShoppingElement;
 import de.db.shoppinglist.model.ShoppingEntry;
 
-public class NewEntryFragment extends Fragment {
-
+public class ModifyEntryFragment extends Fragment {
 
     private EditText nameOfProductEditText;
     private EditText quantityEditText;
     private EditText unitOfQuantityEditText;
     private EditText detailsEditText;
+    private CheckBox doneCheckbox;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_new_entry, container, false);
+        View view = inflater.inflate(R.layout.fragment_modify_entry, container, false);
         findViewsById(view);
         return view;
     }
-
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,8 +60,9 @@ public class NewEntryFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+
     private MenuItem getDoneMenuItem(Menu menu) {
-       return menu.findItem(R.id.menu_done_doneButton);
+        return menu.findItem(R.id.menu_done_doneButton);
     }
 
     @Override
@@ -101,7 +101,9 @@ public class NewEntryFragment extends Fragment {
         String unitOfQuantity = unitOfQuantityEditText.getText().toString();
         String nameOfProduct = nameOfProductEditText.getText().toString();
         String details = detailsEditText.getText().toString();
+        boolean done = doneCheckbox.isChecked();
         ShoppingEntry entry = new ShoppingEntry(quantity, unitOfQuantity, new ShoppingElement(nameOfProduct, details));
+        entry.setDone(done);
         EntrySVM svm = new ViewModelProvider(requireActivity()).get(EntrySVM.class);
         svm.provide(entry);
         closeFragment();
@@ -120,14 +122,15 @@ public class NewEntryFragment extends Fragment {
 
     private void closeFragment() {
         NavController navController = NavHostFragment.findNavController(this);
-        NavDirections shoppingList = NewEntryFragmentDirections.actionNewEntryFragmentToShoppingListFragment();
+        NavDirections shoppingList = ModifyEntryFragmentDirections.actionModifyEntryFragmentToShoppingListFragment();
         navController.navigate(shoppingList);
     }
 
     private void findViewsById(View view) {
-        nameOfProductEditText = view.findViewById(R.id.nameOfProductEditText);
-        quantityEditText = view.findViewById(R.id.quantityEditText);
-        unitOfQuantityEditText = view.findViewById(R.id.unitOfQuantityEditText);
-        detailsEditText = view.findViewById(R.id.detailsEditText);
+        nameOfProductEditText = view.findViewById(R.id.modify_entry_nameOfProductEditText);
+        quantityEditText = view.findViewById(R.id.modify_entry_quantityEditText);
+        unitOfQuantityEditText = view.findViewById(R.id.modify_entry_unitOfQuantityEditText);
+        detailsEditText = view.findViewById(R.id.modify_entry_detailsEditText);
+        doneCheckbox = view.findViewById(R.id.modify_entry_done_checkbox);
     }
 }

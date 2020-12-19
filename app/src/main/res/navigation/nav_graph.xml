@@ -22,8 +22,8 @@
             android:id="@+id/action_shoppingListFragment_to_newEntryFragment"
             app:destination="@id/newEntryFragment"/>
         <action
-            android:id="@+id/action_shoppingListFragment_to_newEntryFragment2"
-            app:destination="@id/newEntryFragment" />
+            android:id="@+id/action_shoppingListFragment_to_modifyEntryFragment"
+            app:destination="@id/modifyEntryFragment" />
     </fragment>
     <fragment
         android:id="@+id/newEntryFragment"
@@ -35,5 +35,14 @@
             app:destination="@id/shoppingListFragment"
             app:popUpTo="@id/shoppingListFragment"
             app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/modifyEntryFragment"
+        android:name="de.db.shoppinglist.view.ModifyEntryFragment"
+        android:label="@string/modifyEntryFragmentTitle"
+        tools:layout="@layout/fragment_modify_entry" >
+        <action
+            android:id="@+id/action_modifyEntryFragment_to_shoppingListFragment"
+            app:destination="@id/shoppingListFragment" />
     </fragment>
 </navigation>

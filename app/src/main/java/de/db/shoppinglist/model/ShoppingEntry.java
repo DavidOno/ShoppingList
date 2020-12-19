@@ -20,6 +20,10 @@ public class ShoppingEntry {
         done = false;
     }
 
+    public void setDone(boolean done){
+        this.done = done;
+    }
+
     public String getName() {
         return shoppingElement.getName();
     }
