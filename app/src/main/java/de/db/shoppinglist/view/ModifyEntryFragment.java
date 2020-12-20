@@ -123,7 +123,7 @@ public class ModifyEntryFragment extends Fragment {
         boolean done = doneCheckbox.isChecked();
         ShoppingEntry entry = new ShoppingEntry(quantity, unitOfQuantity, new ShoppingElement(nameOfProduct, details));
         entry.setDone(done);
-        NewEntrySVM svm = new ViewModelProvider(requireActivity()).get(NewEntrySVM.class);
+        NewEntrySVM svm = new ViewModelProvider(requireActivity()).get(NewEntrySVM.class); //TODO: Probably change to ModifyEntrySVM
         svm.provide(entry);
         closeFragment();
     }
