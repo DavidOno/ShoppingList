@@ -5,6 +5,13 @@ public class ShoppingElement {
     private String name;
     private String details;
 
+    /**
+     * This empty constructor is required for Firebase
+     */
+    public ShoppingElement(){
+
+    }
+
     public ShoppingElement(String name, String details) {
         this.name = name;
         this.details = details;

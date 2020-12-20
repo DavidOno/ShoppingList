@@ -2,13 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
     <androidx.cardview.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/entry_card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         card_view:cardCornerRadius="10dp"
-        card_view:cardElevation="7dp"
+        card_view:cardElevation="2dp"
         card_view:cardUseCompatPadding="true">
 
         <RelativeLayout
@@ -47,8 +48,6 @@
                         android:maxLines="1"
                         android:ellipsize="end"
                         android:textSize="14dp"/>
-
-
                 </LinearLayout>
 
                 <TextView
@@ -62,7 +61,6 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginBottom="3dp"
                     android:textSize="12dp"/>
-
             </LinearLayout>
 
             <CheckBox

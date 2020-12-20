@@ -19,15 +19,12 @@ import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavArgs;
-import androidx.navigation.NavArgument;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.ifc.NewEntrySVM;
-import de.db.shoppinglist.model.ShoppingElement;
 import de.db.shoppinglist.model.ShoppingEntry;
 
 public class ModifyEntryFragment extends Fragment {
@@ -121,7 +118,7 @@ public class ModifyEntryFragment extends Fragment {
         String nameOfProduct = nameOfProductEditText.getText().toString();
         String details = detailsEditText.getText().toString();
         boolean done = doneCheckbox.isChecked();
-        ShoppingEntry entry = new ShoppingEntry(quantity, unitOfQuantity, new ShoppingElement(nameOfProduct, details));
+        ShoppingEntry entry = new ShoppingEntry(quantity, unitOfQuantity, nameOfProduct, details);
         entry.setDone(done);
         NewEntrySVM svm = new ViewModelProvider(requireActivity()).get(NewEntrySVM.class); //TODO: Probably change to ModifyEntrySVM
         svm.provide(entry);

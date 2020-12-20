@@ -8,19 +8,29 @@ public class ShoppingEntry implements Parcelable {
     private float quantity;
     private String unitOfQuantity;
     private boolean done;
-    private ShoppingElement shoppingElement;
+    private String name;
+    private String details;
 
-    public ShoppingEntry(float quantity, String unitOfQuantity, ShoppingElement shoppingElement) {
+    /**
+     * Empty constructor required by Firestore.
+     */
+    public ShoppingEntry(){
+
+    }
+
+    public ShoppingEntry(float quantity, String unitOfQuantity, String name, String details) {
         this.quantity = quantity;
         this.unitOfQuantity = unitOfQuantity;
-        this.shoppingElement = shoppingElement;
+        this.name = name;
+        this.details = details;
         done = false;
     }
 
     public ShoppingEntry(ShoppingEntry other) {
         this.quantity = other.quantity;
         this.unitOfQuantity = other.unitOfQuantity;
-        this.shoppingElement = other.shoppingElement;
+        this.name = other.name;
+        this.details = other.details;
         done = false;
     }
 
@@ -28,6 +38,21 @@ public class ShoppingEntry implements Parcelable {
         quantity = in.readFloat();
         unitOfQuantity = in.readString();
         done = in.readByte() != 0;
+    }
+
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeFloat(quantity);
+        dest.writeString(unitOfQuantity);
+        dest.writeByte((byte) (done ? 1 : 0));
+        dest.writeString(name);
+        dest.writeString(details);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<ShoppingEntry> CREATOR = new Creator<ShoppingEntry>() {
@@ -47,7 +72,7 @@ public class ShoppingEntry implements Parcelable {
     }
 
     public String getName() {
-        return shoppingElement.getName();
+        return name;
     }
 
     public float getQuantity() {
@@ -59,19 +84,7 @@ public class ShoppingEntry implements Parcelable {
     }
 
     public String getDetails(){
-        return shoppingElement.getDetails();
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeFloat(quantity);
-        dest.writeString(unitOfQuantity);
-        dest.writeByte((byte) (done ? 1 : 0));
+        return details;
     }
 
     public boolean isDone() {

@@ -10,36 +10,33 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.model.ShoppingEntry;
-import de.db.shoppinglist.model.ShoppingList;
 
+public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<ShoppingEntry, FireShoppingListRecViewAdapter.ViewHolder> {
 
-public class ShoppingListRecViewAdapter extends RecyclerView.Adapter<ShoppingListRecViewAdapter.ViewHolder>{
-
-    private List<ShoppingEntry> entries = new ArrayList<>();
     private OnEntryListener onEntryListener;
 
-    public ShoppingListRecViewAdapter(OnEntryListener onEntryListener) {
+    /**
+     * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
+     * FirestoreRecyclerOptions} for configuration options.
+     *
+     * @param options
+     */
+    public FireShoppingListRecViewAdapter(@NonNull FirestoreRecyclerOptions options, OnEntryListener onEntryListener) {
+        super(options);
         this.onEntryListener = onEntryListener;
     }
 
-    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_entry, parent, false);
-        return new ViewHolder(view, onEntryListener);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.nameOfEntry.setText(entries.get(position).getName());
-        holder.quantity.setText(getQuantityText(entries.get(position).getQuantity()));
-        holder.unitOfQuantity.setText(entries.get(position).getUnitOfQuantity());
-        holder.isDone.setChecked(entries.get(position).isDone());
+    protected void onBindViewHolder(@NonNull ViewHolder holder, int i, @NonNull ShoppingEntry shoppingEntry) {
+        holder.nameOfEntry.setText(shoppingEntry.getName());
+        holder.quantity.setText(getQuantityText(shoppingEntry.getQuantity()));
+        holder.unitOfQuantity.setText(shoppingEntry.getUnitOfQuantity());
+        holder.isDone.setChecked(shoppingEntry.isDone());
     }
 
     private String getQuantityText(float quantity) {
@@ -50,34 +47,17 @@ public class ShoppingListRecViewAdapter extends RecyclerView.Adapter<ShoppingLis
         }
     }
 
+    @NonNull
     @Override
-    public int getItemCount() {
-        return entries.size();
-    }
-
-    public void addEntry(ShoppingEntry entry){
-        entries.add(entry);
-        notifyDataSetChanged();
-    }
-
-    public void replaceShoppingList(ShoppingList shoppingList){
-        entries.clear();
-        entries.addAll(shoppingList.getEntries());
-        notifyDataSetChanged();
-    }
-
-    public void deleteAll(){
-        entries.clear();
-        notifyDataSetChanged();
-    }
-
-    public ShoppingEntry getEntryByPosition(int position){
-        return entries.get(position);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_entry, parent, false);
+        return new FireShoppingListRecViewAdapter.ViewHolder(view, onEntryListener);
     }
 
     public interface OnEntryListener {
         void onEntryClick(int position);
     }
+
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
@@ -114,4 +94,3 @@ public class ShoppingListRecViewAdapter extends RecyclerView.Adapter<ShoppingLis
         }
     }
 }
-

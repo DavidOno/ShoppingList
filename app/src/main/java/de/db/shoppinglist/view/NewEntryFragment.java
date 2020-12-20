@@ -12,21 +12,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
-import java.util.Optional;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.ifc.NewEntrySVM;
-import de.db.shoppinglist.model.ShoppingElement;
 import de.db.shoppinglist.model.ShoppingEntry;
 
 public class NewEntryFragment extends Fragment {
@@ -99,9 +98,9 @@ public class NewEntryFragment extends Fragment {
     }
 
     private void finishFragment() {
-        ShoppingEntry entry = createNewEntry();
-        NewEntrySVM svm = new ViewModelProvider(requireActivity()).get(NewEntrySVM.class);
-        svm.provide(entry);
+        CollectionReference newEntryRef = FirebaseFirestore.getInstance().collection("Test");
+        newEntryRef.add(createNewEntry());
+        Toast.makeText(getContext(), "Note added:", Toast.LENGTH_LONG);
         closeFragment();
     }
 
@@ -110,7 +109,7 @@ public class NewEntryFragment extends Fragment {
         String unitOfQuantity = getString(unitOfQuantityEditText);
         String nameOfProduct = getString(nameOfProductEditText);
         String details = getString(detailsEditText);
-        return new ShoppingEntry(quantity, unitOfQuantity, new ShoppingElement(nameOfProduct, details));
+        return new ShoppingEntry(quantity, unitOfQuantity, nameOfProduct, details);
     }
 
     private float getQuantity(){

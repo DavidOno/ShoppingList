@@ -11,6 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
@@ -21,12 +24,14 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.adapter.ShoppingListsRecViewAdapter;
+import de.db.shoppinglist.viewmodel.ShoppingListsViewModel;
 
 public class ShoppingListsFragment extends Fragment implements ShoppingListsRecViewAdapter.OnListListener{
 
     private RecyclerView listOfListsView;
     private FloatingActionButton newListButton;
     private ShoppingListsRecViewAdapter adapter;
+    private ViewModel shoppingListsViewModel;
 
     @Nullable
     @Override
@@ -37,6 +42,8 @@ public class ShoppingListsFragment extends Fragment implements ShoppingListsRecV
         adapter = new ShoppingListsRecViewAdapter(this);
         listOfListsView.setAdapter(adapter);
         listOfListsView.setLayoutManager(new LinearLayoutManager(getContext()));
+        shoppingListsViewModel = new ViewModelProvider(requireActivity()).get(ShoppingListsViewModel.class);
+//        shoppingListsViewModel.
         return view;
     }
 

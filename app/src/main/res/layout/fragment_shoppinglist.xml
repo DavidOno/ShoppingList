@@ -5,33 +5,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".view.ShoppingListFragment">
 
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:weightSum="10">
-
-
-
-        <TextView
-            android:id="@+id/ListTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/listOfEntries"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight = "8.5"
+            android:layout_weight = "0.3"
             android:padding="0dp"/>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight = "1.5">
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/AddNewEntryButton"
@@ -43,8 +22,7 @@
                 android:layout_marginRight="15dp"
                 android:src="@drawable/plus_icon"
                 android:backgroundTint="@android:color/black"
+                android:layout_gravity="end|bottom"
                 />
-        </RelativeLayout>
-    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
