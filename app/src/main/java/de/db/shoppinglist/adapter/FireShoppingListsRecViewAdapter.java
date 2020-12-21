@@ -53,7 +53,7 @@ public class FireShoppingListsRecViewAdapter extends FirestoreRecyclerAdapter<Sh
 
         public ViewHolder(@NonNull View itemView, OnListListener onListListener) {
             super(itemView);
-            nameOfShoppingList = itemView.findViewById(R.id.shoppingList_ListItem);
+            nameOfShoppingList = itemView.findViewById(R.id.item_list_name);
             this.onListListener = onListListener;
             itemView.setOnClickListener(this);
         }
