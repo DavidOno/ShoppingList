@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -57,10 +59,36 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
         findViewsById(view);
         newEntryButton.setOnClickListener(v -> openNewEntryFragment());
         entriesView.setLayoutManager(new LinearLayoutManager(getContext()));
-        shoppingListViewModel = new ViewModelProvider(requireActivity()).get(ShoppingListViewModel.class);
+        setUpViewModel();
         setUpRecyclerView();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(listName);
+        setTitleOfFragment();
+        handleItemInteraction();
         return view;
+    }
+
+    private void setUpViewModel() {
+        shoppingListViewModel = new ViewModelProvider(requireActivity()).get(ShoppingListViewModel.class);
+        shoppingListViewModel.init();
+    }
+
+    private void setTitleOfFragment() {
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(listName);
+    }
+
+    private void handleItemInteraction() {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int adapterPosition = viewHolder.getAdapterPosition();
+                shoppingListViewModel.deleteEntry(fireAdapter.getItem(adapterPosition));
+                Toast.makeText(getContext(), "Could be deleted", Toast.LENGTH_LONG).show();
+            }
+        }).attachToRecyclerView(entriesView);
     }
 
     private void setUpRecyclerView() {
