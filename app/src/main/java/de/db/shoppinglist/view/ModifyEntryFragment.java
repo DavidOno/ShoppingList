@@ -17,6 +17,7 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -30,6 +31,7 @@ import de.db.shoppinglist.model.ShoppingEntry;
 
 public class ModifyEntryFragment extends Fragment {
 
+    public static final String MODIFY = "Modify "; //TODO: @string/...
     private EditText nameOfProductEditText;
     private EditText quantityEditText;
     private EditText unitOfQuantityEditText;
@@ -50,11 +52,10 @@ public class ModifyEntryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if(getArguments() != null){
-            ShoppingEntry entry = ModifyEntryFragmentArgs.fromBundle(getArguments()).getEntry();
-            initFields(entry);
-            oldDocumentId = getDocumentId(entry);
-        }
+        ShoppingEntry entry = ModifyEntryFragmentArgs.fromBundle(getArguments()).getEntry();
+        initFields(entry);
+        oldDocumentId = getDocumentId(entry);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(MODIFY +entry.getName());
         deleteButton.setOnClickListener(v -> deleteEntryAndFinish());
     }
 
@@ -121,10 +122,13 @@ public class ModifyEntryFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(nameOfProductEditText.getText().toString().isEmpty()){
+                String name = nameOfProductEditText.getText().toString();
+                if(name.isEmpty()){
                     doneMenuItem.setEnabled(false);
+                    ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(MODIFY +name);
                 }else{
                     doneMenuItem.setEnabled(true);
+                    ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(MODIFY +name);
                 }
             }
 
