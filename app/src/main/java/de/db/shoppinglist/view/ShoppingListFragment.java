@@ -69,7 +69,6 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
 
     private void setUpViewModel() {
         shoppingListViewModel = new ViewModelProvider(requireActivity()).get(ShoppingListViewModel.class);
-        shoppingListViewModel.init();
     }
 
     private void setTitleOfFragment() {
@@ -86,7 +85,8 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int adapterPosition = viewHolder.getAdapterPosition();
-                shoppingListViewModel.deleteEntry(fireAdapter.getItem(adapterPosition));
+                boolean wasSuccess = shoppingListViewModel.deleteEntry(list, fireAdapter.getItem(adapterPosition));
+                if(wasSuccess)
                 Toast.makeText(getContext(), "Could be deleted", Toast.LENGTH_LONG).show();
             }
         }).attachToRecyclerView(entriesView);

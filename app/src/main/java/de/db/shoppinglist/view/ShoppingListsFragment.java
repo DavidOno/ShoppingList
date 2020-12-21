@@ -59,7 +59,6 @@ public class ShoppingListsFragment extends Fragment implements FireShoppingLists
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int adapterPosition = viewHolder.getAdapterPosition();
                 shoppingListsViewModel.deleteList(fireAdapter.getItem(adapterPosition));
-                Toast.makeText(getContext(), "Could be deleted", Toast.LENGTH_LONG).show();
             }
         }).attachToRecyclerView(listOfListsView);
         return view;

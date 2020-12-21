@@ -1,51 +1,98 @@
 package de.db.shoppinglist.database;
 
+import android.util.Log;
+
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import de.db.shoppinglist.model.ShoppingElement;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 
 public class FirebaseSource implements Source {
 
     private static FirebaseSource instance;
-    private final String origin = "ORIGIN";
-    private final String entries_key = "ENTRIES";
+    private final String listsRootKey = "Lists";
+    private final String entriesKey = "Entries";
+    private final String firebaseTag = "FIREBASE";
+
 
 
     @Override
-    public ShoppingList getShoppingList(String name) {
-        return null;
+    public boolean addEntry(String listUid, ShoppingEntry newEntry) {
+        AtomicBoolean wasSuccess = new AtomicBoolean(false);
+        DocumentReference newEntryRef = FirebaseFirestore.getInstance()
+                .collection(listsRootKey).document(listUid).collection(entriesKey).document(newEntry.getUid());
+        newEntryRef.set(newEntry).addOnSuccessListener(aVoid -> {
+            Log.d("FIREBASE", "Success: Added Entry");
+            wasSuccess.set(true);
+        })
+                .addOnFailureListener(e -> {
+                    Log.d("FIREBASE", e.getMessage());
+                });;
+        return wasSuccess.get();
+    }
+
+//    @Override
+//    public boolean modifyEntry(String uid, ShoppingEntry entry) {
+//        AtomicBoolean wasSuccess = new AtomicBoolean(false);
+//        DocumentReference modifyEntryRef = FirebaseFirestore.getInstance()
+//                .collection(listsRootKey).document(uid).collection(entriesKey).document(entry.getUid());
+//        modifyEntryRef.set(entry);
+//        return wasSuccess.get();
+//    }
+
+    @Override
+    public boolean deleteEntry(String listUid, String documentUid) {
+        AtomicBoolean wasSuccess = new AtomicBoolean(false);
+        DocumentReference entryRef = FirebaseFirestore.getInstance().collection(listsRootKey).document(listUid).collection("Entries").document(documentUid);
+        entryRef.delete().addOnSuccessListener(aVoid -> {
+            Log.d("FIREBASE", "Success: Deleted Entry");
+            wasSuccess.set(true);
+        })
+        .addOnFailureListener(e -> {
+            Log.d("FIREBASE", e.getMessage());
+        });
+        return wasSuccess.get();
     }
 
     @Override
-    public void addEntry() {
-
+    public boolean addList(ShoppingList shoppingList) {
+        AtomicBoolean wasSuccess = new AtomicBoolean(false);
+        FirebaseFirestore.getInstance().collection(listsRootKey).document(shoppingList.getUid()).set(shoppingList);
+        return wasSuccess.get();
     }
 
     @Override
-    public void modifyEntry() {
-
+    public boolean modifyList() {
+        AtomicBoolean wasSuccess = new AtomicBoolean(false);
+        return wasSuccess.get();
     }
 
     @Override
-    public void deleteEntry(ShoppingElement item) {
-//        DocumentReference oldEntryRef = FirebaseFirestore.getInstance().collection(origin).document(listName).collection("Entries").document(oldDocumentId);
-//        oldEntryRef.delete();
+    public boolean deleteList(String listId) {
+        boolean wasDeletingEntriesSuccess = deleteEntries(listId);
+        boolean wasDeletingListSuccess = deleteListOnly(listId);
+        return wasDeletingEntriesSuccess && wasDeletingListSuccess;
     }
 
-    @Override
-    public void addList() {
-
+    private boolean deleteEntries(String listId) {
+        //From https://firebase.google.com/docs/firestore/manage-data/delete-data#collections
+        // Deleting collections from an Android client is not recommended.
+        return true;
     }
 
-    @Override
-    public void modifyList() {
+    private boolean deleteListOnly(String listId) {
+        AtomicBoolean wasSuccess = new AtomicBoolean(true);
+        DocumentReference entryRef = FirebaseFirestore.getInstance().collection(listsRootKey).document(listId);
+        entryRef.delete().addOnSuccessListener(aVoid -> {
+            Log.d("FIREBASE", "Success: Deleted List");
 
-    }
-
-    @Override
-    public void deleteList() {
-
+        }).addOnFailureListener(e -> {
+            Log.d("FIREBASE", e.getMessage());
+            wasSuccess.set(false);
+        });
+        return wasSuccess.get();
     }
 }

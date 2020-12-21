@@ -6,12 +6,12 @@ import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.repository.ShoppingRepository;
 
-public class ShoppingListsViewModel extends ViewModel {
+public class NewEntryViewModel extends ViewModel {
 
     private ShoppingRepository repo = ShoppingRepository.getInstance();
 
-    public boolean deleteList(ShoppingList list) {
-        return repo.deleteList(list.getUid());
-    }
 
+    public boolean addNewEntry(ShoppingList list, ShoppingEntry newEntry) {
+        return repo.addEntry(list.getUid(), newEntry);
+    }
 }

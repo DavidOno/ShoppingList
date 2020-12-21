@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
@@ -29,6 +30,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
+import de.db.shoppinglist.viewmodel.ModifyEntryViewModel;
+import de.db.shoppinglist.viewmodel.NewEntryViewModel;
 
 public class NewEntryFragment extends Fragment {
 
@@ -38,12 +41,14 @@ public class NewEntryFragment extends Fragment {
     private EditText unitOfQuantityEditText;
     private EditText detailsEditText;
     private ShoppingList list;
+    private NewEntryViewModel viewModel;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_new_entry, container, false);
         findViewsById(view);
+
         return view;
     }
 
@@ -55,7 +60,7 @@ public class NewEntryFragment extends Fragment {
         setHasOptionsMenu(true);
         NewEntryFragmentArgs newEntryFragmentArgs = NewEntryFragmentArgs.fromBundle(getArguments());
         list = newEntryFragmentArgs.getList();
-        Toast.makeText(getContext(), list.getUid(), Toast.LENGTH_LONG).show();
+        viewModel = new ViewModelProvider(requireActivity()).get(NewEntryViewModel.class);
     }
 
     @Override
@@ -106,8 +111,7 @@ public class NewEntryFragment extends Fragment {
     private void finishFragment() {
         ShoppingEntry newEntry = createNewEntry();
         String id = newEntry.getUid();
-        DocumentReference newEntryRef = FirebaseFirestore.getInstance().collection("Lists/"+list.getUid()+"/"+"Entries").document(id);
-        newEntryRef.set(newEntry);
+        boolean wasSuccess = viewModel.addNewEntry(list, newEntry);
         closeFragment();
     }
 

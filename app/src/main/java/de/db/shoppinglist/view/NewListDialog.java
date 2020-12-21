@@ -16,18 +16,26 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.model.ShoppingList;
+import de.db.shoppinglist.viewmodel.ModifyEntryViewModel;
+import de.db.shoppinglist.viewmodel.NewListDialogViewModel;
 
 public class NewListDialog extends AppCompatDialogFragment {
 
     private EditText listNameEditText;
     private Button doneButton;
     private Button backButton;
+    private CoordinatorLayout coordinatorLayout;
+
+    private NewListDialogViewModel viewModel;
 
     public NewListDialog(){
     }
@@ -43,6 +51,7 @@ public class NewListDialog extends AppCompatDialogFragment {
         doneButton = view.findViewById(R.id.new_list_dialog_doneButton);
         doneButton.setEnabled(false);
         backButton = view.findViewById(R.id.new_list_dialog_backButton);
+        coordinatorLayout = view.findViewById(R.id.newEntryDialog_CoordLayout);
         listNameEditText.addTextChangedListener(enableDoneMenuItemOnTextChange());
 
         listNameEditText.requestFocus();
@@ -52,7 +61,7 @@ public class NewListDialog extends AppCompatDialogFragment {
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         listNameEditText.addTextChangedListener(enableDoneMenuItemOnTextChange());
-
+        viewModel = new ViewModelProvider(requireActivity()).get(NewListDialogViewModel.class);
         return dialog;
     }
 
@@ -84,10 +93,9 @@ public class NewListDialog extends AppCompatDialogFragment {
     }
 
     private void finish() {
-        closeDialog();
         String listName = listNameEditText.getText().toString();
         ShoppingList shoppingList = new ShoppingList(listName);
-        String id = shoppingList.getUid();
-        FirebaseFirestore.getInstance().collection("Lists").document(id).set(shoppingList);
+        viewModel.addList(shoppingList);
+        closeDialog();
     }
 }

@@ -1,21 +1,20 @@
 package de.db.shoppinglist.database;
 
-import de.db.shoppinglist.model.ShoppingElement;
+import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 
 public interface Source {
-    ShoppingList getShoppingList(String name);
 
-    public void addEntry();
+    public boolean addEntry(String listUid, ShoppingEntry entry);
 
-    public void modifyEntry();
+//    public boolean modifyEntry(String uid, ShoppingEntry entry);
 
-    public void deleteEntry(ShoppingElement item);
+    public boolean deleteEntry(String listUid, String documentUid);
 
-    public void addList();
+    public boolean addList(ShoppingList shoppingList);
 
-    public void modifyList();
+    public boolean modifyList();
 
-    public void deleteList();
+    public boolean deleteList(String listId);
 }
 

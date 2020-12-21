@@ -1,11 +1,8 @@
 package de.db.shoppinglist.repository;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-
 import de.db.shoppinglist.database.Source;
 import de.db.shoppinglist.database.FirebaseSource;
-import de.db.shoppinglist.model.ShoppingElement;
+import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 
 public class ShoppingRepository {
@@ -24,35 +21,27 @@ public class ShoppingRepository {
         return instance;
     }
 
-    public void addEntry(){
-
+    public boolean addEntry(String listId, ShoppingEntry newEntry){
+        return db.addEntry(listId, newEntry);
     }
 
-    public void modifyEntry(){
+//    public boolean modifyEntry(String uid, ShoppingEntry entry){
+//        return db.modifyEntry(uid, entry);
+//    }
 
+    public boolean deleteEntry(String listUid, String documentUid){
+        return db.deleteEntry(listUid, documentUid);
     }
 
-    public void deleteEntry(ShoppingElement item){
-        db.deleteEntry(item);
-    }
-
-    public void addList(){
-
+    public boolean addList(ShoppingList shoppingList){
+        return db.addList(shoppingList);
     }
 
     public void modifyList(){
 
     }
 
-    public void deleteList(){
-
+    public boolean deleteList(String listId){
+        return db.deleteList(listId);
     }
-
-    public LiveData<ShoppingList> getShoppingList(String name){
-        final MutableLiveData<ShoppingList> shoppingData = new MutableLiveData<>();
-        shoppingData.setValue(db.getShoppingList(name));
-        return null; //TODO
-    }
-
-
 }
