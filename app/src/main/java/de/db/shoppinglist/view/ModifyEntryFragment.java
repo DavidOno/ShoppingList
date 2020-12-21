@@ -138,8 +138,9 @@ public class ModifyEntryFragment extends Fragment {
 
     private void closeFragment() {
         NavController navController = NavHostFragment.findNavController(this);
-        NavDirections shoppingList = ModifyEntryFragmentDirections.actionModifyEntryFragmentToShoppingListFragment();
-        navController.navigate(shoppingList);
+//        NavDirections shoppingList = ModifyEntryFragmentDirections.actionModifyEntryFragmentToShoppingListFragment();
+//        navController.navigate(shoppingList);
+        navController.navigateUp();
     }
 
     private void findViewsById(View view) {

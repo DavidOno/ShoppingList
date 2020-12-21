@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
@@ -28,10 +27,7 @@ import com.google.firebase.firestore.Query;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.adapter.FireShoppingListRecViewAdapter;
-import de.db.shoppinglist.adapter.ShoppingListRecViewAdapter;
-import de.db.shoppinglist.ifc.NewEntrySVM;
 import de.db.shoppinglist.model.ShoppingEntry;
-import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.ShoppingListViewModel;
 
 public class ShoppingListFragment extends Fragment implements FireShoppingListRecViewAdapter.OnEntryListener{
@@ -41,10 +37,11 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
     private FloatingActionButton newEntryButton;
 //    private ShoppingListRecViewAdapter adapter;
     private ShoppingListViewModel shoppingListViewModel;
+    private String listName;
 
     //TODO: Put in MVVM
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private CollectionReference shoppingListRef = db.collection("Test");
+    private CollectionReference shoppingListRef = db.collection("Lists").document(listName);
 
     private FirestoreRecyclerAdapter fireAdapter;
 
@@ -84,7 +81,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
 
     private void openNewEntryFragment() {
         NavController navController = NavHostFragment.findNavController(this);
-        NavDirections newEntry = ShoppingListFragmentDirections.actionShoppingListFragmentToNewEntryFragment();
+        NavDirections newEntry = ShoppingListFragmentDirections.actionShoppingListFragmentToNewEntryFragment(listName);
         navController.navigate(newEntry);
     }
 
@@ -92,6 +89,8 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        ShoppingListFragmentArgs shoppingListFragmentArgs = ShoppingListFragmentArgs.fromBundle(savedInstanceState);
+        listName = shoppingListFragmentArgs.getListName();
     }
 
     @Override

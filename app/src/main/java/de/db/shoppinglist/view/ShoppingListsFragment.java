@@ -13,25 +13,31 @@ import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.adapter.ShoppingListsRecViewAdapter;
+import de.db.shoppinglist.adapter.FireShoppingListsRecViewAdapter;
+import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.ShoppingListsViewModel;
 
-public class ShoppingListsFragment extends Fragment implements ShoppingListsRecViewAdapter.OnListListener{
+public class ShoppingListsFragment extends Fragment implements FireShoppingListsRecViewAdapter.OnListListener{
 
     private RecyclerView listOfListsView;
     private FloatingActionButton newListButton;
-    private ShoppingListsRecViewAdapter adapter;
+    private FireShoppingListsRecViewAdapter fireAdapter;
     private ViewModel shoppingListsViewModel;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference shoppingListRef = db.collection("Lists");
 
     @Nullable
     @Override
@@ -39,12 +45,20 @@ public class ShoppingListsFragment extends Fragment implements ShoppingListsRecV
         View view = inflater.inflate(R.layout.fragment_shoppinglists, container, false);
         findViewsById(view);
         newListButton.setOnClickListener(v -> openNewListDialog());
-        adapter = new ShoppingListsRecViewAdapter(this);
-        listOfListsView.setAdapter(adapter);
         listOfListsView.setLayoutManager(new LinearLayoutManager(getContext()));
         shoppingListsViewModel = new ViewModelProvider(requireActivity()).get(ShoppingListsViewModel.class);
-//        shoppingListsViewModel.
+        setUpRecyclerView();
         return view;
+    }
+
+    private void setUpRecyclerView() {
+        Query query = shoppingListRef;
+        FirestoreRecyclerOptions<ShoppingList> options = new FirestoreRecyclerOptions.Builder<ShoppingList>()
+                .setQuery(query, ShoppingList.class)
+                .build();
+
+        fireAdapter = new FireShoppingListsRecViewAdapter(options, this);
+        listOfListsView.setAdapter(fireAdapter);
     }
 
     @Override
@@ -59,7 +73,7 @@ public class ShoppingListsFragment extends Fragment implements ShoppingListsRecV
     }
 
     private void openNewListDialog() {
-        NewListDialog dialog = new NewListDialog(adapter);
+        NewListDialog dialog = new NewListDialog();
         dialog.show(getParentFragmentManager(), null);
     }
 
@@ -72,8 +86,21 @@ public class ShoppingListsFragment extends Fragment implements ShoppingListsRecV
 
     @Override
     public void onListClick(int position) {
+        String name = fireAdapter.getItem(position).getName();
         NavController navController = NavHostFragment.findNavController(this);
-        NavDirections openSelectedList = ShoppingListsFragmentDirections.actionShoppingListsFragmentToShoppingListFragment();
+        NavDirections openSelectedList = ShoppingListsFragmentDirections.actionShoppingListsFragmentToShoppingListFragment(name);
         navController.navigate(openSelectedList);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        fireAdapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        fireAdapter.stopListening();
     }
 }

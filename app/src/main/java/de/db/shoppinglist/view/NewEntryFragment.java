@@ -35,6 +35,7 @@ public class NewEntryFragment extends Fragment {
     private EditText quantityEditText;
     private EditText unitOfQuantityEditText;
     private EditText detailsEditText;
+    private String listName;
 
     @Nullable
     @Override
@@ -50,6 +51,8 @@ public class NewEntryFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        NewEntryFragmentArgs newEntryFragmentArgs = NewEntryFragmentArgs.fromBundle(savedInstanceState);
+        listName = newEntryFragmentArgs.getListName();
     }
 
     @Override
@@ -98,10 +101,16 @@ public class NewEntryFragment extends Fragment {
     }
 
     private void finishFragment() {
-        CollectionReference newEntryRef = FirebaseFirestore.getInstance().collection("Test");
-        newEntryRef.add(createNewEntry());
+        ShoppingEntry newEntry = createNewEntry();
+        String id = createIdFromEntry(newEntry);
+        CollectionReference newEntryRef = FirebaseFirestore.getInstance().collection("Lists/"+listName+"/"+id);
+        newEntryRef.add(newEntry);
         Toast.makeText(getContext(), "Note added:", Toast.LENGTH_LONG);
         closeFragment();
+    }
+
+    private String createIdFromEntry(ShoppingEntry newEntry) {
+        return newEntry.getName();
     }
 
     private ShoppingEntry createNewEntry() {
@@ -138,8 +147,7 @@ public class NewEntryFragment extends Fragment {
 
     private void closeFragment() {
         NavController navController = NavHostFragment.findNavController(this);
-        NavDirections shoppingList = NewEntryFragmentDirections.actionNewEntryFragmentToShoppingListFragment();
-        navController.navigate(shoppingList);
+        navController.navigateUp();
     }
 
     private void findViewsById(View view) {

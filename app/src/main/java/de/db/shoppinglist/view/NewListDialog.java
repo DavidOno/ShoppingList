@@ -12,24 +12,24 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.adapter.ShoppingListsRecViewAdapter;
+import de.db.shoppinglist.model.ShoppingList;
 
 public class NewListDialog extends AppCompatDialogFragment {
 
     private EditText listNameEditText;
     private Button doneButton;
     private Button backButton;
-    private ShoppingListsRecViewAdapter adapter;
 
-    public NewListDialog(ShoppingListsRecViewAdapter adapter){
-        this.adapter = adapter;
+    public NewListDialog(){
     }
 
     @NonNull
@@ -46,7 +46,7 @@ public class NewListDialog extends AppCompatDialogFragment {
         listNameEditText.addTextChangedListener(enableDoneMenuItemOnTextChange());
 
         listNameEditText.requestFocus();
-        doneButton.setOnClickListener(item -> returnResult());
+        doneButton.setOnClickListener(item -> finish());
         backButton.setOnClickListener(item -> closeDialog());
         Dialog dialog = builder.create();
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -83,8 +83,9 @@ public class NewListDialog extends AppCompatDialogFragment {
         };
     }
 
-    private void returnResult() {
+    private void finish() {
         closeDialog();
-        adapter.addShoppingList(listNameEditText.getText().toString());
+        String listName = listNameEditText.getText().toString();
+        FirebaseFirestore.getInstance().collection("Lists").document(listName).set(new ShoppingList(listName));
     }
 }
