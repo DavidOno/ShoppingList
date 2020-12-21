@@ -55,13 +55,17 @@ public class ModifyEntryFragment extends Fragment {
             initFields(entry);
             oldDocumentId = getDocumentId(entry);
         }
-        deleteButton.setOnClickListener(v -> deleteEntry());
+        deleteButton.setOnClickListener(v -> deleteEntryAndFinish());
+    }
+
+    private void deleteEntryAndFinish() {
+        deleteEntry();
+        closeFragment();
     }
 
     private void deleteEntry() {
         DocumentReference oldEntryRef = FirebaseFirestore.getInstance().collection("Lists").document(listName).collection("Entries").document(oldDocumentId);
         oldEntryRef.delete();
-        closeFragment();
     }
 
     private String getDocumentId(ShoppingEntry entry) {
