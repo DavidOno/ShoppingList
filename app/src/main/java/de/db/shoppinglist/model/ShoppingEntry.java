@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class ShoppingEntry implements Parcelable {
 
@@ -12,12 +13,12 @@ public class ShoppingEntry implements Parcelable {
     private boolean done;
     private String name;
     private String details;
+    private String uid;
 
     /**
      * Empty constructor required by Firestore.
      */
     public ShoppingEntry(){
-
     }
 
     public ShoppingEntry(float quantity, String unitOfQuantity, String name, String details) {
@@ -26,6 +27,7 @@ public class ShoppingEntry implements Parcelable {
         this.name = name;
         this.details = details;
         done = false;
+        uid = String.valueOf(UUID.randomUUID());
     }
 
     public ShoppingEntry(ShoppingEntry other) {
@@ -34,27 +36,17 @@ public class ShoppingEntry implements Parcelable {
         this.name = other.name;
         this.details = other.details;
         done = false;
+        uid = String.valueOf(UUID.randomUUID());
     }
+
 
     protected ShoppingEntry(Parcel in) {
         quantity = in.readFloat();
         unitOfQuantity = in.readString();
         done = in.readByte() != 0;
-    }
-
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeFloat(quantity);
-        dest.writeString(unitOfQuantity);
-        dest.writeByte((byte) (done ? 1 : 0));
-        dest.writeString(name);
-        dest.writeString(details);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
+        name = in.readString();
+        details = in.readString();
+        uid = in.readString();
     }
 
     public static final Creator<ShoppingEntry> CREATOR = new Creator<ShoppingEntry>() {
@@ -93,21 +85,40 @@ public class ShoppingEntry implements Parcelable {
         return done;
     }
 
+    public String getUid(){
+        return uid;
+    }
+
+    public void setQuantity(float quantity) {
+        this.quantity = quantity;
+    }
+
+    public void setUnitOfQuantity(String unitOfQuantity) {
+        this.unitOfQuantity = unitOfQuantity;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
+
+
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ShoppingEntry that = (ShoppingEntry) o;
-        return Float.compare(that.quantity, quantity) == 0 &&
-                done == that.done &&
-                Objects.equals(unitOfQuantity, that.unitOfQuantity) &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(details, that.details);
+    public int describeContents() {
+        return 0;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(quantity, unitOfQuantity, done, name, details);
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeFloat(quantity);
+        dest.writeString(unitOfQuantity);
+        dest.writeByte((byte) (done ? 1 : 0));
+        dest.writeString(name);
+        dest.writeString(details);
+        dest.writeString(uid);
     }
 }

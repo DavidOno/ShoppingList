@@ -14,7 +14,7 @@ public class ModifyEntryViewModel extends ViewModel {
     }
 
     public void deleteEntry(){
-        repo.deleteEntry((ShoppingElement) item);
+//        repo.deleteEntry((ShoppingElement) item);
     }
 
     public void addEntry(){

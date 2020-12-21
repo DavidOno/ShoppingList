@@ -86,6 +86,8 @@ public class NewListDialog extends AppCompatDialogFragment {
     private void finish() {
         closeDialog();
         String listName = listNameEditText.getText().toString();
-        FirebaseFirestore.getInstance().collection("Lists").document(listName).set(new ShoppingList(listName));
+        ShoppingList shoppingList = new ShoppingList(listName);
+        String id = shoppingList.getUid();
+        FirebaseFirestore.getInstance().collection("Lists").document(id).set(shoppingList);
     }
 }

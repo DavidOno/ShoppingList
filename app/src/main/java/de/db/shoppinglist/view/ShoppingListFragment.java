@@ -35,6 +35,7 @@ import java.util.Arrays;
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.adapter.FireShoppingListRecViewAdapter;
 import de.db.shoppinglist.model.ShoppingEntry;
+import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.ShoppingListViewModel;
 
 public class ShoppingListFragment extends Fragment implements FireShoppingListRecViewAdapter.OnEntryListener{
@@ -44,7 +45,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
     private FloatingActionButton newEntryButton;
 //    private ShoppingListRecViewAdapter adapter;
     private ShoppingListViewModel shoppingListViewModel;
-    private String listName;
+    private ShoppingList list;
 
     //TODO: Put in MVVM
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -72,7 +73,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
     }
 
     private void setTitleOfFragment() {
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(listName);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(list.getName());
     }
 
     private void handleItemInteraction() {
@@ -92,7 +93,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
     }
 
     private void setUpRecyclerView() {
-        Query query =  db.collection("Lists/"+listName+"/Entries");
+        Query query =  db.collection("Lists/"+list.getUid()+"/Entries");
         FirestoreRecyclerOptions<ShoppingEntry> options = new FirestoreRecyclerOptions.Builder<ShoppingEntry>()
                 .setQuery(query, ShoppingEntry.class)
                 .build();
@@ -115,7 +116,8 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
 
     private void openNewEntryFragment() {
         NavController navController = NavHostFragment.findNavController(this);
-        NavDirections newEntry = ShoppingListFragmentDirections.actionShoppingListFragmentToNewEntryFragment(listName);
+        NavDirections newEntry = ShoppingListFragmentDirections.actionShoppingListFragmentToNewEntryFragment(list);
+        Toast.makeText(getContext(), list.getUid()+"<>", Toast.LENGTH_LONG).show();
         navController.navigate(newEntry);
     }
 
@@ -124,7 +126,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         ShoppingListFragmentArgs shoppingListFragmentArgs = ShoppingListFragmentArgs.fromBundle(getArguments());
-        listName = shoppingListFragmentArgs.getListName();
+        list = shoppingListFragmentArgs.getList();
     }
 
     @Override
@@ -144,7 +146,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
         positionToByModified = position;
         ShoppingEntry entry = (ShoppingEntry) fireAdapter.getItem(position);
         NavController navController = NavHostFragment.findNavController(this);
-        NavDirections openSelectedEntry = ShoppingListFragmentDirections.actionShoppingListFragmentToModifyEntryFragment(entry, listName);
+        NavDirections openSelectedEntry = ShoppingListFragmentDirections.actionShoppingListFragmentToModifyEntryFragment(entry, list);
         navController.navigate(openSelectedEntry);
     }
 }

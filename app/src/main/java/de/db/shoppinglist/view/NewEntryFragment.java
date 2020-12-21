@@ -28,6 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.model.ShoppingEntry;
+import de.db.shoppinglist.model.ShoppingList;
 
 public class NewEntryFragment extends Fragment {
 
@@ -36,7 +37,7 @@ public class NewEntryFragment extends Fragment {
     private EditText quantityEditText;
     private EditText unitOfQuantityEditText;
     private EditText detailsEditText;
-    private String listName;
+    private ShoppingList list;
 
     @Nullable
     @Override
@@ -53,7 +54,8 @@ public class NewEntryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         NewEntryFragmentArgs newEntryFragmentArgs = NewEntryFragmentArgs.fromBundle(getArguments());
-        listName = newEntryFragmentArgs.getListName();
+        list = newEntryFragmentArgs.getList();
+        Toast.makeText(getContext(), list.getUid(), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -103,8 +105,8 @@ public class NewEntryFragment extends Fragment {
 
     private void finishFragment() {
         ShoppingEntry newEntry = createNewEntry();
-        String id = createIdFromEntry(newEntry);
-        DocumentReference newEntryRef = FirebaseFirestore.getInstance().collection("Lists/"+listName+"/"+"Entries").document(id);
+        String id = newEntry.getUid();
+        DocumentReference newEntryRef = FirebaseFirestore.getInstance().collection("Lists/"+list.getUid()+"/"+"Entries").document(id);
         newEntryRef.set(newEntry);
         closeFragment();
     }

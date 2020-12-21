@@ -100,9 +100,9 @@ public class ShoppingListsFragment extends Fragment implements FireShoppingLists
 
     @Override
     public void onListClick(int position) {
-        String name = fireAdapter.getItem(position).getName();
+        ShoppingList list = fireAdapter.getItem(position);
         NavController navController = NavHostFragment.findNavController(this);
-        NavDirections openSelectedList = ShoppingListsFragmentDirections.actionShoppingListsFragmentToShoppingListFragment(name);
+        NavDirections openSelectedList = ShoppingListsFragmentDirections.actionShoppingListsFragmentToShoppingListFragment(list);
         navController.navigate(openSelectedList);
     }
 

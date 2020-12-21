@@ -28,6 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.model.ShoppingEntry;
+import de.db.shoppinglist.model.ShoppingList;
 
 public class ModifyEntryFragment extends Fragment {
 
@@ -37,9 +38,10 @@ public class ModifyEntryFragment extends Fragment {
     private EditText unitOfQuantityEditText;
     private EditText detailsEditText;
     private CheckBox doneCheckbox;
-    private String listName;
-    private String oldDocumentId;
+    private ShoppingList list;
     private Button deleteButton;
+    private String entryId;
+    private ShoppingEntry entry;
 
     @Nullable
     @Override
@@ -52,9 +54,9 @@ public class ModifyEntryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ShoppingEntry entry = ModifyEntryFragmentArgs.fromBundle(getArguments()).getEntry();
+        entry = ModifyEntryFragmentArgs.fromBundle(getArguments()).getEntry();
         initFields(entry);
-        oldDocumentId = getDocumentId(entry);
+        entryId = getDocumentId(entry);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(MODIFY +entry.getName());
         deleteButton.setOnClickListener(v -> deleteEntryAndFinish());
     }
@@ -65,12 +67,12 @@ public class ModifyEntryFragment extends Fragment {
     }
 
     private void deleteEntry() {
-        DocumentReference oldEntryRef = FirebaseFirestore.getInstance().collection("Lists").document(listName).collection("Entries").document(oldDocumentId);
+        DocumentReference oldEntryRef = FirebaseFirestore.getInstance().collection("Lists").document(list.getUid()).collection("Entries").document(entryId);
         oldEntryRef.delete();
     }
 
     private String getDocumentId(ShoppingEntry entry) {
-        return String.valueOf(entry.hashCode());
+        return entry.getUid();
     }
 
 
@@ -87,7 +89,7 @@ public class ModifyEntryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         ModifyEntryFragmentArgs modifyEntryFragmentArgs = ModifyEntryFragmentArgs.fromBundle(getArguments());
-        listName = modifyEntryFragmentArgs.getListName();
+        list = modifyEntryFragmentArgs.getList();
     }
 
     @Override
@@ -145,13 +147,19 @@ public class ModifyEntryFragment extends Fragment {
         String nameOfProduct = nameOfProductEditText.getText().toString();
         String details = detailsEditText.getText().toString();
         boolean done = doneCheckbox.isChecked();
-        ShoppingEntry entry = new ShoppingEntry(quantity, unitOfQuantity, nameOfProduct, details);
-        entry.setDone(done);
+        setValues(quantity, unitOfQuantity, nameOfProduct, details, done);
         deleteEntry();
-        String newDocumentId = getDocumentId(entry);
-        DocumentReference modifyEntryRef = FirebaseFirestore.getInstance().collection("Lists").document(listName).collection("Entries").document(newDocumentId);
+        DocumentReference modifyEntryRef = FirebaseFirestore.getInstance().collection("Lists").document(list.getUid()).collection("Entries").document(entryId);
         modifyEntryRef.set(entry);
         closeFragment();
+    }
+
+    private void setValues(float quantity, String unitOfQuantity, String nameOfProduct, String details, boolean done) {
+        entry.setQuantity(quantity);
+        entry.setUnitOfQuantity(unitOfQuantity);
+        entry.setName(nameOfProduct);
+        entry.setDetails(details);
+        entry.setDone(done);
     }
 
     @Override
