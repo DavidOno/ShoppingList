@@ -23,6 +23,7 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import de.db.shoppinglist.R;
@@ -51,7 +52,7 @@ public class NewEntryFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        NewEntryFragmentArgs newEntryFragmentArgs = NewEntryFragmentArgs.fromBundle(savedInstanceState);
+        NewEntryFragmentArgs newEntryFragmentArgs = NewEntryFragmentArgs.fromBundle(getArguments());
         listName = newEntryFragmentArgs.getListName();
     }
 
@@ -103,14 +104,13 @@ public class NewEntryFragment extends Fragment {
     private void finishFragment() {
         ShoppingEntry newEntry = createNewEntry();
         String id = createIdFromEntry(newEntry);
-        CollectionReference newEntryRef = FirebaseFirestore.getInstance().collection("Lists/"+listName+"/"+id);
-        newEntryRef.add(newEntry);
-        Toast.makeText(getContext(), "Note added:", Toast.LENGTH_LONG);
+        DocumentReference newEntryRef = FirebaseFirestore.getInstance().collection("Lists/"+listName+"/"+"Entries").document(id);
+        newEntryRef.set(newEntry);
         closeFragment();
     }
 
     private String createIdFromEntry(ShoppingEntry newEntry) {
-        return newEntry.getName();
+        return String.valueOf(newEntry.hashCode());
     }
 
     private ShoppingEntry createNewEntry() {

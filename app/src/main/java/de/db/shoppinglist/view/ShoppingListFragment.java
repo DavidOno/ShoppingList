@@ -22,8 +22,12 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+
+import java.util.Arrays;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.adapter.FireShoppingListRecViewAdapter;
@@ -41,7 +45,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
 
     //TODO: Put in MVVM
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private CollectionReference shoppingListRef = db.collection("Lists").document(listName);
+
 
     private FirestoreRecyclerAdapter fireAdapter;
 
@@ -58,7 +62,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
     }
 
     private void setUpRecyclerView() {
-        Query query = shoppingListRef;
+        Query query =  db.collection("Lists/"+listName+"/Entries");
         FirestoreRecyclerOptions<ShoppingEntry> options = new FirestoreRecyclerOptions.Builder<ShoppingEntry>()
                 .setQuery(query, ShoppingEntry.class)
                 .build();
@@ -89,7 +93,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        ShoppingListFragmentArgs shoppingListFragmentArgs = ShoppingListFragmentArgs.fromBundle(savedInstanceState);
+        ShoppingListFragmentArgs shoppingListFragmentArgs = ShoppingListFragmentArgs.fromBundle(getArguments());
         listName = shoppingListFragmentArgs.getListName();
     }
 
@@ -110,7 +114,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
         positionToByModified = position;
         ShoppingEntry entry = (ShoppingEntry) fireAdapter.getItem(position);
         NavController navController = NavHostFragment.findNavController(this);
-        NavDirections openSelectedEntry = ShoppingListFragmentDirections.actionShoppingListFragmentToModifyEntryFragment(entry);
+        NavDirections openSelectedEntry = ShoppingListFragmentDirections.actionShoppingListFragmentToModifyEntryFragment(entry, listName);
         navController.navigate(openSelectedEntry);
     }
 }

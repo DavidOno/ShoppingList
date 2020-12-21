@@ -3,6 +3,8 @@ package de.db.shoppinglist.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Objects;
+
 public class ShoppingEntry implements Parcelable {
 
     private float quantity;
@@ -89,5 +91,23 @@ public class ShoppingEntry implements Parcelable {
 
     public boolean isDone() {
         return done;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ShoppingEntry that = (ShoppingEntry) o;
+        return Float.compare(that.quantity, quantity) == 0 &&
+                done == that.done &&
+                Objects.equals(unitOfQuantity, that.unitOfQuantity) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(details, that.details);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(quantity, unitOfQuantity, done, name, details);
     }
 }

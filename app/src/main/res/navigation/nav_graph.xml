@@ -45,5 +45,8 @@
         <argument
             android:name="entry"
             app:argType="de.db.shoppinglist.model.ShoppingEntry" />
+        <argument
+            android:name="listName"
+            app:argType="string" />
     </fragment>
 </navigation>
