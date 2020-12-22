@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -38,6 +39,9 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
     private ShoppingListViewModel shoppingListViewModel;
     private ShoppingList list;
     private FirestoreRecyclerAdapter fireAdapter;
+    private MenuItem checkAll;
+    private MenuItem deleteAllChecked;
+    private MenuItem deleteAll;
 
     @Nullable
     @Override
@@ -45,7 +49,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
         View view = inflater.inflate(R.layout.fragment_shoppinglist, container, false);
         findViewsById(view);
         newEntryButton.setOnClickListener(v -> openNewEntryFragment());
-        entriesView.setLayoutManager(new LinearLayoutManager(getContext()));
+        entriesView.setLayoutManager(new LinearLayoutManager(getContext())); //TODO: put in setUpRecyclerView method
         setUpViewModel();
         setUpRecyclerView();
         setTitleOfFragment();
@@ -133,6 +137,27 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
         inflater.inflate(R.menu.menu_shoppinglist, menu);
         MenuCompat.setGroupDividerEnabled(menu, true);
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_shoppingList_check_all:
+                fireAdapter.getSnapshots().forEach(entry -> shoppingListViewModel.setStatusToDone(list, (ShoppingEntry) entry));
+                break;
+            case R.id.menu_shoppingList_delete_all_checked:
+                fireAdapter.getSnapshots().stream()
+                        .filter(ShoppingEntry.class::isInstance)
+                        .filter(shoppingEntry -> ((ShoppingEntry) shoppingEntry).isDone())
+                        .forEach(entry -> shoppingListViewModel.deleteEntry(list, (ShoppingEntry) entry));
+                break;
+            case R.id.menuItemDeleteAllEntries:
+                fireAdapter.getSnapshots().stream()
+                        .filter(ShoppingEntry.class::isInstance)
+                        .forEach(entry -> shoppingListViewModel.deleteEntry(list, (ShoppingEntry) entry));
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void findViewsById(View view) {

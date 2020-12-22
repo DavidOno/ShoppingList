@@ -2,10 +2,15 @@
 <menu  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/flushChecked"
-        android:title="@string/flushChecked"
+    <item android:id="@+id/menu_shoppingList_check_all"
+        android:title="@string/CheckAll"
         android:icon="@drawable/flush_checked"
         app:showAsAction="ifRoom" />
+
+    <item android:id="@+id/menu_shoppingList_delete_all_checked"
+        android:title="@string/DeleteAllChecked"
+        android:icon="@drawable/delete_all"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/options"

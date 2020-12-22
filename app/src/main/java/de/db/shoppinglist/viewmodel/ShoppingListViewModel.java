@@ -34,4 +34,9 @@ public class ShoppingListViewModel extends ViewModel {
         entry.setDone(!entry.isDone());
         repo.updateDoneStatus(list.getUid(), entry);
     }
+
+    public void setStatusToDone(ShoppingList list, ShoppingEntry entry) {
+        entry.setDone(true);
+        repo.updateDoneStatus(list.getUid(), entry);
+    }
 }
