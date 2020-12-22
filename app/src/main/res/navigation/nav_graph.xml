@@ -11,7 +11,11 @@
         android:label="@string/ShoppingListsFragmentTitle">
         <action
             android:id="@+id/action_shoppingListsFragment_to_shoppingListFragment"
-            app:destination="@id/shoppingListFragment" />
+            app:destination="@id/shoppingListFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/shoppingListFragment"
@@ -20,10 +24,16 @@
         tools:layout="@layout/fragment_shoppinglist" >
         <action
             android:id="@+id/action_shoppingListFragment_to_newEntryFragment"
-            app:destination="@id/newEntryFragment"/>
+            app:destination="@id/newEntryFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_shoppingListFragment_to_modifyEntryFragment"
-            app:destination="@id/modifyEntryFragment" />
+            app:destination="@id/modifyEntryFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right" />
         <argument
             android:name="list"
             app:argType="de.db.shoppinglist.model.ShoppingList" />
