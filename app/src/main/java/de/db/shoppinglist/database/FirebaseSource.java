@@ -8,6 +8,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.db.shoppinglist.model.ShoppingEntry;
@@ -78,7 +80,7 @@ public class FirebaseSource implements Source {
 
     @Override
     public FirestoreRecyclerOptions<ShoppingEntry> getShoppingListRecyclerViewOptions(String listId) {
-        Query query = rootCollectionRef.document(listId).collection(entriesKey);
+        Query query = rootCollectionRef.document(listId).collection(entriesKey).orderBy("position");
         return new FirestoreRecyclerOptions.Builder<ShoppingEntry>()
                 .setQuery(query, ShoppingEntry.class)
                 .build();
@@ -90,6 +92,13 @@ public class FirebaseSource implements Source {
         return new FirestoreRecyclerOptions.Builder<ShoppingList>()
                 .setQuery(query, ShoppingList.class)
                 .build();
+    }
+
+    @Override
+    public void updateEntryPosition(ShoppingList list, ShoppingEntry entry, int position) {
+        Map<String, Object> updatePosition = new HashMap<>();
+        updatePosition.put("position", position);
+        rootCollectionRef.document(list.getUid()).collection(entriesKey).document(entry.getUid()).update(updatePosition);
     }
 
     private boolean deleteEntries(String listId) {

@@ -109,23 +109,14 @@ public class NewEntryFragment extends Fragment {
     }
 
     private void finishFragment() {
-        ShoppingEntry newEntry = createNewEntry();
-        String id = newEntry.getUid();
-        boolean wasSuccess = viewModel.addNewEntry(list, newEntry);
-        closeFragment();
-    }
-
-    private String createIdFromEntry(ShoppingEntry newEntry) {
-        return String.valueOf(newEntry.hashCode());
-    }
-
-    private ShoppingEntry createNewEntry() {
         float quantity = getQuantity();
         String unitOfQuantity = getString(unitOfQuantityEditText);
         String nameOfProduct = getString(nameOfProductEditText);
         String details = getString(detailsEditText);
-        return new ShoppingEntry(quantity, unitOfQuantity, nameOfProduct, details);
+        boolean wasSuccess = viewModel.addNewEntry(list, quantity, unitOfQuantity, nameOfProduct, details);
+        closeFragment();
     }
+
 
     private float getQuantity(){
         String numberText = quantityEditText.getText().toString();

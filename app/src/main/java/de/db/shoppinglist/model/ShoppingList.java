@@ -5,10 +5,11 @@ import android.os.Parcelable;
 
 import java.util.UUID;
 
-public class ShoppingList implements Parcelable {
+public class ShoppingList implements Parcelable, PositionContainer {
 
     private String name;
     private String uid;
+    private int nextFreePosition = 1;
 
     public ShoppingList(){
 
@@ -19,20 +20,11 @@ public class ShoppingList implements Parcelable {
         uid = String.valueOf(UUID.randomUUID());
     }
 
+
     protected ShoppingList(Parcel in) {
         name = in.readString();
         uid = in.readString();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
-        dest.writeString(uid);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
+        nextFreePosition = in.readInt();
     }
 
     public static final Creator<ShoppingList> CREATOR = new Creator<ShoppingList>() {
@@ -53,5 +45,24 @@ public class ShoppingList implements Parcelable {
 
     public String getUid() {
         return uid;
+    }
+
+    @Override
+    public int getNextFreePosition() {
+        int nextFree = nextFreePosition;
+        nextFreePosition++;
+        return nextFree;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(uid);
+        dest.writeInt(nextFreePosition);
     }
 }

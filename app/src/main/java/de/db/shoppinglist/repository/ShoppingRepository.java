@@ -50,4 +50,8 @@ public class ShoppingRepository {
     public FirestoreRecyclerOptions<ShoppingList> getShoppingListsRecyclerViewOptions() {
         return db.getShoppingListsRecyclerViewOptions();
     }
+
+    public void updateEntryPosition(ShoppingList list, ShoppingEntry entry, int position) {
+        db.updateEntryPosition(list, entry, position);
+    }
 }

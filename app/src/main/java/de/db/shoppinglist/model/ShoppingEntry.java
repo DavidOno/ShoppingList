@@ -3,10 +3,9 @@ package de.db.shoppinglist.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.Objects;
 import java.util.UUID;
 
-public class ShoppingEntry implements Parcelable {
+public class ShoppingEntry implements Parcelable, PositionAware {
 
     private float quantity;
     private String unitOfQuantity;
@@ -14,6 +13,7 @@ public class ShoppingEntry implements Parcelable {
     private String name;
     private String details;
     private String uid;
+    private int position = -1;
 
     /**
      * Empty constructor required by Firestore.
@@ -21,13 +21,14 @@ public class ShoppingEntry implements Parcelable {
     public ShoppingEntry(){
     }
 
-    public ShoppingEntry(float quantity, String unitOfQuantity, String name, String details) {
+    public ShoppingEntry(float quantity, String unitOfQuantity, String name, String details, int position) {
         this.quantity = quantity;
         this.unitOfQuantity = unitOfQuantity;
         this.name = name;
         this.details = details;
         done = false;
         uid = String.valueOf(UUID.randomUUID());
+        this.position = position;
     }
 
     public ShoppingEntry(ShoppingEntry other) {
@@ -37,6 +38,7 @@ public class ShoppingEntry implements Parcelable {
         this.details = other.details;
         done = false;
         uid = String.valueOf(UUID.randomUUID());
+        position = other.position;
     }
 
 
@@ -47,6 +49,7 @@ public class ShoppingEntry implements Parcelable {
         name = in.readString();
         details = in.readString();
         uid = in.readString();
+        position = in.readInt();
     }
 
     public static final Creator<ShoppingEntry> CREATOR = new Creator<ShoppingEntry>() {
@@ -107,6 +110,12 @@ public class ShoppingEntry implements Parcelable {
 
 
 
+
+    @Override
+    public int getPosition() {
+        return position;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -120,5 +129,6 @@ public class ShoppingEntry implements Parcelable {
         dest.writeString(name);
         dest.writeString(details);
         dest.writeString(uid);
+        dest.writeInt(position);
     }
 }

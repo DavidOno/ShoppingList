@@ -1,5 +1,6 @@
 package de.db.shoppinglist.view;
 
+import android.content.ClipData;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,6 +32,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.adapter.FireShoppingListRecViewAdapter;
@@ -69,9 +73,17 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
     }
 
     private void handleItemInteraction() {
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                int fromPosition = viewHolder.getAdapterPosition();
+                int toPosition = target.getAdapterPosition();
+                ShoppingEntry firstEntry = (ShoppingEntry) fireAdapter.getItem(fromPosition);
+                ShoppingEntry secondEntry = (ShoppingEntry) fireAdapter.getItem(toPosition);
+
+                shoppingListViewModel.updatePosition(list, firstEntry, toPosition);
+                shoppingListViewModel.updatePosition(list, secondEntry, fromPosition);
+
                 return false;
             }
 
@@ -79,8 +91,6 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int adapterPosition = viewHolder.getAdapterPosition();
                 boolean wasSuccess = shoppingListViewModel.deleteEntry(list, fireAdapter.getItem(adapterPosition));
-                if(wasSuccess)
-                Toast.makeText(getContext(), "Could be deleted", Toast.LENGTH_LONG).show();
             }
         }).attachToRecyclerView(entriesView);
     }

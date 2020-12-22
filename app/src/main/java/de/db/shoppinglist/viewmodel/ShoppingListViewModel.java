@@ -25,4 +25,8 @@ public class ShoppingListViewModel extends ViewModel {
     public FirestoreRecyclerOptions<ShoppingEntry> getRecylerViewOptions(ShoppingList list) {
         return repo.getRecyclerViewOptions(list.getUid());
     }
+
+    public void updatePosition(ShoppingList list, ShoppingEntry entry, int position) {
+        repo.updateEntryPosition(list, entry, position);
+    }
 }
