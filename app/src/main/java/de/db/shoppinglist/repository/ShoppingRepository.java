@@ -1,5 +1,7 @@
 package de.db.shoppinglist.repository;
 
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+
 import de.db.shoppinglist.database.Source;
 import de.db.shoppinglist.database.FirebaseSource;
 import de.db.shoppinglist.model.ShoppingEntry;
@@ -25,10 +27,6 @@ public class ShoppingRepository {
         return db.addEntry(listId, newEntry);
     }
 
-//    public boolean modifyEntry(String uid, ShoppingEntry entry){
-//        return db.modifyEntry(uid, entry);
-//    }
-
     public boolean deleteEntry(String listUid, String documentUid){
         return db.deleteEntry(listUid, documentUid);
     }
@@ -43,5 +41,13 @@ public class ShoppingRepository {
 
     public boolean deleteList(String listId){
         return db.deleteList(listId);
+    }
+
+    public FirestoreRecyclerOptions<ShoppingEntry> getRecyclerViewOptions(String listId) {
+        return db.getShoppingListRecyclerViewOptions(listId);
+    }
+
+    public FirestoreRecyclerOptions<ShoppingList> getShoppingListsRecyclerViewOptions() {
+        return db.getShoppingListsRecyclerViewOptions();
     }
 }

@@ -2,6 +2,8 @@ package de.db.shoppinglist.viewmodel;
 
 import androidx.lifecycle.ViewModel;
 
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.repository.ShoppingRepository;
@@ -14,4 +16,7 @@ public class ShoppingListsViewModel extends ViewModel {
         return repo.deleteList(list.getUid());
     }
 
+    public FirestoreRecyclerOptions<ShoppingList> getRecyclerViewOptions() {
+        return repo.getShoppingListsRecyclerViewOptions();
+    }
 }

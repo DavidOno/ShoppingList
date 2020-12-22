@@ -2,8 +2,10 @@ package de.db.shoppinglist.database;
 
 import android.util.Log;
 
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -33,15 +35,6 @@ public class FirebaseSource implements Source {
                 });;
         return wasSuccess.get();
     }
-
-//    @Override
-//    public boolean modifyEntry(String uid, ShoppingEntry entry) {
-//        AtomicBoolean wasSuccess = new AtomicBoolean(false);
-//        DocumentReference modifyEntryRef = FirebaseFirestore.getInstance()
-//                .collection(listsRootKey).document(uid).collection(entriesKey).document(entry.getUid());
-//        modifyEntryRef.set(entry);
-//        return wasSuccess.get();
-//    }
 
     @Override
     public boolean deleteEntry(String listUid, String documentUid) {
@@ -75,6 +68,22 @@ public class FirebaseSource implements Source {
         boolean wasDeletingEntriesSuccess = deleteEntries(listId);
         boolean wasDeletingListSuccess = deleteListOnly(listId);
         return wasDeletingEntriesSuccess && wasDeletingListSuccess;
+    }
+
+    @Override
+    public FirestoreRecyclerOptions<ShoppingEntry> getShoppingListRecyclerViewOptions(String listId) {
+        Query query =  FirebaseFirestore.getInstance().collection(listsRootKey).document(listId).collection(entriesKey);
+        return new FirestoreRecyclerOptions.Builder<ShoppingEntry>()
+                .setQuery(query, ShoppingEntry.class)
+                .build();
+    }
+
+    @Override
+    public FirestoreRecyclerOptions<ShoppingList> getShoppingListsRecyclerViewOptions() {
+        Query query = FirebaseFirestore.getInstance().collection(listsRootKey);
+        return new FirestoreRecyclerOptions.Builder<ShoppingList>()
+                .setQuery(query, ShoppingList.class)
+                .build();
     }
 
     private boolean deleteEntries(String listId) {

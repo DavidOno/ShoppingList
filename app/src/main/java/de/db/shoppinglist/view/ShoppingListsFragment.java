@@ -38,7 +38,7 @@ public class ShoppingListsFragment extends Fragment implements FireShoppingLists
     private FireShoppingListsRecViewAdapter fireAdapter;
     private ShoppingListsViewModel shoppingListsViewModel;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private CollectionReference shoppingListRef = db.collection("Lists");
+//    private CollectionReference shoppingListRef =
 
     @Nullable
     @Override
@@ -65,11 +65,7 @@ public class ShoppingListsFragment extends Fragment implements FireShoppingLists
     }
 
     private void setUpRecyclerView() {
-        Query query = shoppingListRef;
-        FirestoreRecyclerOptions<ShoppingList> options = new FirestoreRecyclerOptions.Builder<ShoppingList>()
-                .setQuery(query, ShoppingList.class)
-                .build();
-
+        FirestoreRecyclerOptions<ShoppingList> options = shoppingListsViewModel.getRecyclerViewOptions();
         fireAdapter = new FireShoppingListsRecViewAdapter(options, this);
         listOfListsView.setAdapter(fireAdapter);
     }

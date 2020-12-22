@@ -40,17 +40,10 @@ import de.db.shoppinglist.viewmodel.ShoppingListViewModel;
 
 public class ShoppingListFragment extends Fragment implements FireShoppingListRecViewAdapter.OnEntryListener{
 
-    private int positionToByModified;
     private RecyclerView entriesView;
     private FloatingActionButton newEntryButton;
-//    private ShoppingListRecViewAdapter adapter;
     private ShoppingListViewModel shoppingListViewModel;
     private ShoppingList list;
-
-    //TODO: Put in MVVM
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-
     private FirestoreRecyclerAdapter fireAdapter;
 
     @Nullable
@@ -93,11 +86,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
     }
 
     private void setUpRecyclerView() {
-        Query query =  db.collection("Lists/"+list.getUid()+"/Entries");
-        FirestoreRecyclerOptions<ShoppingEntry> options = new FirestoreRecyclerOptions.Builder<ShoppingEntry>()
-                .setQuery(query, ShoppingEntry.class)
-                .build();
-
+        FirestoreRecyclerOptions<ShoppingEntry> options = shoppingListViewModel.getRecylerViewOptions(list);
         fireAdapter = new FireShoppingListRecViewAdapter(options, this);
         entriesView.setAdapter(fireAdapter);
     }
@@ -117,7 +106,6 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
     private void openNewEntryFragment() {
         NavController navController = NavHostFragment.findNavController(this);
         NavDirections newEntry = ShoppingListFragmentDirections.actionShoppingListFragmentToNewEntryFragment(list);
-        Toast.makeText(getContext(), list.getUid()+"<>", Toast.LENGTH_LONG).show();
         navController.navigate(newEntry);
     }
 
@@ -143,7 +131,6 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
 
     @Override
     public void onEntryClick(int position) {
-        positionToByModified = position;
         ShoppingEntry entry = (ShoppingEntry) fireAdapter.getItem(position);
         NavController navController = NavHostFragment.findNavController(this);
         NavDirections openSelectedEntry = ShoppingListFragmentDirections.actionShoppingListFragmentToModifyEntryFragment(entry, list);
