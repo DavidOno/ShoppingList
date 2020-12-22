@@ -93,6 +93,13 @@ public class ModifyEntryFragment extends Fragment {
         unitOfQuantityEditText.setText(entry.getUnitOfQuantity());
         detailsEditText.setText(entry.getDetails());
         doneCheckbox.setChecked(entry.isDone());
+        handleDoneChecked();
+    }
+
+    private void handleDoneChecked() {
+        doneCheckbox.setOnClickListener(v -> {
+            viewModel.toggleDoneStatus(list, entry);
+        });
     }
 
     @Override
