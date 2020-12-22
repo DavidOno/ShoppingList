@@ -54,4 +54,8 @@ public class ShoppingRepository {
     public void updateEntryPosition(ShoppingList list, ShoppingEntry entry, int position) {
         db.updateEntryPosition(list, entry, position);
     }
+
+    public void updateDoneStatus(String listId, ShoppingEntry entry) {
+        db.updateStatusDone(listId, entry);
+    }
 }

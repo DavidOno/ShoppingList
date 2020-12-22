@@ -22,5 +22,7 @@ public interface Source {
     FirestoreRecyclerOptions<ShoppingList> getShoppingListsRecyclerViewOptions();
 
     void updateEntryPosition(ShoppingList list, ShoppingEntry entry, int position);
+
+    void updateStatusDone(String listId, ShoppingEntry entry);
 }
 

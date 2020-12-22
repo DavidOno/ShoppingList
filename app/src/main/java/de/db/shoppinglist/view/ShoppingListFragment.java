@@ -1,13 +1,11 @@
 package de.db.shoppinglist.view;
 
-import android.content.ClipData;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,18 +23,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import de.db.shoppinglist.R;
+import de.db.shoppinglist.adapter.Checkable;
 import de.db.shoppinglist.adapter.FireShoppingListRecViewAdapter;
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
@@ -61,6 +50,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
         setUpRecyclerView();
         setTitleOfFragment();
         handleItemInteraction();
+        handleItemIsDone();
         return view;
     }
 
@@ -93,6 +83,17 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
                 boolean wasSuccess = shoppingListViewModel.deleteEntry(list, fireAdapter.getItem(adapterPosition));
             }
         }).attachToRecyclerView(entriesView);
+    }
+
+    public void handleItemIsDone(){
+        if(fireAdapter instanceof Checkable){
+            Checkable<ShoppingEntry> checkable = (Checkable)fireAdapter;
+            checkable.getFlag().observe(getViewLifecycleOwner(),
+                    aBoolean -> {
+                        ShoppingEntry entry = checkable.getItem();
+                        shoppingListViewModel.toggleDoneStatus(list, entry);
+                    });
+        }
     }
 
     private void setUpRecyclerView() {

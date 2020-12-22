@@ -101,6 +101,20 @@ public class FirebaseSource implements Source {
         rootCollectionRef.document(list.getUid()).collection(entriesKey).document(entry.getUid()).update(updatePosition);
     }
 
+    @Override
+    public void updateStatusDone(String listId, ShoppingEntry entry) {
+        Map<String, Object> updateIsDone = new HashMap<>();
+        updateIsDone.put("done", entry.isDone());
+        rootCollectionRef.document(listId).collection(entriesKey).document(entry.getUid())
+                .update(updateIsDone)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("FIREBASE", "Success: Updated Status");
+                })
+                .addOnFailureListener(e -> {
+                    Log.d("FIREBASE", e.getMessage());
+                });;
+    }
+
     private boolean deleteEntries(String listId) {
         //From https://firebase.google.com/docs/firestore/manage-data/delete-data#collections
         // Deleting collections from an Android client is not recommended.

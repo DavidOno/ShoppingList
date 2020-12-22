@@ -11,16 +11,22 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
+import java.util.Optional;
+
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.model.ShoppingEntry;
 
-public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<ShoppingEntry, FireShoppingListRecViewAdapter.ViewHolder> {
+public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<ShoppingEntry, FireShoppingListRecViewAdapter.ViewHolder> implements Checkable<ShoppingEntry> {
 
+    private MutableLiveData<Boolean> wasChecked = new MutableLiveData<>();
+    private ShoppingEntry entryContainingCheckedBox = null;
     private OnEntryListener onEntryListener;
     private int previousExpandedPosition = -1;
     private int expandedPosition = -1;
@@ -44,6 +50,22 @@ public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<Sho
         holder.isDone.setChecked(shoppingEntry.isDone());
         holder.details.setText(shoppingEntry.getDetails());
 
+        holder.isDone.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            entryContainingCheckedBox = shoppingEntry;
+            wasChecked.setValue(true);
+        });
+
+        if(holder.isDone.isChecked()){
+            holder.nameOfEntry.setPaintFlags(holder.nameOfEntry.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.quantity.setPaintFlags(holder.quantity.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.unitOfQuantity.setPaintFlags(holder.unitOfQuantity.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.details.setPaintFlags(holder.details.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        }else{
+            holder.nameOfEntry.setPaintFlags(holder.nameOfEntry.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            holder.quantity.setPaintFlags(holder.quantity.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            holder.unitOfQuantity.setPaintFlags(holder.unitOfQuantity.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            holder.details.setPaintFlags(holder.details.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+        }
         final boolean isExpanded = position== expandedPosition;
         holder.details.setVisibility(isExpanded?View.VISIBLE:View.GONE);
         holder.details.addTextChangedListener(new TextWatcher() {
@@ -97,10 +119,26 @@ public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<Sho
         return new FireShoppingListRecViewAdapter.ViewHolder(view, onEntryListener);
     }
 
+    @Override
+    public LiveData<Boolean> getFlag() {
+        return wasChecked;
+    }
+
+    @Override
+    public ShoppingEntry getItem() {
+        return entryContainingCheckedBox;
+    }
+
+    @Override
+    public void resetFlags() {
+        wasChecked = new MutableLiveData<>();
+        wasChecked.setValue(false);
+        entryContainingCheckedBox = null;
+    }
+
     public interface OnEntryListener {
         void onEntryClick(int position);
     }
-
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
@@ -122,18 +160,6 @@ public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<Sho
             details = itemView.findViewById(R.id.entry_details);
 
             this.onEntryListener = onEntryListener;
-            //TODO:
-            isDone.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if(isChecked) {
-                    nameOfEntry.setPaintFlags(nameOfEntry.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                    quantity.setPaintFlags(quantity.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                    unitOfQuantity.setPaintFlags(unitOfQuantity.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                }else{
-                    nameOfEntry.setPaintFlags(nameOfEntry.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-                    quantity.setPaintFlags(quantity.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-                    unitOfQuantity.setPaintFlags(unitOfQuantity.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-                }
-            });
             itemView.setOnClickListener(this);
         }
 
