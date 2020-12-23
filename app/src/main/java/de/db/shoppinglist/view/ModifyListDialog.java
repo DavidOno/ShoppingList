@@ -30,6 +30,7 @@ public class ModifyListDialog extends AppCompatDialogFragment {
     private Button backButton;
 
     private ModifyListDialogViewModel viewModel;
+    private ShoppingList list;
 
     public ModifyListDialog(){
     }
@@ -56,6 +57,14 @@ public class ModifyListDialog extends AppCompatDialogFragment {
         listNameEditText.addTextChangedListener(enableDoneMenuItemOnTextChange());
         viewModel = new ViewModelProvider(requireActivity()).get(ModifyListDialogViewModel.class);
         return dialog;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ModifyListDialogArgs shoppingListFragmentArgs = ModifyListDialogArgs.fromBundle(getArguments());
+        list = shoppingListFragmentArgs.getList();
+        listNameEditText.setText(list.getName());
     }
 
     private void closeDialog() {
@@ -87,9 +96,8 @@ public class ModifyListDialog extends AppCompatDialogFragment {
 
     private void finish() {
         String listName = listNameEditText.getText().toString();
-        ShoppingList shoppingList = new ShoppingList(listName);
-//        viewModel.addList(shoppingList);
-        //TODO: update DB
+        viewModel.updateListName(list);
         closeDialog();
+
     }
 }

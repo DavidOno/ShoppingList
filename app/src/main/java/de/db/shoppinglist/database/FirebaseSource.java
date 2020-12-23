@@ -112,7 +112,20 @@ public class FirebaseSource implements Source {
                 })
                 .addOnFailureListener(e -> {
                     Log.d("FIREBASE", e.getMessage());
-                });;
+                });
+    }
+
+    @Override
+    public void updateListName(ShoppingList list) {
+        Map<String, Object> updateName = new HashMap<>();
+        updateName.put("name", list.getName());
+        rootCollectionRef.document(list.getUid()).update(updateName)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("FIREBASE", "Success: Updated Name");
+                })
+                .addOnFailureListener(e -> {
+                    Log.d("FIREBASE", e.getMessage());
+                });
     }
 
     private boolean deleteEntries(String listId) {

@@ -24,5 +24,7 @@ public interface Source {
     void updateEntryPosition(ShoppingList list, ShoppingEntry entry, int position);
 
     void updateStatusDone(String listId, ShoppingEntry entry);
+
+    void updateListName(ShoppingList list);
 }
 

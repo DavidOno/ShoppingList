@@ -58,4 +58,8 @@ public class ShoppingRepository {
     public void updateDoneStatus(String listId, ShoppingEntry entry) {
         db.updateStatusDone(listId, entry);
     }
+
+    public void updateListName(ShoppingList list) {
+        db.updateListName(list);
+    }
 }
