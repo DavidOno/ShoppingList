@@ -47,7 +47,7 @@ public class ModifyListDialog extends AppCompatDialogFragment {
         doneButton.setEnabled(false);
         backButton = view.findViewById(R.id.new_list_dialog_backButton);
         listNameEditText.addTextChangedListener(enableDoneMenuItemOnTextChange());
-
+        listNameEditText.setText(list.getName());
         listNameEditText.requestFocus();
         doneButton.setOnClickListener(item -> finish());
         backButton.setOnClickListener(item -> closeDialog());
@@ -64,7 +64,6 @@ public class ModifyListDialog extends AppCompatDialogFragment {
         super.onCreate(savedInstanceState);
         ModifyListDialogArgs shoppingListFragmentArgs = ModifyListDialogArgs.fromBundle(getArguments());
         list = shoppingListFragmentArgs.getList();
-        listNameEditText.setText(list.getName());
     }
 
     private void closeDialog() {
@@ -96,6 +95,7 @@ public class ModifyListDialog extends AppCompatDialogFragment {
 
     private void finish() {
         String listName = listNameEditText.getText().toString();
+        list.setName(listName);
         viewModel.updateListName(list);
         closeDialog();
 

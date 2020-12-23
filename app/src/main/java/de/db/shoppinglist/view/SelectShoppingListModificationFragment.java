@@ -37,7 +37,7 @@ public class SelectShoppingListModificationFragment extends Fragment{
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_shoppinglists, container, false);
+        View view = inflater.inflate(R.layout.fragment_select_list_for_modify, container, false);
         findViewsById(view);
         listOfListsView.setLayoutManager(new LinearLayoutManager(getContext()));
         shoppingListsViewModel = new ViewModelProvider(requireActivity()).get(SelectListModificationViewModel.class);
@@ -46,17 +46,23 @@ public class SelectShoppingListModificationFragment extends Fragment{
         return view;
     }
 
+
+
     private void handleEditRequest() {
         fireAdapter.getEditClicked().observe(getViewLifecycleOwner(), aBoolean -> {
-            ShoppingList shoppingList = fireAdapter.getClickedElement();
-            NavController navController = NavHostFragment.findNavController(this);
-            NavDirections openListModifyDialogDirection = SelectShoppingListModificationFragmentDirections.actionSelectShoppingListModificationFragmentToModifyListDialog(shoppingList);
-            navController.navigate(openListModifyDialogDirection);
-            fireAdapter.resetFlags();
+            if(aBoolean.booleanValue()) {
+                ShoppingList shoppingList = fireAdapter.getClickedElement();
+                NavController navController = NavHostFragment.findNavController(this);
+                NavDirections openListModifyDialogDirection = SelectShoppingListModificationFragmentDirections.actionSelectShoppingListModificationFragmentToModifyListDialog(shoppingList);
+                navController.navigate(openListModifyDialogDirection);
+                fireAdapter.resetFlags();
+            }
         });
         fireAdapter.getDeleteClicked().observe(getViewLifecycleOwner(), aBoolean -> {
-            shoppingListsViewModel.deleteList(fireAdapter.getClickedElement());
-            fireAdapter.resetFlags();
+            if(aBoolean.booleanValue()) {
+                shoppingListsViewModel.deleteList(fireAdapter.getClickedElement());
+                fireAdapter.resetFlags();
+            }
         });
     }
 

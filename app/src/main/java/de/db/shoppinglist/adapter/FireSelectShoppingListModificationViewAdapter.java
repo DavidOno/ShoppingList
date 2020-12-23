@@ -67,8 +67,8 @@ public class FireSelectShoppingListModificationViewAdapter extends FirestoreRecy
 
     public void resetFlags() {
         clickedElement = null;
-        editClicked = new MutableLiveData<>(false);
-        deleteClicked = new MutableLiveData<>(false);
+        editClicked.setValue(false);
+        deleteClicked.setValue(false);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{

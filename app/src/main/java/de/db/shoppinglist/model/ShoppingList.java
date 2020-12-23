@@ -43,6 +43,10 @@ public class ShoppingList implements Parcelable, PositionContainer {
         return name;
     }
 
+    public void setName(String name){
+        this.name = name;
+    }
+
     public String getUid() {
         return uid;
     }
