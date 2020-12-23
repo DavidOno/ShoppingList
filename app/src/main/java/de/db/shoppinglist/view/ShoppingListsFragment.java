@@ -7,7 +7,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,9 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.adapter.FireShoppingListsRecViewAdapter;
@@ -48,6 +44,11 @@ public class ShoppingListsFragment extends Fragment implements FireShoppingLists
         listOfListsView.setLayoutManager(new LinearLayoutManager(getContext()));
         shoppingListsViewModel = new ViewModelProvider(requireActivity()).get(ShoppingListsViewModel.class);
         setUpRecyclerView();
+        handleItemInteraction();
+        return view;
+    }
+
+    private void handleItemInteraction() {
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -60,7 +61,6 @@ public class ShoppingListsFragment extends Fragment implements FireShoppingLists
                 shoppingListsViewModel.deleteList(fireAdapter.getItem(adapterPosition));
             }
         }).attachToRecyclerView(listOfListsView);
-        return view;
     }
 
     private void setUpRecyclerView() {
