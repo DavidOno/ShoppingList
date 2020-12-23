@@ -17,4 +17,6 @@
     <string name="modifyEntryFragmentTitle">Modify Entry</string>
     <string name="deleteEntry">Delete Entry</string>
     <string name="DeleteAllChecked">Delete All Checked</string>
+    <string name="EditList">Edit List</string>
+    <string name="EditShoppingLists">Edit</string>
 </resources>

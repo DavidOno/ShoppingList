@@ -16,27 +16,22 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.lifecycle.ViewModelProvider;
-
-import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.model.ShoppingList;
-import de.db.shoppinglist.viewmodel.ModifyEntryViewModel;
+import de.db.shoppinglist.viewmodel.ModifyListDialogViewModel;
 import de.db.shoppinglist.viewmodel.NewListDialogViewModel;
 
-public class NewListDialog extends AppCompatDialogFragment {
+public class ModifyListDialog extends AppCompatDialogFragment {
 
     private EditText listNameEditText;
     private Button doneButton;
     private Button backButton;
 
-    private NewListDialogViewModel viewModel;
+    private ModifyListDialogViewModel viewModel;
 
-    public NewListDialog(){
+    public ModifyListDialog(){
     }
 
     @NonNull
@@ -44,13 +39,12 @@ public class NewListDialog extends AppCompatDialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_new_list, null);
+        View view = inflater.inflate(R.layout.dialog_modify_list, null);
         builder.setView(view);
         listNameEditText = view.findViewById(R.id.editText_list_name);
         doneButton = view.findViewById(R.id.new_list_dialog_doneButton);
         doneButton.setEnabled(false);
         backButton = view.findViewById(R.id.new_list_dialog_backButton);
-        coordinatorLayout = view.findViewById(R.id.newEntryDialog_CoordLayout);
         listNameEditText.addTextChangedListener(enableDoneMenuItemOnTextChange());
 
         listNameEditText.requestFocus();
@@ -60,7 +54,7 @@ public class NewListDialog extends AppCompatDialogFragment {
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         listNameEditText.addTextChangedListener(enableDoneMenuItemOnTextChange());
-        viewModel = new ViewModelProvider(requireActivity()).get(NewListDialogViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(ModifyListDialogViewModel.class);
         return dialog;
     }
 
@@ -94,7 +88,8 @@ public class NewListDialog extends AppCompatDialogFragment {
     private void finish() {
         String listName = listNameEditText.getText().toString();
         ShoppingList shoppingList = new ShoppingList(listName);
-        viewModel.addList(shoppingList);
+//        viewModel.addList(shoppingList);
+        //TODO: update DB
         closeDialog();
     }
 }

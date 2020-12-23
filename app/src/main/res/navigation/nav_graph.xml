@@ -16,6 +16,9 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_shoppingListsFragment_to_selectShoppingListModificationFragment"
+            app:destination="@id/selectShoppingListModificationFragment" />
     </fragment>
     <fragment
         android:id="@+id/shoppingListFragment"
@@ -59,4 +62,22 @@
             android:name="list"
             app:argType="de.db.shoppinglist.model.ShoppingList" />
     </fragment>
+    <fragment
+        android:id="@+id/selectShoppingListModificationFragment"
+        android:name="de.db.shoppinglist.view.SelectShoppingListModificationFragment"
+        android:label="fragment_select_list_for_modify"
+        tools:layout="@layout/fragment_select_list_for_modify" >
+        <action
+            android:id="@+id/action_selectShoppingListModificationFragment_to_modifyListDialog"
+            app:destination="@id/modifyListDialog" />
+    </fragment>
+    <dialog
+        android:id="@+id/modifyListDialog"
+        android:name="de.db.shoppinglist.view.ModifyListDialog"
+        android:label="dialog_modify_list"
+        tools:layout="@layout/dialog_modify_list" >
+        <argument
+            android:name="list"
+            app:argType="de.db.shoppinglist.model.ShoppingList" />
+    </dialog>
 </navigation>

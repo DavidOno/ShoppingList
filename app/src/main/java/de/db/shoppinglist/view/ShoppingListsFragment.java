@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -37,8 +38,6 @@ public class ShoppingListsFragment extends Fragment implements FireShoppingLists
     private FloatingActionButton newListButton;
     private FireShoppingListsRecViewAdapter fireAdapter;
     private ShoppingListsViewModel shoppingListsViewModel;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-//    private CollectionReference shoppingListRef =
 
     @Nullable
     @Override
@@ -94,11 +93,23 @@ public class ShoppingListsFragment extends Fragment implements FireShoppingLists
     }
 
     @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.Main_menu_edit:
+                NavController navController = NavHostFragment.findNavController(this);
+                NavDirections modifyListsDirection = ShoppingListsFragmentDirections.actionShoppingListsFragmentToSelectShoppingListModificationFragment();
+                navController.navigate(modifyListsDirection);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onListClick(int position) {
         ShoppingList list = fireAdapter.getItem(position);
         NavController navController = NavHostFragment.findNavController(this);
-        NavDirections openSelectedList = ShoppingListsFragmentDirections.actionShoppingListsFragmentToShoppingListFragment(list);
-        navController.navigate(openSelectedList);
+        NavDirections openSelectedListDirection = ShoppingListsFragmentDirections.actionShoppingListsFragmentToShoppingListFragment(list);
+        navController.navigate(openSelectedListDirection);
     }
 
     @Override

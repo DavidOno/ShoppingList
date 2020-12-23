@@ -10,6 +10,13 @@
         android:icon="@drawable/vertical_dot_options">
 
         <menu>
+            <group android:id="@+id/gr3">
+                <item android:id="@+id/Main_menu_edit"
+                    android:title="@string/EditShoppingLists"
+                    android:icon="@drawable/ic_edit"
+                    app:showAsAction="ifRoom" />
+            </group>
+
             <group android:id="@+id/grp1">
                 <item android:id="@+id/Main_menu_item_share"
                     android:title="@string/share"
@@ -23,6 +30,7 @@
                     android:icon="@drawable/delete_all"
                     app:showAsAction="ifRoom" />
             </group>
+
         </menu>
     </item>
 </menu>
