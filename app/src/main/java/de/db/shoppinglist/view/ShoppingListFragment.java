@@ -94,8 +94,11 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
             Checkable<ShoppingEntry> checkable = (Checkable)fireAdapter;
             checkable.getFlag().observe(getViewLifecycleOwner(),
                     aBoolean -> {
-                        ShoppingEntry entry = checkable.getItem();
-                        shoppingListViewModel.toggleDoneStatus(list, entry);
+                        if(aBoolean.booleanValue()) {
+                            ShoppingEntry entry = checkable.getItem();
+                            shoppingListViewModel.toggleDoneStatus(list, entry);
+                            ((Checkable) fireAdapter).resetFlags();
+                        }
                     });
         }
     }

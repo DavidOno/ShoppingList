@@ -25,7 +25,7 @@ import de.db.shoppinglist.model.ShoppingEntry;
 
 public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<ShoppingEntry, FireShoppingListRecViewAdapter.ViewHolder> implements Checkable<ShoppingEntry> {
 
-    private MutableLiveData<Boolean> wasChecked = new MutableLiveData<>();
+    private MutableLiveData<Boolean> wasChecked = new MutableLiveData<>(false);
     private ShoppingEntry entryContainingCheckedBox = null;
     private OnEntryListener onEntryListener;
     private int previousExpandedPosition = -1;
@@ -131,7 +131,6 @@ public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<Sho
 
     @Override
     public void resetFlags() {
-        wasChecked = new MutableLiveData<>();
         wasChecked.setValue(false);
         entryContainingCheckedBox = null;
     }
