@@ -27,6 +27,5 @@ public interface Source {
 
     void updateListName(ShoppingList list);
 
-//    void getRelationOfDoneTasks(String listId, BiConsumer<Integer, Integer> callback);
 }
 

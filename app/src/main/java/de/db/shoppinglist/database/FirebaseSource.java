@@ -101,11 +101,7 @@ public class FirebaseSource implements Source {
     @Override
     public boolean deleteList(String listId) {
         boolean wasDeletingEntriesSuccess = deleteEntries(listId);
-//        boolean wasDeletingListSuccess = false;
-//        if(wasDeletingEntriesSuccess) {
-//            wasDeletingListSuccess = deleteListOnly(listId);
-//        }
-        return wasDeletingEntriesSuccess /*&& wasDeletingListSuccess*/;
+        return wasDeletingEntriesSuccess;
     }
 
     @Override
@@ -166,31 +162,14 @@ public class FirebaseSource implements Source {
     private boolean deleteEntries(String listId) {
         Task<QuerySnapshot> query = rootCollectionRef.document(listId).collection(entriesKey).get();
         query.addOnSuccessListener(aVoid -> {
-            int total = query.getResult().getDocuments().size();
-            long done = query.getResult().getDocuments().stream().filter(documentSnapshot -> ((Boolean)documentSnapshot.get("done"))).count();
             query.getResult().getDocuments().stream()
                     .map(doc -> buildPath(listId, doc))
                     .forEach(DocumentReference::delete);
-            changeCounter(listId, "total", -total);
-            changeCounter(listId, "done", (int) -done);
             Log.d("FIREBASE", "Success: Deleted all entries");
             deleteListOnly(listId);
         });
         return true;
     }
-
-//    @Override
-//    public void getRelationOfDoneTasks(String listId, BiConsumer<Integer, Integer> callback){
-//        Task<QuerySnapshot> query = rootCollectionRef.document(listId).collection(entriesKey).get();
-//        query.addOnSuccessListener(aVoid -> {
-//            int done = (int) query.getResult().getDocuments().stream()
-//                    .filter(documentSnapshot -> ((boolean) documentSnapshot.get("done")))
-//                    .count();
-//            int total = query.getResult().getDocuments().size();
-//            callback.accept(done, total);
-//            Log.d("FIREBASE", "Success: Got relation of all lists");
-//        });
-//    }
 
     private DocumentReference buildPath(String listId, DocumentSnapshot doc) {
         return rootCollectionRef.document(listId).collection(entriesKey).document(doc.getId());

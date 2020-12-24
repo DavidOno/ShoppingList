@@ -59,11 +59,4 @@ public class ShoppingRepository {
         db.updateListName(list);
     }
 
-//    public MutableLiveData<IsDoneRelation> getIsDoneRelationOfList(String listId){
-//        final MutableLiveData<IsDoneRelation> relation = new MutableLiveData<>();
-//        db.getRelationOfDoneTasks(listId, (done, total) -> {
-//            relation.setValue(new IsDoneRelation(total, done));
-//        });
-//        return relation;
-//    }
 }
