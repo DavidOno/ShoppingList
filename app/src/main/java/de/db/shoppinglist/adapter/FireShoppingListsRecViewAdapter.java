@@ -33,6 +33,7 @@ public class FireShoppingListsRecViewAdapter extends FirestoreRecyclerAdapter<Sh
     @Override
     protected void onBindViewHolder(@NonNull ViewHolder holder, int i, @NonNull ShoppingList shoppingList) {
         holder.nameOfShoppingList.setText(shoppingList.getName());
+        holder.relation.setText((shoppingList.getDone() +"/"+shoppingList.getTotal()));
     }
 
     @NonNull
@@ -49,11 +50,13 @@ public class FireShoppingListsRecViewAdapter extends FirestoreRecyclerAdapter<Sh
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private TextView nameOfShoppingList;
+        private TextView relation;
         private OnListListener onListListener;
 
         public ViewHolder(@NonNull View itemView, OnListListener onListListener) {
             super(itemView);
             nameOfShoppingList = itemView.findViewById(R.id.item_list_name);
+            relation = itemView.findViewById(R.id.item_list_counter);
             this.onListListener = onListListener;
             itemView.setOnClickListener(this);
         }

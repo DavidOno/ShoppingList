@@ -2,8 +2,8 @@ package de.db.shoppinglist.repository;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
-import de.db.shoppinglist.database.Source;
 import de.db.shoppinglist.database.FirebaseSource;
+import de.db.shoppinglist.database.Source;
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 
@@ -35,10 +35,6 @@ public class ShoppingRepository {
         return db.addList(shoppingList);
     }
 
-    public void modifyList(){
-
-    }
-
     public boolean deleteList(String listId){
         return db.deleteList(listId);
     }
@@ -62,4 +58,12 @@ public class ShoppingRepository {
     public void updateListName(ShoppingList list) {
         db.updateListName(list);
     }
+
+//    public MutableLiveData<IsDoneRelation> getIsDoneRelationOfList(String listId){
+//        final MutableLiveData<IsDoneRelation> relation = new MutableLiveData<>();
+//        db.getRelationOfDoneTasks(listId, (done, total) -> {
+//            relation.setValue(new IsDoneRelation(total, done));
+//        });
+//        return relation;
+//    }
 }

@@ -3,9 +3,7 @@ package de.db.shoppinglist.viewmodel;
 import androidx.lifecycle.ViewModel;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.firebase.firestore.Query;
 
-import de.db.shoppinglist.model.ShoppingElement;
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.repository.ShoppingRepository;
@@ -13,6 +11,7 @@ import de.db.shoppinglist.repository.ShoppingRepository;
 public class ShoppingListViewModel extends ViewModel {
 
     private ShoppingRepository repo = ShoppingRepository.getInstance();
+
 
     public boolean deleteEntry(ShoppingList list, Object item) {
         if(!(item instanceof ShoppingEntry)){

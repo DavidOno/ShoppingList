@@ -26,5 +26,7 @@ public interface Source {
     void updateStatusDone(String listId, ShoppingEntry entry);
 
     void updateListName(ShoppingList list);
+
+//    void getRelationOfDoneTasks(String listId, BiConsumer<Integer, Integer> callback);
 }
 
