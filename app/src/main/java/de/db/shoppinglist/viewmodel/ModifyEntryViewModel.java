@@ -10,8 +10,8 @@ public class ModifyEntryViewModel extends ViewModel {
 
     private ShoppingRepository repo = ShoppingRepository.getInstance();
 
-    public boolean deleteEntry(String listUid, String documentUid){
-        return repo.deleteEntry(listUid, documentUid);
+    public void deleteEntry(String listUid, String documentUid){
+        repo.deleteEntry(listUid, documentUid);
     }
 
     public void toggleDoneStatus(ShoppingList list, ShoppingEntry entry) {

@@ -11,8 +11,8 @@ public class ShoppingListsViewModel extends ViewModel {
 
     private ShoppingRepository repo = ShoppingRepository.getInstance();
 
-    public boolean deleteList(ShoppingList list) {
-        return repo.deleteList(list.getUid());
+    public void deleteList(ShoppingList list) {
+        repo.deleteList(list.getUid());
     }
 
     public FirestoreRecyclerOptions<ShoppingList> getRecyclerViewOptions() {

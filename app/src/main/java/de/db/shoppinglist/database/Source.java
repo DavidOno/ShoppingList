@@ -7,15 +7,13 @@ import de.db.shoppinglist.model.ShoppingList;
 
 public interface Source {
 
-    public boolean addEntry(String listUid, ShoppingEntry entry, boolean isPartOfModify);
+    public void addEntry(String listUid, ShoppingEntry entry);
 
-    public boolean deleteEntry(String listUid, String documentUid, boolean isPartOfModify);
+    public void deleteEntry(String listUid, String documentUid);
 
-    public boolean addList(ShoppingList shoppingList);
+    public void addList(ShoppingList shoppingList);
 
-    public boolean modifyList();
-
-    public boolean deleteList(String listId);
+    public void deleteList(String listId);
 
     FirestoreRecyclerOptions<ShoppingEntry> getShoppingListRecyclerViewOptions(String listId);
 

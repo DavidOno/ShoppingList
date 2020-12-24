@@ -113,7 +113,7 @@ public class NewEntryFragment extends Fragment {
         String unitOfQuantity = getString(unitOfQuantityEditText);
         String nameOfProduct = getString(nameOfProductEditText);
         String details = getString(detailsEditText);
-        boolean wasSuccess = viewModel.addNewEntry(list, quantity, unitOfQuantity, nameOfProduct, details);
+        viewModel.addNewEntry(list, quantity, unitOfQuantity, nameOfProduct, details);
         closeFragment();
     }
 

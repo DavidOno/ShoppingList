@@ -23,20 +23,20 @@ public class ShoppingRepository {
         return instance;
     }
 
-    public boolean addEntry(String listId, ShoppingEntry newEntry){
-        return db.addEntry(listId, newEntry, false);
+    public void addEntry(String listId, ShoppingEntry newEntry){
+        db.addEntry(listId, newEntry);
     }
 
-    public boolean deleteEntry(String listUid, String documentUid){
-        return db.deleteEntry(listUid, documentUid, false);
+    public void deleteEntry(String listUid, String documentUid){
+        db.deleteEntry(listUid, documentUid);
     }
 
-    public boolean addList(ShoppingList shoppingList){
-        return db.addList(shoppingList);
+    public void addList(ShoppingList shoppingList){
+        db.addList(shoppingList);
     }
 
-    public boolean deleteList(String listId){
-        return db.deleteList(listId);
+    public void deleteList(String listId){
+        db.deleteList(listId);
     }
 
     public FirestoreRecyclerOptions<ShoppingEntry> getRecyclerViewOptions(String listId) {

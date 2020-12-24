@@ -13,99 +13,83 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 
 public class FirebaseSource implements Source {
 
+    public static final String FIREBASE_TAG = "FIREBASE";
     private final String listsRootKey = "Lists";
     private final String entriesKey = "Entries";
-    private final String firebaseTag = "FIREBASE";
+    private final String firebaseTag = FIREBASE_TAG;
     private final CollectionReference rootCollectionRef = FirebaseFirestore.getInstance().collection(listsRootKey);
 
 
     @Override
-    public boolean addEntry(String listUid, ShoppingEntry newEntry, boolean isPartOfModify) {
-        AtomicBoolean wasSuccess = new AtomicBoolean(false);
-        DocumentReference newEntryRef = rootCollectionRef.document(listUid).collection(entriesKey).document(newEntry.getUid());
+    public void addEntry(String listId, ShoppingEntry newEntry) {
+        DocumentReference newEntryRef = rootCollectionRef.document(listId).collection(entriesKey).document(newEntry.getUid());
         newEntryRef.set(newEntry).addOnSuccessListener(aVoid -> {
-            if(!isPartOfModify)
-                changeCounter(listUid, "total", 1);
-            Log.d("FIREBASE", "Success: Added Entry");
-            wasSuccess.set(true);
+            updateListStatusCounter(listId);
+            Log.d(FIREBASE_TAG, "Success: Added Entry");
         })
                 .addOnFailureListener(e -> {
-                    Log.d("FIREBASE", e.getMessage());
-                });;
-        return wasSuccess.get();
+                    Log.d(FIREBASE_TAG, e.getMessage());
+                });
     }
 
     @Override
-    public boolean deleteEntry(String listUid, String documentUid, boolean isPartOfModify) {
-        AtomicBoolean wasSuccess = new AtomicBoolean(false);
-        DocumentReference entryRef = rootCollectionRef.document(listUid).collection("Entries").document(documentUid);
+    public void deleteEntry(String listId, String documentUid) {
+        DocumentReference entryRef = rootCollectionRef.document(listId).collection("Entries").document(documentUid);
         entryRef.delete().addOnSuccessListener(aVoid -> {
-            if(!isPartOfModify)
-                changeCounter(listUid, "total", -1);
-            Log.d("FIREBASE", "Success: Deleted Entry");
-            wasSuccess.set(true);
+            updateListStatusCounter(listId);
+            Log.d(FIREBASE_TAG, "Success: Deleted Entry");
         })
         .addOnFailureListener(e -> {
-            Log.d("FIREBASE", e.getMessage());
+            Log.d(FIREBASE_TAG, e.getMessage());
         });
-        return wasSuccess.get();
     }
 
-
-    private  void changeCounter(String listUid, String counterName, int change) {
-        final Task<DocumentSnapshot> documentSnapshotTask = rootCollectionRef.document(listUid).get();
-        documentSnapshotTask.addOnSuccessListener(documentSnapshot -> {
-            synchronized (this) {
-                final AtomicReference<Long> counter = new AtomicReference<Long>(new Long(0));
-                counter.set((Long) documentSnapshot.get(counterName));
-                Map<String, Object> decrementTotal = new HashMap<>();
-                int newCounter = (int) (counter.get() + change);
-                decrementTotal.put(counterName, newCounter);
-                Log.d("FIREBASE", "Counter_current:"+(int)counter.get().intValue() +" counter_later:"+newCounter);
-                DocumentReference entryRef = rootCollectionRef.document(listUid);
-                entryRef.update(decrementTotal)
-                        .addOnSuccessListener(aVoid -> {
-                            Log.d("FIREBASE", "Success: changed counter: " + change);
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.d("FIREBASE", e.getMessage());
-                        });
-            }
+    private void updateListStatusCounter(String listId){
+        Task<QuerySnapshot> querySnapshotTask = rootCollectionRef.document(listId).collection(entriesKey).get();
+        querySnapshotTask.addOnSuccessListener(queryDocumentSnapshots -> {
+            long done = queryDocumentSnapshots.getDocuments().stream().filter(doc -> (Boolean) doc.get("done")).count();
+            long total = queryDocumentSnapshots.getDocuments().size();
+            Map<String, Object> counterVars = new HashMap<>();
+            counterVars.put("done", done);
+            counterVars.put("total", total);
+            rootCollectionRef.document(listId).update(counterVars)
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(FIREBASE_TAG, "Success: " + done+"/"+total);
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.d(FIREBASE_TAG, e.getMessage());
+                    });
         });
     }
 
     @Override
-    public boolean addList(ShoppingList shoppingList) {
-        AtomicBoolean wasSuccess = new AtomicBoolean(false);
+    public void addList(ShoppingList shoppingList) {
         rootCollectionRef.document(shoppingList.getUid()).set(shoppingList)
                 .addOnSuccessListener(aVoid -> {
-                    Log.d("FIREBASE", "Success: Added List");
-                    wasSuccess.set(true);
+                    Log.d(FIREBASE_TAG, "Success: Added List");
                 })
                 .addOnFailureListener(e -> {
-                    Log.d("FIREBASE", e.getMessage());
-                });;
-        return wasSuccess.get();
+                    Log.d(FIREBASE_TAG, e.getMessage());
+                });
     }
 
-    @Override
-    public boolean modifyList() {
-        AtomicBoolean wasSuccess = new AtomicBoolean(false);
-        return wasSuccess.get();
-    }
 
     @Override
-    public boolean deleteList(String listId) {
-        boolean wasDeletingEntriesSuccess = deleteEntries(listId);
-        return wasDeletingEntriesSuccess;
+    public void deleteList(String listId) {
+        Task<QuerySnapshot> query = rootCollectionRef.document(listId).collection(entriesKey).get();
+        query.addOnSuccessListener(aVoid -> {
+            query.getResult().getDocuments().stream()
+                    .map(doc -> buildPath(listId, doc))
+                    .forEach(DocumentReference::delete);
+            Log.d(FIREBASE_TAG, "Success: Deleted all entries");
+            deleteListOnly(listId);
+        });
     }
 
     @Override
@@ -138,15 +122,11 @@ public class FirebaseSource implements Source {
         rootCollectionRef.document(listId).collection(entriesKey).document(entry.getUid())
                 .update(updateIsDone)
                 .addOnSuccessListener(aVoid -> {
-                    if(entry.isDone()){
-                        changeCounter(listId, "done", 1);
-                    }else{
-                        changeCounter(listId, "done", -1);
-                    }
-                    Log.d("FIREBASE", "Success: Updated Status");
+                    updateListStatusCounter(listId);
+                    Log.d(FIREBASE_TAG, "Success: Updated Status");
                 })
                 .addOnFailureListener(e -> {
-                    Log.d("FIREBASE", e.getMessage());
+                    Log.d(FIREBASE_TAG, e.getMessage());
                 });
     }
 
@@ -156,45 +136,32 @@ public class FirebaseSource implements Source {
         updateName.put("name", list.getName());
         rootCollectionRef.document(list.getUid()).update(updateName)
                 .addOnSuccessListener(aVoid -> {
-                    Log.d("FIREBASE", "Success: Updated Name");
+                    Log.d(FIREBASE_TAG, "Success: Updated Name");
                 })
                 .addOnFailureListener(e -> {
-                    Log.d("FIREBASE", e.getMessage());
+                    Log.d(FIREBASE_TAG, e.getMessage());
                 });
     }
 
     @Override
     public void modifyWholeEntry(ShoppingList list, ShoppingEntry entry) {
-        deleteEntry(list.getUid(), entry.getUid(), true);
-        addEntry(list.getUid(), entry, true);
-    }
-
-    private boolean deleteEntries(String listId) {
-        Task<QuerySnapshot> query = rootCollectionRef.document(listId).collection(entriesKey).get();
-        query.addOnSuccessListener(aVoid -> {
-            query.getResult().getDocuments().stream()
-                    .map(doc -> buildPath(listId, doc))
-                    .forEach(DocumentReference::delete);
-            Log.d("FIREBASE", "Success: Deleted all entries");
-            deleteListOnly(listId);
-        });
-        return true;
+        Log.d(FIREBASE_TAG, "Starting modifying entry:");
+        deleteEntry(list.getUid(), entry.getUid());
+        addEntry(list.getUid(), entry);
+        Log.d(FIREBASE_TAG, "Ended modifying entry");
     }
 
     private DocumentReference buildPath(String listId, DocumentSnapshot doc) {
         return rootCollectionRef.document(listId).collection(entriesKey).document(doc.getId());
     }
 
-    private boolean deleteListOnly(String listId) {
-        AtomicBoolean wasSuccess = new AtomicBoolean(true);
+    private void deleteListOnly(String listId) {
         DocumentReference entryRef = rootCollectionRef.document(listId);
         entryRef.delete().addOnSuccessListener(aVoid -> {
-            Log.d("FIREBASE", "Success: Deleted List");
+            Log.d(FIREBASE_TAG, "Success: Deleted List");
 
         }).addOnFailureListener(e -> {
-            Log.d("FIREBASE", e.getMessage());
-            wasSuccess.set(false);
+            Log.d(FIREBASE_TAG, e.getMessage());
         });
-        return wasSuccess.get();
     }
 }

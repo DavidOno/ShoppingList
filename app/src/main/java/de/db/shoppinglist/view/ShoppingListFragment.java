@@ -84,7 +84,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int adapterPosition = viewHolder.getAdapterPosition();
-                boolean wasSuccess = shoppingListViewModel.deleteEntry(list, fireAdapter.getItem(adapterPosition));
+                shoppingListViewModel.deleteEntry(list, fireAdapter.getItem(adapterPosition));
             }
         }).attachToRecyclerView(entriesView);
     }

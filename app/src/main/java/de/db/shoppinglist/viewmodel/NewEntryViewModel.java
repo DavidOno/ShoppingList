@@ -10,9 +10,9 @@ public class NewEntryViewModel extends ViewModel {
 
     private ShoppingRepository repo = ShoppingRepository.getInstance();
 
-    public boolean addNewEntry(ShoppingList list, float quantity, String unitOfQuantity, String nameOfProduct, String details) {
+    public void addNewEntry(ShoppingList list, float quantity, String unitOfQuantity, String nameOfProduct, String details) {
         int position = list.getNextFreePosition();
         ShoppingEntry shoppingEntry = new ShoppingEntry(quantity, unitOfQuantity, nameOfProduct, details, position);
-        return repo.addEntry(list.getUid(), shoppingEntry);
+        repo.addEntry(list.getUid(), shoppingEntry);
     }
 }

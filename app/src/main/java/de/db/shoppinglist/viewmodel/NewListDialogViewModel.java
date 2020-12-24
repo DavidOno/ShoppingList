@@ -9,7 +9,7 @@ public class NewListDialogViewModel extends ViewModel {
 
     private ShoppingRepository repo = ShoppingRepository.getInstance();
 
-    public boolean addList(ShoppingList shoppingList) {
-        return repo.addList(shoppingList);
+    public void addList(ShoppingList shoppingList) {
+        repo.addList(shoppingList);
     }
 }

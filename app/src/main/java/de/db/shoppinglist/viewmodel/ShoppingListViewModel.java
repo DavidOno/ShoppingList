@@ -13,12 +13,12 @@ public class ShoppingListViewModel extends ViewModel {
     private ShoppingRepository repo = ShoppingRepository.getInstance();
 
 
-    public boolean deleteEntry(ShoppingList list, Object item) {
+    public void deleteEntry(ShoppingList list, Object item) {
         if(!(item instanceof ShoppingEntry)){
             throw new IllegalArgumentException("Only items of type ShoppingEntry can be deleted.");
         }
         ShoppingEntry shoppingEntry = (ShoppingEntry) item;
-        return repo.deleteEntry(list.getUid(), shoppingEntry.getUid());
+        repo.deleteEntry(list.getUid(), shoppingEntry.getUid());
     }
 
     public FirestoreRecyclerOptions<ShoppingEntry> getRecylerViewOptions(ShoppingList list) {
