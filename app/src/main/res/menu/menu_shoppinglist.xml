@@ -5,7 +5,7 @@
     <item android:id="@+id/menu_shoppingList_check_all"
         android:title="@string/CheckAll"
         android:icon="@drawable/flush_checked"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item android:id="@+id/menu_shoppingList_delete_all_checked"
         android:title="@string/DeleteAllChecked"
@@ -20,15 +20,19 @@
         android:icon="@drawable/vertical_dot_options">
 
         <menu>
-            <item android:id="@+id/menu_item_share"
-                android:title="@string/share"
-                android:icon="@drawable/share"
-                app:showAsAction="ifRoom"/>
+            <group android:id="@+id/menu_shoppinglist_grp1">
+                <item android:id="@+id/menu_item_share"
+                    android:title="@string/share"
+                    android:icon="@drawable/share"
+                    app:showAsAction="ifRoom"/>
+            </group>
+            <group android:id="@+id/menu_shoppinglist_grp2">
+                <item android:id="@+id/menuItemDeleteAllEntries"
+                    android:title="@string/deleteAllEntries"
+                    android:icon="@drawable/delete_all"
+                    app:showAsAction="ifRoom" />
+            </group>
+            </menu>
 
-            <item android:id="@+id/menuItemDeleteAllEntries"
-                android:title="@string/deleteAllEntries"
-                android:icon="@drawable/delete_all"
-                app:showAsAction="ifRoom" />
-        </menu>
     </item>
 </menu>

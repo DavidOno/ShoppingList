@@ -108,6 +108,10 @@ public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<Sho
         if(quantity - 0 < 0.0001){
             return "";
         }else{
+            if((int)quantity == quantity){
+                int quantityAsInt = (int) quantity;
+                return quantityAsInt + " x ";
+            }
             return quantity + " x ";
         }
     }

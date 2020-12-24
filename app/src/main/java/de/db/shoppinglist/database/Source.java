@@ -7,9 +7,9 @@ import de.db.shoppinglist.model.ShoppingList;
 
 public interface Source {
 
-    public boolean addEntry(String listUid, ShoppingEntry entry);
+    public boolean addEntry(String listUid, ShoppingEntry entry, boolean isPartOfModify);
 
-    public boolean deleteEntry(String listUid, String documentUid);
+    public boolean deleteEntry(String listUid, String documentUid, boolean isPartOfModify);
 
     public boolean addList(ShoppingList shoppingList);
 
@@ -27,5 +27,6 @@ public interface Source {
 
     void updateListName(ShoppingList list);
 
+    void modifyWholeEntry(ShoppingList list, ShoppingEntry entry);
 }
 

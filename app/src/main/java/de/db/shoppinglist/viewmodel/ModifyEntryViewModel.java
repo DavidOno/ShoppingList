@@ -19,8 +19,7 @@ public class ModifyEntryViewModel extends ViewModel {
         repo.updateDoneStatus(list.getUid(), entry);
     }
 
-    public boolean modifyEntry(ShoppingList list, ShoppingEntry entry){
-        repo.deleteEntry(list.getUid(), entry.getUid());
-        return repo.addEntry(list.getUid(), entry);
+    public void modifyEntry(ShoppingList list, ShoppingEntry entry){
+        repo.modifyWholeEntry(list, entry);
     }
 }

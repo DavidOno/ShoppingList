@@ -28,11 +28,12 @@ public class FirebaseSource implements Source {
 
 
     @Override
-    public boolean addEntry(String listUid, ShoppingEntry newEntry) {
+    public boolean addEntry(String listUid, ShoppingEntry newEntry, boolean isPartOfModify) {
         AtomicBoolean wasSuccess = new AtomicBoolean(false);
         DocumentReference newEntryRef = rootCollectionRef.document(listUid).collection(entriesKey).document(newEntry.getUid());
         newEntryRef.set(newEntry).addOnSuccessListener(aVoid -> {
-            changeCounter(listUid, "total", 1);
+            if(!isPartOfModify)
+                changeCounter(listUid, "total", 1);
             Log.d("FIREBASE", "Success: Added Entry");
             wasSuccess.set(true);
         })
@@ -43,11 +44,12 @@ public class FirebaseSource implements Source {
     }
 
     @Override
-    public boolean deleteEntry(String listUid, String documentUid) {
+    public boolean deleteEntry(String listUid, String documentUid, boolean isPartOfModify) {
         AtomicBoolean wasSuccess = new AtomicBoolean(false);
         DocumentReference entryRef = rootCollectionRef.document(listUid).collection("Entries").document(documentUid);
         entryRef.delete().addOnSuccessListener(aVoid -> {
-            changeCounter(listUid, "total", -1);
+            if(!isPartOfModify)
+                changeCounter(listUid, "total", -1);
             Log.d("FIREBASE", "Success: Deleted Entry");
             wasSuccess.set(true);
         })
@@ -65,7 +67,9 @@ public class FirebaseSource implements Source {
                 final AtomicReference<Long> counter = new AtomicReference<Long>(new Long(0));
                 counter.set((Long) documentSnapshot.get(counterName));
                 Map<String, Object> decrementTotal = new HashMap<>();
-                decrementTotal.put(counterName, counter.get() + change);
+                int newCounter = (int) (counter.get() + change);
+                decrementTotal.put(counterName, newCounter);
+                Log.d("FIREBASE", "Counter_current:"+(int)counter.get().intValue() +" counter_later:"+newCounter);
                 DocumentReference entryRef = rootCollectionRef.document(listUid);
                 entryRef.update(decrementTotal)
                         .addOnSuccessListener(aVoid -> {
@@ -114,7 +118,7 @@ public class FirebaseSource implements Source {
 
     @Override
     public FirestoreRecyclerOptions<ShoppingList> getShoppingListsRecyclerViewOptions() {
-        Query lists = rootCollectionRef;
+        Query lists = rootCollectionRef.orderBy("name");
         return new FirestoreRecyclerOptions.Builder<ShoppingList>()
                 .setQuery(lists, ShoppingList.class)
                 .build();
@@ -157,6 +161,12 @@ public class FirebaseSource implements Source {
                 .addOnFailureListener(e -> {
                     Log.d("FIREBASE", e.getMessage());
                 });
+    }
+
+    @Override
+    public void modifyWholeEntry(ShoppingList list, ShoppingEntry entry) {
+        deleteEntry(list.getUid(), entry.getUid(), true);
+        addEntry(list.getUid(), entry, true);
     }
 
     private boolean deleteEntries(String listId) {

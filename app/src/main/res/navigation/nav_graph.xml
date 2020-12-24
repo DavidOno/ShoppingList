@@ -67,7 +67,7 @@
     <fragment
         android:id="@+id/selectShoppingListModificationFragment"
         android:name="de.db.shoppinglist.view.SelectShoppingListModificationFragment"
-        android:label="fragment_select_list_for_modify"
+        android:label="@string/SelectListForModification"
         tools:layout="@layout/fragment_select_list_for_modify" >
         <action
             android:id="@+id/action_selectShoppingListModificationFragment_to_modifyListDialog"

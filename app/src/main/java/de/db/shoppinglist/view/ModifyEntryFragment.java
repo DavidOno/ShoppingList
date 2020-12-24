@@ -166,7 +166,7 @@ public class ModifyEntryFragment extends Fragment {
         String details = detailsEditText.getText().toString();
         boolean done = doneCheckbox.isChecked();
         setValues(quantity, unitOfQuantity, nameOfProduct, details, done);
-        boolean wasSuccess = viewModel.modifyEntry(list, entry);
+        viewModel.modifyEntry(list, entry);
         closeFragment();
     }
 

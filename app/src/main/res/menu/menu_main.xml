@@ -9,7 +9,7 @@
         app:showAsAction="always"
         android:icon="@drawable/vertical_dot_options">
 
-        <menu>
+        <menu >
             <group android:id="@+id/gr3">
                 <item android:id="@+id/Main_menu_edit"
                     android:title="@string/EditShoppingLists"

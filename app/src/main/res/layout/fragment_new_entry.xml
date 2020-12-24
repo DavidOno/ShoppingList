@@ -22,6 +22,8 @@
         android:maxLines="1"
         android:layout_below="@id/imageView"
         android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:inputType="textCapSentences"
         />
 
     <LinearLayout
@@ -43,6 +45,7 @@
         android:inputType="number"
         android:maxLines="1"
         android:layout_weight="0.5"
+        android:gravity="center"
         />
 
     <EditText
@@ -52,6 +55,8 @@
         android:hint="Unit of Quantity"
         android:maxLines="1"
         android:layout_weight="0.5"
+        android:gravity="center"
+        android:inputType="textCapSentences"
         />
 
     </LinearLayout>
@@ -62,7 +67,7 @@
         android:layout_height="wrap_content"
         android:hint="Details"
         android:layout_below="@id/quantitySection"
-        android:inputType="textMultiLine"
+        android:inputType="textMultiLine|textCapSentences"
         android:layout_marginTop="30dp"
         android:gravity="bottom"
         />

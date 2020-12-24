@@ -13,8 +13,8 @@ public class ShoppingRepository {
     private Source db = new FirebaseSource();
 
     /**
-     * Ensures that all viewmodels retrieve their information from the same source
-     * @return Returns an instance of this singleton.
+     * Ensures that all viewmodels retrieve their information from the same source.
+     * @return Returns instance of this singleton.
      */
     public static ShoppingRepository getInstance(){
         if(instance == null){
@@ -24,11 +24,11 @@ public class ShoppingRepository {
     }
 
     public boolean addEntry(String listId, ShoppingEntry newEntry){
-        return db.addEntry(listId, newEntry);
+        return db.addEntry(listId, newEntry, false);
     }
 
     public boolean deleteEntry(String listUid, String documentUid){
-        return db.deleteEntry(listUid, documentUid);
+        return db.deleteEntry(listUid, documentUid, false);
     }
 
     public boolean addList(ShoppingList shoppingList){
@@ -59,4 +59,7 @@ public class ShoppingRepository {
         db.updateListName(list);
     }
 
+    public void modifyWholeEntry(ShoppingList list, ShoppingEntry entry) {
+        db.modifyWholeEntry(list, entry);
+    }
 }
