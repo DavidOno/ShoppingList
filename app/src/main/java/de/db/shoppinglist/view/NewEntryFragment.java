@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,17 +19,10 @@ import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
-import de.db.shoppinglist.viewmodel.ModifyEntryViewModel;
 import de.db.shoppinglist.viewmodel.NewEntryViewModel;
 
 public class NewEntryFragment extends Fragment {
@@ -48,11 +40,8 @@ public class NewEntryFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_new_entry, container, false);
         findViewsById(view);
-
         return view;
     }
-
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -140,6 +129,12 @@ public class NewEntryFragment extends Fragment {
     private void closeKeyBoard() {
         final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+
+    }
+
+    private void openKeyBoard(){
+        final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(getView(), 0);
     }
 
     private void closeFragment() {
