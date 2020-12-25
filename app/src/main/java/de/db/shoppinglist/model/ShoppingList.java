@@ -2,6 +2,7 @@ package de.db.shoppinglist.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.util.UUID;
 
@@ -11,7 +12,7 @@ public class ShoppingList implements Parcelable, PositionContainer {
     private String uid;
     private int done;
     private int total;
-    private int nextFreePosition = 1;
+    private int nextFreePosition;
 
     public ShoppingList(){
 
@@ -83,8 +84,7 @@ public class ShoppingList implements Parcelable, PositionContainer {
     public int getNextFreePosition() {
         int nextFree = nextFreePosition;
         nextFreePosition++;
+        Log.d("ShoppingList", ""+nextFree);
         return nextFree;
     }
-
-
 }

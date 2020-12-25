@@ -29,10 +29,21 @@ public class FirebaseSource implements Source {
     @Override
     public void addEntry(String listId, ShoppingEntry newEntry) {
         DocumentReference newEntryRef = rootCollectionRef.document(listId).collection(entriesKey).document(newEntry.getUid());
-        newEntryRef.set(newEntry).addOnSuccessListener(aVoid -> {
-            updateListStatusCounter(listId);
-            Log.d(FIREBASE_TAG, "Success: Added Entry");
-        })
+        newEntryRef.set(newEntry)
+                .addOnSuccessListener(aVoid -> {
+                    updateListStatusCounter(listId);
+                    Log.d(FIREBASE_TAG, "Success: Added Entry");
+                })
+                .addOnFailureListener(e -> {
+                    Log.d(FIREBASE_TAG, e.getMessage());
+                });
+        Map<String, Object> updateNextFreePosition = new HashMap<>();
+        updateNextFreePosition.put("nextFreePosition", newEntry.getPosition());
+        rootCollectionRef.document(listId).update(updateNextFreePosition)
+                .addOnSuccessListener(aVoid -> {
+                    updateListStatusCounter(listId);
+                    Log.d(FIREBASE_TAG, "Success: Updated nextFreePosition");
+                })
                 .addOnFailureListener(e -> {
                     Log.d(FIREBASE_TAG, e.getMessage());
                 });
@@ -145,10 +156,21 @@ public class FirebaseSource implements Source {
 
     @Override
     public void modifyWholeEntry(ShoppingList list, ShoppingEntry entry) {
-        Log.d(FIREBASE_TAG, "Starting modifying entry:");
-        deleteEntry(list.getUid(), entry.getUid());
-        addEntry(list.getUid(), entry);
-        Log.d(FIREBASE_TAG, "Ended modifying entry");
+        Map<String, Object> updateEntryMap = new HashMap<>();
+        updateEntryMap.put("name", entry.getName());
+        updateEntryMap.put("done", entry.isDone());
+        updateEntryMap.put("details", entry.getDetails());
+        updateEntryMap.put("position", entry.getPosition());
+        updateEntryMap.put("quantity", entry.getQuantity());
+        updateEntryMap.put("unitOfQuantity", entry.getUnitOfQuantity());
+        rootCollectionRef.document(list.getUid()).collection(entriesKey).document(entry.getUid()).update(updateEntryMap)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(FIREBASE_TAG, "Success: Updated Entry");
+
+                }).addOnFailureListener(e -> {
+            Log.d(FIREBASE_TAG, e.getMessage());
+        });
+        updateListStatusCounter(list.getUid());
     }
 
     private DocumentReference buildPath(String listId, DocumentSnapshot doc) {
