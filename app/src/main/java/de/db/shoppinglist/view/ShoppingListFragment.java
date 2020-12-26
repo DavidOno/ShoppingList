@@ -39,9 +39,6 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
     private ShoppingListViewModel shoppingListViewModel;
     private ShoppingList list;
     private FirestoreRecyclerAdapter fireAdapter;
-    private MenuItem checkAll;
-    private MenuItem deleteAllChecked;
-    private MenuItem deleteAll;
 
     @Nullable
     @Override
@@ -123,7 +120,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
 
     private void openNewEntryFragment() {
         NavController navController = NavHostFragment.findNavController(this);
-        NavDirections newEntry = ShoppingListFragmentDirections.actionShoppingListFragmentToNewEntryFragment(list);
+        NavDirections newEntry = ShoppingListFragmentDirections.actionShoppingListFragmentToSearchEntryFragment(list);
         navController.navigate(newEntry);
     }
 

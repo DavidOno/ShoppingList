@@ -11,7 +11,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.db.shoppinglist.model.ShoppingEntry;
@@ -171,6 +173,21 @@ public class FirebaseSource implements Source {
             Log.d(FIREBASE_TAG, e.getMessage());
         });
         updateListStatusCounter(list.getUid());
+    }
+
+    @Override
+    public List<ShoppingEntry> getHistory() {
+        List<ShoppingEntry> mock = new ArrayList<>();
+        ShoppingEntry shoppingEntry = new ShoppingEntry();
+        shoppingEntry.setName("Cyankali");
+        shoppingEntry.setDetails("Ohne Zucker");
+        shoppingEntry.setUnitOfQuantity("Kapseln");
+        mock.add(shoppingEntry);
+        ShoppingEntry shoppingEntry2 = new ShoppingEntry();
+        shoppingEntry2.setName("Brokolli");
+        shoppingEntry2.setUnitOfQuantity("Saecke");
+        mock.add(shoppingEntry2);
+        return mock;
     }
 
     private DocumentReference buildPath(String listId, DocumentSnapshot doc) {

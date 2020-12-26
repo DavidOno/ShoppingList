@@ -20,4 +20,5 @@
     <string name="EditList">Edit List</string>
     <string name="EditShoppingLists">Edit</string>
     <string name="SelectListForModification">Select a List for Modification</string>
+    <string name="searchEntry">Search or create new entry</string>
 </resources>

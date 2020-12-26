@@ -22,6 +22,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import de.db.shoppinglist.R;
+import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.NewEntryViewModel;
 
@@ -33,6 +34,8 @@ public class NewEntryFragment extends Fragment {
     private EditText unitOfQuantityEditText;
     private EditText detailsEditText;
     private ShoppingList list;
+    private ShoppingEntry entry;
+    private String entryName;
     private NewEntryViewModel viewModel;
 
     @Nullable
@@ -40,6 +43,13 @@ public class NewEntryFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_new_entry, container, false);
         findViewsById(view);
+        if(entryName == null){
+            nameOfProductEditText.setText(entry.getName());
+            unitOfQuantityEditText.setText(entry.getUnitOfQuantity());
+            detailsEditText.setText(entry.getDetails());
+        }else{
+            nameOfProductEditText.setText(entryName);
+        }
         return view;
     }
 
@@ -47,9 +57,19 @@ public class NewEntryFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        handleNavigationArguments();
+        viewModel = new ViewModelProvider(requireActivity()).get(NewEntryViewModel.class);
+    }
+
+    private void handleNavigationArguments() {
+        getNavigationArguments();
+    }
+
+    private void getNavigationArguments() {
         NewEntryFragmentArgs newEntryFragmentArgs = NewEntryFragmentArgs.fromBundle(getArguments());
         list = newEntryFragmentArgs.getList();
-        viewModel = new ViewModelProvider(requireActivity()).get(NewEntryViewModel.class);
+        entry = newEntryFragmentArgs.getEntry();
+        entryName = newEntryFragmentArgs.getName();
     }
 
     @Override
@@ -58,7 +78,7 @@ public class NewEntryFragment extends Fragment {
         MenuCompat.setGroupDividerEnabled(menu, true);
         MenuItem done = getDoneMenuItem(menu);
         nameOfProductEditText.addTextChangedListener(enableDoneMenuItemOnTextChange(done));
-        done.setEnabled(false);
+        done.setEnabled(!nameOfProductEditText.getText().toString().isEmpty());
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -139,6 +159,7 @@ public class NewEntryFragment extends Fragment {
 
     private void closeFragment() {
         NavController navController = NavHostFragment.findNavController(this);
+        navController.navigateUp();
         navController.navigateUp();
     }
 

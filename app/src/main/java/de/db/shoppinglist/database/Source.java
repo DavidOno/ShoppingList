@@ -2,6 +2,8 @@ package de.db.shoppinglist.database;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
+import java.util.List;
+
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 
@@ -26,5 +28,7 @@ public interface Source {
     void updateListName(ShoppingList list);
 
     void modifyWholeEntry(ShoppingList list, ShoppingEntry entry);
+
+    List<ShoppingEntry> getHistory();
 }
 

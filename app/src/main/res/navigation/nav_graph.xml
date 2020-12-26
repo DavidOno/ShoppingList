@@ -28,12 +28,6 @@
         android:label="@string/ShoppingListFragmentTitle"
         tools:layout="@layout/fragment_shoppinglist" >
         <action
-            android:id="@+id/action_shoppingListFragment_to_newEntryFragment"
-            app:destination="@id/newEntryFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
             android:id="@+id/action_shoppingListFragment_to_modifyEntryFragment"
             app:destination="@id/modifyEntryFragment"
             app:enterAnim="@anim/slide_in_right"
@@ -42,6 +36,9 @@
         <argument
             android:name="list"
             app:argType="de.db.shoppinglist.model.ShoppingList" />
+        <action
+            android:id="@+id/action_shoppingListFragment_to_searchEntryFragment"
+            app:destination="@id/searchEntryFragment" />
     </fragment>
     <fragment
         android:id="@+id/newEntryFragment"
@@ -51,6 +48,14 @@
         <argument
             android:name="list"
             app:argType="de.db.shoppinglist.model.ShoppingList" />
+        <argument
+            android:name="Entry"
+            app:argType="de.db.shoppinglist.model.ShoppingEntry"
+            app:nullable="true" />
+        <argument
+            android:name="name"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/modifyEntryFragment"
@@ -82,4 +87,16 @@
             android:name="list"
             app:argType="de.db.shoppinglist.model.ShoppingList" />
     </dialog>
+    <fragment
+        android:id="@+id/searchEntryFragment"
+        android:name="de.db.shoppinglist.view.SearchEntryFragment"
+        android:label="@string/searchEntry"
+        tools:layout="@layout/fragment_search_entry" >
+        <action
+            android:id="@+id/action_searchEntryFragment_to_newEntryFragment"
+            app:destination="@id/newEntryFragment" />
+        <argument
+            android:name="List"
+            app:argType="de.db.shoppinglist.model.ShoppingList" />
+    </fragment>
 </navigation>
