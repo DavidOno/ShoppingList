@@ -50,7 +50,7 @@
             app:argType="de.db.shoppinglist.model.ShoppingList" />
         <argument
             android:name="Entry"
-            app:argType="de.db.shoppinglist.model.ShoppingEntry"
+            app:argType="de.db.shoppinglist.model.EntryHistoryElement"
             app:nullable="true" />
         <argument
             android:name="name"

@@ -22,7 +22,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.model.ShoppingEntry;
+import de.db.shoppinglist.model.EntryHistoryElement;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.NewEntryViewModel;
 
@@ -34,7 +34,7 @@ public class NewEntryFragment extends Fragment {
     private EditText unitOfQuantityEditText;
     private EditText detailsEditText;
     private ShoppingList list;
-    private ShoppingEntry entry;
+    private EntryHistoryElement entry;
     private String entryName;
     private NewEntryViewModel viewModel;
 

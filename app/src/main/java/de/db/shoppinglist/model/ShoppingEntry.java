@@ -131,4 +131,8 @@ public class ShoppingEntry implements Parcelable, PositionAware {
         dest.writeString(uid);
         dest.writeInt(position);
     }
+
+    public EntryHistoryElement extractHistoryElement(){
+        return new EntryHistoryElement(name, unitOfQuantity, details);
+    }
 }

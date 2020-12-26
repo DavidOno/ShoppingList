@@ -4,6 +4,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
 import java.util.List;
 
+import de.db.shoppinglist.model.EntryHistoryElement;
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 
@@ -29,6 +30,6 @@ public interface Source {
 
     void modifyWholeEntry(ShoppingList list, ShoppingEntry entry);
 
-    List<ShoppingEntry> getHistory();
+    List<EntryHistoryElement> getHistory();
 }
 

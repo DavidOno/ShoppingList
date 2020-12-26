@@ -21,6 +21,7 @@ import java.util.List;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.adapter.SearchEntryRecyclerViewAdapter;
+import de.db.shoppinglist.model.EntryHistoryElement;
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.SearchEntryViewModel;
@@ -67,7 +68,7 @@ public class SearchEntryFragment extends Fragment implements SearchEntryRecycler
     }
 
     private void setUpRecyclerView() {
-        List<ShoppingEntry> history = viewModel.getHistory();
+        List<EntryHistoryElement> history = viewModel.getHistory();
         adapter = new SearchEntryRecyclerViewAdapter(history,this);
         historyOfEntries.setAdapter(adapter);
         historyOfEntries.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -88,7 +89,7 @@ public class SearchEntryFragment extends Fragment implements SearchEntryRecycler
 
     @Override
     public void onEntryClick(int position) {
-        ShoppingEntry entry = adapter.getHistoryEntry(position);
+        EntryHistoryElement entry = adapter.getHistoryEntry(position);
         NavController navController = NavHostFragment.findNavController(this);
         NavDirections newEntry = SearchEntryFragmentDirections.actionSearchEntryFragmentToNewEntryFragment(list, entry, null);
         navController.navigate(newEntry);

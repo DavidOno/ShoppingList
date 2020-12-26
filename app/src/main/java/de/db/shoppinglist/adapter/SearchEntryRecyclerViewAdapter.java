@@ -14,16 +14,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.db.shoppinglist.R;
+import de.db.shoppinglist.model.EntryHistoryElement;
 import de.db.shoppinglist.model.ShoppingEntry;
 
 public class SearchEntryRecyclerViewAdapter extends RecyclerView.Adapter<SearchEntryRecyclerViewAdapter.ViewHolder> implements Filterable {
 
-    private List<ShoppingEntry> entries;
-    private List<ShoppingEntry> allEntries;
+    private List<EntryHistoryElement> entries;
+    private List<EntryHistoryElement> allEntries;
     private OnEntryListener onEntryListener;
 
 
-    public SearchEntryRecyclerViewAdapter(List entries, OnEntryListener onEntryListener) {
+    public SearchEntryRecyclerViewAdapter(List<EntryHistoryElement> entries, OnEntryListener onEntryListener) {
         this.entries = new ArrayList<>(entries);
         this.allEntries = new ArrayList<>(entries);
         this.onEntryListener = onEntryListener;
@@ -48,7 +49,7 @@ public class SearchEntryRecyclerViewAdapter extends RecyclerView.Adapter<SearchE
         return entries.size();
     }
 
-    public ShoppingEntry getHistoryEntry(int position){
+    public EntryHistoryElement getHistoryEntry(int position){
         return entries.get(position);
     }
 
@@ -60,12 +61,12 @@ public class SearchEntryRecyclerViewAdapter extends RecyclerView.Adapter<SearchE
     private Filter historyFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            List<ShoppingEntry> filteredList = new ArrayList<>();
+            List<EntryHistoryElement> filteredList = new ArrayList<>();
             if(constraint == null || constraint.length() == 0){
                 filteredList.addAll(allEntries);
             }else{
                 String filterPattern = constraint.toString().toLowerCase().trim();
-                for(ShoppingEntry entry: allEntries){
+                for(EntryHistoryElement entry: allEntries){
                     if(entry.getName().toLowerCase().trim().contains(filterPattern)){
                         filteredList.add(entry);
                     }

@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.db.shoppinglist.model.EntryHistoryElement;
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 
@@ -24,6 +25,7 @@ public class FirebaseSource implements Source {
     public static final String FIREBASE_TAG = "FIREBASE";
     private final String listsRootKey = "Lists";
     private final String entriesKey = "Entries";
+    private final String historyKey = "History";
     private final String firebaseTag = FIREBASE_TAG;
     private final CollectionReference rootCollectionRef = FirebaseFirestore.getInstance().collection(listsRootKey);
 
@@ -176,17 +178,10 @@ public class FirebaseSource implements Source {
     }
 
     @Override
-    public List<ShoppingEntry> getHistory() {
-        List<ShoppingEntry> mock = new ArrayList<>();
-        ShoppingEntry shoppingEntry = new ShoppingEntry();
-        shoppingEntry.setName("Cyankali");
-        shoppingEntry.setDetails("Ohne Zucker");
-        shoppingEntry.setUnitOfQuantity("Kapseln");
-        mock.add(shoppingEntry);
-        ShoppingEntry shoppingEntry2 = new ShoppingEntry();
-        shoppingEntry2.setName("Brokolli");
-        shoppingEntry2.setUnitOfQuantity("Saecke");
-        mock.add(shoppingEntry2);
+    public List<EntryHistoryElement> getHistory() {
+        List<EntryHistoryElement> mock = new ArrayList<>();
+        mock.add(new EntryHistoryElement("Blubb", "Glas", null));
+        mock.add(new EntryHistoryElement("Brokolli", "Strauch", "gruen"));
         return mock;
     }
 
