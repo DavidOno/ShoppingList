@@ -1,5 +1,6 @@
 package de.db.shoppinglist.viewmodel;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
@@ -12,7 +13,7 @@ public class SearchEntryViewModel extends ViewModel {
 
     private ShoppingRepository repo = ShoppingRepository.getInstance();
 
-    public List<EntryHistoryElement> getHistory() {
+    public LiveData<List<EntryHistoryElement>> getHistory() {
         return repo.getHistory();
     }
 }

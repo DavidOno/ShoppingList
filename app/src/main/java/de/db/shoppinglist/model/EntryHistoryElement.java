@@ -79,4 +79,13 @@ public class EntryHistoryElement implements Parcelable {
     public int hashCode() {
         return Objects.hash(name, unitOfQuantity, details);
     }
+
+    @Override
+    public String toString() {
+        return "EntryHistoryElement{" +
+                "name='" + name + '\'' +
+                ", unitOfQuantity='" + unitOfQuantity + '\'' +
+                ", details='" + details + '\'' +
+                '}';
+    }
 }

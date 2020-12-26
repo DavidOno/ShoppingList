@@ -1,15 +1,17 @@
 package de.db.shoppinglist.view;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
-import androidx.appcompat.widget.SearchView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
@@ -22,7 +24,6 @@ import java.util.List;
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.adapter.SearchEntryRecyclerViewAdapter;
 import de.db.shoppinglist.model.EntryHistoryElement;
-import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.SearchEntryViewModel;
 
@@ -68,8 +69,13 @@ public class SearchEntryFragment extends Fragment implements SearchEntryRecycler
     }
 
     private void setUpRecyclerView() {
-        List<EntryHistoryElement> history = viewModel.getHistory();
-        adapter = new SearchEntryRecyclerViewAdapter(history,this);
+        LiveData<List<EntryHistoryElement>> history = viewModel.getHistory();
+        adapter = new SearchEntryRecyclerViewAdapter(history.getValue(),this);
+        history.observe(getViewLifecycleOwner(),entryHistoryElements -> {
+            adapter.setHistory(history.getValue());
+            adapter.notifyDataSetChanged();
+            Log.d("SEARCH_ENTRY", "Observed change");
+        });
         historyOfEntries.setAdapter(adapter);
         historyOfEntries.setLayoutManager(new LinearLayoutManager(getContext()));
     }

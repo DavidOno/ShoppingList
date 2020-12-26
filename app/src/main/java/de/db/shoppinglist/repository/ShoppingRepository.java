@@ -1,14 +1,24 @@
 package de.db.shoppinglist.repository;
 
+import android.util.Log;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
+import java.util.ArrayList;
+
 import java.util.List;
+import java.util.function.Consumer;
 
 import de.db.shoppinglist.database.FirebaseSource;
 import de.db.shoppinglist.database.Source;
 import de.db.shoppinglist.model.EntryHistoryElement;
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
+
+import static java.util.Collections.emptyList;
 
 public class ShoppingRepository {
 
@@ -66,7 +76,15 @@ public class ShoppingRepository {
         db.modifyWholeEntry(list, entry);
     }
 
-    public List<EntryHistoryElement> getHistory() {
-        return db.getHistory();
+    public LiveData<List<EntryHistoryElement>> getHistory() {
+        final List<EntryHistoryElement> result = new ArrayList<>();
+        MutableLiveData<List<EntryHistoryElement>> liveResult = new MutableLiveData<>(emptyList());
+        Consumer<List<EntryHistoryElement>> history = list -> {
+            result.addAll(new ArrayList<>(list));
+            liveResult.setValue(result);
+            Log.d("REPOSITORY", result.toString());
+        };
+        db.getHistory(history);
+        return liveResult;
     }
 }

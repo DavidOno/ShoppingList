@@ -8,6 +8,7 @@ import android.widget.Filterable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -84,6 +85,13 @@ public class SearchEntryRecyclerViewAdapter extends RecyclerView.Adapter<SearchE
             notifyDataSetChanged();
         }
     };
+
+    public void setHistory(List<EntryHistoryElement> history) {
+        entries.clear();
+        entries.addAll(history);
+        allEntries.clear();
+        allEntries.addAll(history);
+    }
 
     public interface OnEntryListener {
         void onEntryClick(int position);

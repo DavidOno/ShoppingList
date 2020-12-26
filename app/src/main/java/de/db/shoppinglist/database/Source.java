@@ -3,6 +3,7 @@ package de.db.shoppinglist.database;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import de.db.shoppinglist.model.EntryHistoryElement;
 import de.db.shoppinglist.model.ShoppingEntry;
@@ -30,6 +31,6 @@ public interface Source {
 
     void modifyWholeEntry(ShoppingList list, ShoppingEntry entry);
 
-    List<EntryHistoryElement> getHistory();
+    void getHistory(Consumer<List<EntryHistoryElement>> callback);
 }
 
