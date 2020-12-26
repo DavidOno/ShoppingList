@@ -37,19 +37,31 @@ public class ShoppingRepository {
     }
 
     public void addEntry(String listId, ShoppingEntry newEntry){
-        db.addEntry(listId, newEntry);
+        Runnable run = () -> {
+            db.addEntry(listId, newEntry);
+        };
+        startThread(run);
     }
 
     public void deleteEntry(String listUid, String documentUid){
-        db.deleteEntry(listUid, documentUid);
+        Runnable run = () -> {
+            db.deleteEntry(listUid, documentUid);
+        };
+        startThread(run);
     }
 
     public void addList(ShoppingList shoppingList){
-        db.addList(shoppingList);
+        Runnable run = () -> {
+            db.addList(shoppingList);
+        };
+        startThread(run);
     }
 
     public void deleteList(String listId){
-        db.deleteList(listId);
+        Runnable run = () -> {
+            db.deleteList(listId);
+        };
+        startThread(run);
     }
 
     public FirestoreRecyclerOptions<ShoppingEntry> getRecyclerViewOptions(String listId) {
@@ -61,19 +73,31 @@ public class ShoppingRepository {
     }
 
     public void updateEntryPosition(ShoppingList list, ShoppingEntry entry, int position) {
-        db.updateEntryPosition(list, entry, position);
+        Runnable run = () -> {
+            db.updateEntryPosition(list, entry, position);
+        };
+        startThread(run);
     }
 
     public void updateDoneStatus(String listId, ShoppingEntry entry) {
-        db.updateStatusDone(listId, entry);
+        Runnable run = () -> {
+            db.updateStatusDone(listId, entry);
+        };
+        startThread(run);
     }
 
     public void updateListName(ShoppingList list) {
-        db.updateListName(list);
+        Runnable run = () -> {
+            db.updateListName(list);
+        };
+        startThread(run);
     }
 
     public void modifyWholeEntry(ShoppingList list, ShoppingEntry entry) {
-        db.modifyWholeEntry(list, entry);
+        Runnable run = () -> {
+            db.modifyWholeEntry(list, entry);
+        };
+        startThread(run);
     }
 
     public LiveData<List<EntryHistoryElement>> getHistory() {
@@ -86,5 +110,10 @@ public class ShoppingRepository {
         };
         db.getHistory(history);
         return liveResult;
+    }
+
+    private void startThread(Runnable run){
+        Thread thread = new Thread(run);
+        thread.start();
     }
 }
