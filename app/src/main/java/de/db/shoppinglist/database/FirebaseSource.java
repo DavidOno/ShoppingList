@@ -15,13 +15,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
-
-import static java.util.stream.Collectors.toList;
 
 import de.db.shoppinglist.model.EntryHistoryElement;
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
+
+import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toList;
 
 public class FirebaseSource implements Source {
 
@@ -59,14 +61,24 @@ public class FirebaseSource implements Source {
     }
 
     private void addToHistory(ShoppingEntry newEntry) {
-        EntryHistoryElement historyElement = newEntry.extractHistoryElement();
-        historyRootCollectionRef.add(historyElement)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d(FIREBASE_TAG, "Success: Added to History");
-                })
-                .addOnFailureListener(e -> {
-                    Log.d(FIREBASE_TAG, e.getMessage());
-                });
+        getHistory().addOnSuccessListener(snapshots -> {
+            List<EntryHistoryElement> history = new ArrayList<>();
+            Set<EntryHistoryElement> collectedHistory = snapshots.getDocuments()
+                    .stream()
+                    .map(this::makeHistoryElement)
+                    .collect(toSet());
+            boolean contains = collectedHistory.contains(newEntry.extractHistoryElement());
+            if(!contains){
+                EntryHistoryElement historyElement = newEntry.extractHistoryElement();
+                historyRootCollectionRef.add(historyElement)
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d(FIREBASE_TAG, "Success: Added to History");
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.d(FIREBASE_TAG, e.getMessage());
+                        });
+            }
+        });
 
     }
 
@@ -210,6 +222,22 @@ public class FirebaseSource implements Source {
         }).addOnFailureListener(e -> {
             Log.d(FIREBASE_TAG, e.getMessage());
         });
+    }
+
+
+    private Task<QuerySnapshot> getHistory() {
+        return historyRootCollectionRef.get();
+//                .addOnSuccessListener(snapshots -> {
+//            List<EntryHistoryElement> history = new ArrayList<>();
+//            List<EntryHistoryElement> collectedHistory = snapshots.getDocuments()
+//                    .stream()
+//                    .map(this::makeHistoryElement)
+//                    .collect(toList());
+//            history.addAll(collectedHistory);
+//            Log.d(FIREBASE_TAG, "Success: Retrieved history");
+//        }).addOnFailureListener(e -> {
+//            Log.d(FIREBASE_TAG, e.getMessage());
+//        });
     }
 
     private EntryHistoryElement makeHistoryElement(DocumentSnapshot doc) {
