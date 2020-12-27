@@ -18,4 +18,8 @@ public class ShoppingListsViewModel extends ViewModel {
     public FirestoreRecyclerOptions<ShoppingList> getRecyclerViewOptions() {
         return repo.getShoppingListsRecyclerViewOptions();
     }
+
+    public void deleteHistory(){
+        repo.deleteHistory();
+    }
 }

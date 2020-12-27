@@ -21,4 +21,5 @@
     <string name="EditShoppingLists">Edit</string>
     <string name="SelectListForModification">Select a List for Modification</string>
     <string name="searchEntry">Search or create new entry</string>
+    <string name="deleteHistory">Delete History</string>
 </resources>

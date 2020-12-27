@@ -38,6 +38,7 @@ public class FirebaseSource implements Source {
     private static final String DETAILS_PROPERTY = "details";
     private static final String QUANTITY_PROPERTY = "quantity";
     private static final String UNIT_OF_QUANTITY_PROPERTY = "unitOfQuantity";
+    public static final String NEXT_FREE_POSITION_PROPERTY = "nextFreePosition";
     private final CollectionReference listsRootCollectionRef = FirebaseFirestore.getInstance().collection(LISTS_ROOT_KEY);
     private final CollectionReference historyRootCollectionRef = FirebaseFirestore.getInstance().collection(HISTORY_KEY);
 
@@ -55,7 +56,7 @@ public class FirebaseSource implements Source {
                     Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
                 );
         Map<String, Object> updateNextFreePosition = new HashMap<>();
-        updateNextFreePosition.put("nextFreePosition", newEntry.getPosition());
+        updateNextFreePosition.put(NEXT_FREE_POSITION_PROPERTY, newEntry.getPosition());
         listsRootCollectionRef.document(listId).update(updateNextFreePosition)
                 .addOnSuccessListener(aVoid -> {
                     updateListStatusCounter(listId);
@@ -134,7 +135,7 @@ public class FirebaseSource implements Source {
         Task<QuerySnapshot> query = listsRootCollectionRef.document(listId).collection(ENTRIES_KEY).get();
         query.addOnSuccessListener(aVoid -> {
             Objects.requireNonNull(query.getResult()).getDocuments().stream()
-                    .map(doc -> buildPath(listId, doc))
+                    .map(doc -> buildPathForShoppingDoc(listId, doc))
                     .forEach(DocumentReference::delete);
             Log.d(FIREBASE_TAG, "Success: Deleted all entries");
             deleteListOnly(listId);
@@ -236,8 +237,13 @@ public class FirebaseSource implements Source {
         return new EntryHistoryElement((String) doc.get(NAME_PROPERTY), (String) doc.get(UNIT_OF_QUANTITY_PROPERTY), (String) doc.get(DETAILS_PROPERTY));
     }
 
-    private DocumentReference buildPath(String listId, DocumentSnapshot doc) {
+    private DocumentReference buildPathForShoppingDoc(String listId, DocumentSnapshot doc) {
         return listsRootCollectionRef.document(listId).collection(ENTRIES_KEY).document(doc.getId());
+    }
+
+
+    private DocumentReference buildPathForHistoryDoc(DocumentSnapshot doc) {
+        return historyRootCollectionRef.document(doc.getId());
     }
 
     private void deleteListOnly(String listId) {
@@ -247,6 +253,17 @@ public class FirebaseSource implements Source {
 
         ).addOnFailureListener(e ->
             Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
+        );
+    }
+
+    public void deleteHistory(){
+        historyRootCollectionRef.get().addOnSuccessListener(documentSnapshots -> {
+            documentSnapshots.getDocuments().stream()
+                    .map(this::buildPathForHistoryDoc)
+                    .forEach(DocumentReference::delete);
+            Log.d(FIREBASE_TAG, "Success: Deleted History");
+        }).addOnFailureListener(e ->
+                Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
         );
     }
 }

@@ -112,6 +112,11 @@ public class ShoppingRepository {
         return liveResult;
     }
 
+    public void deleteHistory(){
+        Runnable run = () -> db.deleteHistory();
+        startThread(run);
+    }
+
     private void startThread(Runnable run){
         Thread thread = new Thread(run);
         thread.start();

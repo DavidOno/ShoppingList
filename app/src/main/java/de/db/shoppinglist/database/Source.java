@@ -11,13 +11,13 @@ import de.db.shoppinglist.model.ShoppingList;
 
 public interface Source {
 
-    public void addEntry(String listUid, ShoppingEntry entry);
+    void addEntry(String listUid, ShoppingEntry entry);
 
-    public void deleteEntry(String listUid, String documentUid);
+    void deleteEntry(String listUid, String documentUid);
 
-    public void addList(ShoppingList shoppingList);
+    void addList(ShoppingList shoppingList);
 
-    public void deleteList(String listId);
+    void deleteList(String listId);
 
     FirestoreRecyclerOptions<ShoppingEntry> getShoppingListRecyclerViewOptions(String listId);
 
@@ -32,5 +32,7 @@ public interface Source {
     void modifyWholeEntry(ShoppingList list, ShoppingEntry entry);
 
     void getHistory(Consumer<List<EntryHistoryElement>> callback);
+
+    void deleteHistory();
 }
 

@@ -100,6 +100,9 @@ public class ShoppingListsFragment extends Fragment implements FireShoppingLists
                 NavDirections modifyListsDirection = ShoppingListsFragmentDirections.actionShoppingListsFragmentToSelectShoppingListModificationFragment();
                 navController.navigate(modifyListsDirection);
                 break;
+            case R.id.Main_menu_delete_history:
+                shoppingListsViewModel.deleteHistory();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
