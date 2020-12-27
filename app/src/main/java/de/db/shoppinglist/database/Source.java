@@ -34,5 +34,7 @@ public interface Source {
     void getHistory(Consumer<List<EntryHistoryElement>> callback);
 
     void deleteHistory();
+
+    void deleteAllLists();
 }
 

@@ -121,4 +121,9 @@ public class ShoppingRepository {
         Thread thread = new Thread(run);
         thread.start();
     }
+
+    public void deleteAllLists() {
+        Runnable run = () -> db.deleteAllLists();
+        startThread(run);
+    }
 }

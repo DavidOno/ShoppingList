@@ -22,4 +22,8 @@ public class ShoppingListsViewModel extends ViewModel {
     public void deleteHistory(){
         repo.deleteHistory();
     }
+
+    public void deleteAllLists() {
+        repo.deleteAllLists();
+    }
 }

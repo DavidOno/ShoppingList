@@ -135,7 +135,7 @@ public class FirebaseSource implements Source {
         Task<QuerySnapshot> query = listsRootCollectionRef.document(listId).collection(ENTRIES_KEY).get();
         query.addOnSuccessListener(aVoid -> {
             Objects.requireNonNull(query.getResult()).getDocuments().stream()
-                    .map(doc -> buildPathForShoppingDoc(listId, doc))
+                    .map(doc -> buildPathForEntryDoc(listId, doc))
                     .forEach(DocumentReference::delete);
             Log.d(FIREBASE_TAG, "Success: Deleted all entries");
             deleteListOnly(listId);
@@ -237,7 +237,7 @@ public class FirebaseSource implements Source {
         return new EntryHistoryElement((String) doc.get(NAME_PROPERTY), (String) doc.get(UNIT_OF_QUANTITY_PROPERTY), (String) doc.get(DETAILS_PROPERTY));
     }
 
-    private DocumentReference buildPathForShoppingDoc(String listId, DocumentSnapshot doc) {
+    private DocumentReference buildPathForEntryDoc(String listId, DocumentSnapshot doc) {
         return listsRootCollectionRef.document(listId).collection(ENTRIES_KEY).document(doc.getId());
     }
 
@@ -245,6 +245,8 @@ public class FirebaseSource implements Source {
     private DocumentReference buildPathForHistoryDoc(DocumentSnapshot doc) {
         return historyRootCollectionRef.document(doc.getId());
     }
+
+
 
     private void deleteListOnly(String listId) {
         DocumentReference entryRef = listsRootCollectionRef.document(listId);
@@ -256,12 +258,25 @@ public class FirebaseSource implements Source {
         );
     }
 
+    @Override
     public void deleteHistory(){
         historyRootCollectionRef.get().addOnSuccessListener(documentSnapshots -> {
             documentSnapshots.getDocuments().stream()
                     .map(this::buildPathForHistoryDoc)
                     .forEach(DocumentReference::delete);
             Log.d(FIREBASE_TAG, "Success: Deleted History");
+        }).addOnFailureListener(e ->
+                Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
+        );
+    }
+
+    @Override
+    public void deleteAllLists() {
+        listsRootCollectionRef.get().addOnSuccessListener(documentSnapshots -> {
+            documentSnapshots.getDocuments().stream()
+                    .map(DocumentSnapshot::getId)
+                    .forEach(this::deleteList);
+            Log.d(FIREBASE_TAG, "Success: Deleted All Lists");
         }).addOnFailureListener(e ->
                 Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
         );

@@ -103,6 +103,9 @@ public class ShoppingListsFragment extends Fragment implements FireShoppingLists
             case R.id.Main_menu_delete_history:
                 shoppingListsViewModel.deleteHistory();
                 break;
+            case R.id.Main_menuItemDeleteAllLists:
+                shoppingListsViewModel.deleteAllLists();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
