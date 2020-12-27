@@ -82,9 +82,8 @@ public class ShoppingList implements Parcelable, PositionContainer {
 
     @Override
     public int getNextFreePosition() {
-        int nextFree = nextFreePosition;
         nextFreePosition++;
-        Log.d("ShoppingList", ""+nextFree);
-        return nextFree;
+        Log.d("ShoppingList", ""+nextFreePosition);
+        return nextFreePosition;
     }
 }
