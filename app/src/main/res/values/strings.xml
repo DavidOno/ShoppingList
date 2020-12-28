@@ -22,4 +22,8 @@
     <string name="SelectListForModification">Select a List for Modification</string>
     <string name="searchEntry">Search or create new entry</string>
     <string name="deleteHistory">Delete History</string>
+    <string name="Camera">From Camera</string>
+    <string name="Archive">From Archive</string>
+    <string name="take_picture">Take Picture</string>
+    <string name="Camera_persective">Camera Perspective</string>
 </resources>

@@ -8,7 +8,7 @@
     tools:context=".view.NewEntryFragment">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/new_entry_imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:srcCompat="@drawable/ic_shopping"
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:hint="Name of Product"
         android:maxLines="1"
-        android:layout_below="@id/imageView"
+        android:layout_below="@id/new_entry_imageView"
         android:layout_centerHorizontal="true"
         android:gravity="center"
         android:inputType="textCapSentences"
