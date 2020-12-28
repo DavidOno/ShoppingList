@@ -59,6 +59,9 @@
         <action
             android:id="@+id/action_newEntryFragment_to_cameraFragment"
             app:destination="@id/cameraFragment" />
+        <action
+            android:id="@+id/action_newEntryFragment_to_cameraFragmentAlt"
+            app:destination="@id/cameraFragmentAlt" />
     </fragment>
     <fragment
         android:id="@+id/modifyEntryFragment"
@@ -107,4 +110,9 @@
         android:name="de.db.shoppinglist.view.CameraFragment"
         android:label="@string/Camera_persective"
         tools:layout="@layout/fragment_camera" />
+    <fragment
+        android:id="@+id/cameraFragmentAlt"
+        android:name="de.db.shoppinglist.view.CameraFragmentAlt"
+        android:label="frament_camera_alt"
+        tools:layout="@layout/frament_camera_alt" />
 </navigation>
