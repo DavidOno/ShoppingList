@@ -1,5 +1,6 @@
 package de.db.shoppinglist.view;
 
+import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -7,6 +8,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.Manifest;
 import android.app.Activity;
@@ -21,6 +25,8 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +41,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import de.db.shoppinglist.R;
+import de.db.shoppinglist.ifc.TakenImageSVM;
 
 /**
  * Taken mainly from
@@ -50,6 +57,8 @@ public class CameraFragmentAlt2 extends Fragment {
     private Button cameraBtn;
     private Button galleryBtn;
     private String currentPhotoPath;
+    private MenuItem done;
+    private TakenImageSVM sharedViewModel;
 //    private StorageReference storageReference;
 
     @Nullable
@@ -57,7 +66,7 @@ public class CameraFragmentAlt2 extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_camera_alt2, container, false);
         findViewsById(view);
-
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(TakenImageSVM.class);
         cameraBtn.setOnClickListener(v -> askCameraPermissions());
 
         galleryBtn.setOnClickListener(v -> {
@@ -65,6 +74,12 @@ public class CameraFragmentAlt2 extends Fragment {
             startActivityForResult(gallery, GALLERY_REQUEST_CODE);
         });
         return view;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     private void findViewsById(View view) {
@@ -92,7 +107,20 @@ public class CameraFragmentAlt2 extends Fragment {
         }
     }
 
-//    private void uploadImageToFirebase(String name, Uri contentUri) {
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_done, menu);
+        MenuCompat.setGroupDividerEnabled(menu, true);
+        done = getDoneMenuItem(menu);
+        done.setEnabled(false);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private MenuItem getDoneMenuItem(Menu menu) {
+        return menu.findItem(R.id.menu_done_doneButton);
+    }
+
+    //    private void uploadImageToFirebase(String name, Uri contentUri) {
 //        final StorageReference image = storageReference.child("pictures/" + name);
 //        image.putFile(contentUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
 //            @Override
@@ -119,9 +147,10 @@ public class CameraFragmentAlt2 extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
-            case 0:
-//                Drawable drawable = selectedImage.getDrawable();
-//                selectedImage.setImageDrawable(drawable);
+            case R.id.menu_done_doneButton:
+                sharedViewModel.setImageLiveData(selectedImage.getDrawable());
+                NavController navController = NavHostFragment.findNavController(this);
+                navController.navigateUp();
                 break;
 
         }
@@ -131,7 +160,7 @@ public class CameraFragmentAlt2 extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode == CAMERA_REQUEST_CODE){
-            if(resultCode == Activity.RESULT_OK){
+            if(resultCode == Activity.RESULT_OK && data !=  null){
                 File f = new File(currentPhotoPath);
                 selectedImage.setImageURI(Uri.fromFile(f));
                 Log.d("tag", "ABsolute Url of Image is " + Uri.fromFile(f));
@@ -140,19 +169,23 @@ public class CameraFragmentAlt2 extends Fragment {
                 Uri contentUri = Uri.fromFile(f);
                 mediaScanIntent.setData(contentUri);
                 getActivity().sendBroadcast(mediaScanIntent);
-
+                done.setEnabled(true);
 //                uploadImageToFirebase(f.getName(),contentUri);
+            }else{
+                done.setEnabled(false);
             }
         }
         if(requestCode == GALLERY_REQUEST_CODE){
-            if(resultCode == Activity.RESULT_OK){
+            if(resultCode == Activity.RESULT_OK && data != null){
                 Uri contentUri = data.getData();
                 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
                 String imageFileName = "JPEG_" + timeStamp +"."+getFileExt(contentUri);
                 Log.d("tag", "onActivityResult: Gallery Image Uri:  " +  imageFileName);
                 selectedImage.setImageURI(contentUri);
-
+                done.setEnabled(true);
 //                uploadImageToFirebase(imageFileName,contentUri);
+            }else{
+                done.setEnabled(false);
             }
         }
     }

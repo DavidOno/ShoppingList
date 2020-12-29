@@ -1,26 +1,18 @@
 package de.db.shoppinglist.view;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.hardware.Camera;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,10 +22,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.ifc.TakenImageSVM;
@@ -67,38 +55,17 @@ public class NewEntryFragment extends Fragment {
         }else{
             nameOfProductEditText.setText(entryName);
         }
-        image.setOnClickListener(v -> inflatePopupMenu());
+        image.setOnClickListener(v -> navigateToTakeImage());
         takenImageSVM.getImageLiveData().observe(getViewLifecycleOwner(), takenImage -> {
-            ByteBuffer buffer = takenImage.getPlanes()[0].getBuffer();
-            byte[] bytes = new byte[buffer.capacity()];
-            buffer.get(bytes);
-            Bitmap bitmapImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, null);
-            image.setImageBitmap(bitmapImage);
+            image.setImageDrawable(takenImage);
         });
         return view;
     }
 
-    private void inflatePopupMenu() {
-        PopupMenu popup = new PopupMenu(getContext(), image);
-        popup.getMenuInflater()
-                .inflate(R.menu.popup_menu, popup.getMenu());
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.Camera:
-                        NavController navController = NavHostFragment.findNavController(NewEntryFragment.this);
-                        NavDirections navDirections = NewEntryFragmentDirections.actionNewEntryFragmentToCameraFragmentAlt2();
-                        navController.navigate(navDirections);
-                        break;
-                    case R.id.Archive: break;
-
-                }
-
-                return true;
-            }
-        });
-
-        popup.show();
+    private void navigateToTakeImage() {
+        NavController navController = NavHostFragment.findNavController(NewEntryFragment.this);
+        NavDirections navDirections = NewEntryFragmentDirections.actionNewEntryFragmentToCameraFragmentAlt2();
+        navController.navigate(navDirections);
     }
 
     @Override
@@ -172,6 +139,7 @@ public class NewEntryFragment extends Fragment {
         String nameOfProduct = getString(nameOfProductEditText);
         String details = getString(detailsEditText);
         viewModel.addNewEntry(list, quantity, unitOfQuantity, nameOfProduct, details);
+        takenImageSVM.freeImage();
         closeFragment();
     }
 

@@ -182,8 +182,8 @@ public class CameraFragment extends Fragment {
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(ImageReader reader) {
-                    Image image = reader.acquireNextImage();
-                    new ViewModelProvider(requireActivity()).get(TakenImageSVM.class).setImageLiveData(image);
+//                    Image image = reader.acquireNextImage();
+//                    new ViewModelProvider(requireActivity()).get(TakenImageSVM.class).setImageLiveData(image);
                 }
             };
             reader.setOnImageAvailableListener(readerListener, mBackgroundHandler);
