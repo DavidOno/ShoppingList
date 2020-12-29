@@ -2,6 +2,8 @@ package de.db.shoppinglist.view;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -31,8 +33,10 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import de.db.shoppinglist.R;
+import de.db.shoppinglist.ifc.TakenImageSVM;
 import de.db.shoppinglist.model.EntryHistoryElement;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.NewEntryViewModel;
@@ -49,6 +53,7 @@ public class NewEntryFragment extends Fragment {
     private EntryHistoryElement entry;
     private String entryName;
     private NewEntryViewModel viewModel;
+    private TakenImageSVM takenImageSVM;
 
     @Nullable
     @Override
@@ -63,6 +68,13 @@ public class NewEntryFragment extends Fragment {
             nameOfProductEditText.setText(entryName);
         }
         image.setOnClickListener(v -> inflatePopupMenu());
+        takenImageSVM.getImageLiveData().observe(getViewLifecycleOwner(), takenImage -> {
+            ByteBuffer buffer = takenImage.getPlanes()[0].getBuffer();
+            byte[] bytes = new byte[buffer.capacity()];
+            buffer.get(bytes);
+            Bitmap bitmapImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, null);
+            image.setImageBitmap(bitmapImage);
+        });
         return view;
     }
 
@@ -72,15 +84,16 @@ public class NewEntryFragment extends Fragment {
                 .inflate(R.menu.popup_menu, popup.getMenu());
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
-                Toast.makeText(
-                        getContext(),
-                        "You Clicked : " + item.getTitle(),
-                        Toast.LENGTH_SHORT
-                ).show();
-//                handleCamera();
-                NavController navController = NavHostFragment.findNavController(NewEntryFragment.this);
-                NavDirections navDirections = NewEntryFragmentDirections.actionNewEntryFragmentToCameraFragment();
-                navController.navigate(navDirections);
+                switch (item.getItemId()){
+                    case R.id.Camera:
+                        NavController navController = NavHostFragment.findNavController(NewEntryFragment.this);
+                        NavDirections navDirections = NewEntryFragmentDirections.actionNewEntryFragmentToCameraFragmentAlt2();
+                        navController.navigate(navDirections);
+                        break;
+                    case R.id.Archive: break;
+
+                }
+
                 return true;
             }
         });
@@ -88,84 +101,13 @@ public class NewEntryFragment extends Fragment {
         popup.show();
     }
 
-//    /** Check if this device has a camera */
-//    private boolean checkCameraHardware(Context context) {
-//        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
-//            // this device has a camera
-//            return true;
-//        } else {
-//            // no camera on this device
-//            return false;
-//        }
-//    }
-//
-//    /** A safe way to get an instance of the Camera object. */
-//    public static Camera getCameraInstance(){
-//        Camera c = null;
-//        try {
-//            c = Camera.open(); // attempt to get a Camera instance
-//        }
-//        catch (Exception e){
-//            // Camera is not available (in use or does not exist)
-//        }
-//        return c; // returns null if camera is unavailable
-//    }
-//
-//
-//
-//    private void handleCamera() {
-//        android.graphics.Camera camera = android.graphics.Camera.
-//    }
-
-//    public void takePictureNoPreview(Context context) throws IOException {
-//        // open back facing camera by default
-//        Camera myCamera = Camera.open();
-//
-//        if (myCamera != null) {
-//            try {
-//                //set camera parameters if you want to
-//                //...
-//
-//                // here, the unused surface view and holder
-//                SurfaceView dummy = new SurfaceView(context)
-//                myCamera.setPreviewDisplay(dummy.getHolder());
-//                myCamera.startPreview();
-//
-//                myCamera.takePicture(null, null, getJpegCallback());
-//
-//            } finally {
-//                myCamera.close();
-//            }
-//
-//        } else {
-//            //booo, failed!
-//        }
-//    }
-//
-//        private Camera.PictureCallback getJpegCallback () {
-//            Camera.PictureCallback jpeg = new Camera.PictureCallback() {
-//                @Override
-//                public void onPictureTaken(byte[] data, Camera camera) {
-//                    FileOutputStream fos;
-//                    try {
-//                        fos = new FileOutputStream("test.jpeg");
-//                        fos.write(data);
-//                        fos.close();
-//                    } catch (IOException e) {
-//                        //do something about it
-//                    }
-//                }
-//            };
-//            return null;
-//        }
-
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         handleNavigationArguments();
         viewModel = new ViewModelProvider(requireActivity()).get(NewEntryViewModel.class);
+        takenImageSVM = new ViewModelProvider(requireActivity()).get(TakenImageSVM.class);
     }
 
     private void handleNavigationArguments() {
