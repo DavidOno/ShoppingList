@@ -106,22 +106,12 @@
             app:argType="de.db.shoppinglist.model.ShoppingList" />
     </fragment>
     <fragment
-        android:id="@+id/cameraFragment"
-        android:name="de.db.shoppinglist.view.CameraFragment"
-        android:label="@string/Camera_persective"
-        tools:layout="@layout/fragment_camera" />
-    <fragment
-        android:id="@+id/cameraFragmentAlt"
-        android:name="de.db.shoppinglist.view.CameraFragmentAlt"
-        android:label="frament_camera_alt"
-        tools:layout="@layout/frament_camera_alt" />
-    <fragment
         android:id="@+id/cameraFragmentAlt2"
         android:name="de.db.shoppinglist.view.TakeImageFragment"
         android:label="fragment_camera_alt2"
-        tools:layout="@layout/fragment_take_image" />
+        tools:layout="@string/ChooseImage" />
     <fragment
         android:id="@+id/modifyTakeImageFragment"
         android:name="de.db.shoppinglist.view.ModifyTakeImageFragment"
-        android:label="ModifyTakeImageFragment" />
+        android:label="@string/ModifyImage" />
 </navigation>

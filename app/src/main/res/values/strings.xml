@@ -26,4 +26,6 @@
     <string name="Archive">From Archive</string>
     <string name="take_picture">Take Picture</string>
     <string name="Camera_persective">Camera Perspective</string>
+    <string name="ChooseImage">Choose an image</string>
+    <string name="ModifyImage">Modify Image</string>
 </resources>
