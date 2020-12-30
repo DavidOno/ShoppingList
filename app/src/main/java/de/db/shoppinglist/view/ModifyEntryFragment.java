@@ -1,6 +1,7 @@
 package de.db.shoppinglist.view;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,6 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,6 +26,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -40,6 +43,7 @@ public class ModifyEntryFragment extends Fragment {
     private EditText unitOfQuantityEditText;
     private EditText detailsEditText;
     private CheckBox doneCheckbox;
+    private ImageView imageView;
     private ShoppingList list;
     private Button deleteButton;
     private String entryId;
@@ -93,8 +97,15 @@ public class ModifyEntryFragment extends Fragment {
         unitOfQuantityEditText.setText(entry.getUnitOfQuantity());
         detailsEditText.setText(entry.getDetails());
         doneCheckbox.setChecked(entry.isDone());
-        
+        setImage(entry);
         handleDoneChecked();
+    }
+
+    private void setImage(ShoppingEntry entry) {
+        if(entry.getImageURI() != null && !entry.getImageURI().isEmpty())
+            Glide.with(getContext())
+                    .load(entry.getImageURI())
+                    .into(imageView);
     }
 
     private void handleDoneChecked() {
@@ -203,5 +214,6 @@ public class ModifyEntryFragment extends Fragment {
         detailsEditText = view.findViewById(R.id.modify_entry_detailsEditText);
         doneCheckbox = view.findViewById(R.id.modify_entry_done_checkbox);
         deleteButton = view.findViewById(R.id.modify_entry_deleteButton);
+        imageView = view.findViewById(R.id.modify_entry_imageView);
     }
 }

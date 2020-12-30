@@ -313,7 +313,9 @@ public class FirebaseSource implements Source {
         final StorageReference image = buildStorageReference();
         image.putFile(imageURI)
                 .addOnSuccessListener(taskSnapshot -> image.getDownloadUrl()
-                        .addOnSuccessListener(imageURI1 -> updateImage(listName, entryName, image.getDownloadUrl().toString())))
+                        .addOnSuccessListener(imageURI1 -> {
+                            updateImage(listName, entryName, imageURI1.toString());
+                        }))
                 .addOnFailureListener(e -> Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
         );
     }

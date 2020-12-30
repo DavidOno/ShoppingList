@@ -147,7 +147,6 @@ public class CameraFragmentAlt2 extends Fragment {
                 mediaScanIntent.setData(contentUri);
                 getActivity().sendBroadcast(mediaScanIntent);
                 done.setEnabled(true);
-//                uploadImageToFirebase(f.getName(),contentUri);
             }else{
                 done.setEnabled(false);
             }
@@ -160,7 +159,6 @@ public class CameraFragmentAlt2 extends Fragment {
                 Log.d("tag", "onActivityResult: Gallery Image Uri:  " +  imageFileName);
                 selectedImage.setImageURI(contentUri);
                 done.setEnabled(true);
-//                uploadImageToFirebase(imageFileName,contentUri);
             }else{
                 done.setEnabled(false);
             }
