@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class ShoppingEntry implements Parcelable, PositionAware {
@@ -150,5 +151,23 @@ public class ShoppingEntry implements Parcelable, PositionAware {
         return new EntryHistoryElement(name, unitOfQuantity, details);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ShoppingEntry that = (ShoppingEntry) o;
+        return Float.compare(that.quantity, quantity) == 0 &&
+                done == that.done &&
+                position == that.position &&
+                Objects.equals(unitOfQuantity, that.unitOfQuantity) &&
+                name.equals(that.name) &&
+                Objects.equals(details, that.details) &&
+                uid.equals(that.uid) &&
+                Objects.equals(imageURI, that.imageURI);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(quantity, unitOfQuantity, done, name, details, uid, position, imageURI);
+    }
 }

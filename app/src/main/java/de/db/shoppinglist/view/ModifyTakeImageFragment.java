@@ -1,16 +1,5 @@
 package de.db.shoppinglist.view;
 
-import androidx.core.view.MenuCompat;
-import androidx.fragment.app.Fragment;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -32,21 +21,28 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.core.view.MenuCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+
+import com.bumptech.glide.Glide;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.ifc.TakenImageSVM;
+import de.db.shoppinglist.ifc.ModifyTakenImageSVM;
 
-/**
- * Taken mainly from
- * https://github.com/bikashthapa01/basic-camera-app-android/blob/master/app/src/main/java/net/smallacademy/cameraandgallery/MainActivity.java
- * and adapted.
- */
-public class CameraFragmentAlt2 extends Fragment {
-
+public class ModifyTakeImageFragment extends Fragment {
     public static final int CAMERA_PERM_CODE = 101;
     public static final int CAMERA_REQUEST_CODE = 102;
     public static final int GALLERY_REQUEST_CODE = 105;
@@ -55,29 +51,39 @@ public class CameraFragmentAlt2 extends Fragment {
     private Button galleryBtn;
     private String currentPhotoPath;
     private MenuItem done;
-    private TakenImageSVM sharedViewModel;
+    private ModifyTakenImageSVM modifyTakenImageSVM;
     private Uri contentUri;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_camera_alt2, container, false);
+        View view = inflater.inflate(R.layout.fragment_take_image, container, false);
         findViewsById(view);
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(TakenImageSVM.class);
-        selectedImage.setImageDrawable(sharedViewModel.getImageLiveData().getValue());
+
+        setImage();
         cameraBtn.setOnClickListener(v -> askCameraPermissions());
 
         galleryBtn.setOnClickListener(v -> {
-            Intent gallery = new Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(gallery, GALLERY_REQUEST_CODE);
         });
         return view;
+    }
+
+    private void setImage() {
+        Uri modifyTakenImageUri = modifyTakenImageSVM.getImageLiveData().getValue();
+        if(modifyTakenImageUri != null){
+            Glide.with(getContext())
+                    .load(modifyTakenImageUri)
+                    .into(selectedImage);
+        }
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        modifyTakenImageSVM = new ViewModelProvider(requireActivity()).get(ModifyTakenImageSVM.class);
     }
 
     private void findViewsById(View view) {
@@ -118,14 +124,11 @@ public class CameraFragmentAlt2 extends Fragment {
         return menu.findItem(R.id.menu_done_doneButton);
     }
 
-
-
-
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_done_doneButton:
-                sharedViewModel.setImage(selectedImage.getDrawable(), contentUri);
+                modifyTakenImageSVM.setImage(contentUri);
                 NavController navController = NavHostFragment.findNavController(this);
                 navController.navigateUp();
                 break;
@@ -198,4 +201,6 @@ public class CameraFragmentAlt2 extends Fragment {
             }
         }
     }
+
+
 }

@@ -15,6 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
@@ -58,13 +59,12 @@ public class NewEntryFragment extends Fragment {
         }
         image.setOnClickListener(v -> navigateToTakeImage());
         takenImageSVM.getImageLiveData().observe(getViewLifecycleOwner(), takenImage -> {
-            image.setImageDrawable(takenImage);
+            image.setImageURI(takenImage);
         });
         return view;
     }
 
     private void navigateToTakeImage() {
-        takenImageSVM.setImage(image.getDrawable(), null);
         NavController navController = NavHostFragment.findNavController(NewEntryFragment.this);
         NavDirections navDirections = NewEntryFragmentDirections.actionNewEntryFragmentToCameraFragmentAlt2();
         navController.navigate(navDirections);
@@ -77,6 +77,16 @@ public class NewEntryFragment extends Fragment {
         handleNavigationArguments();
         viewModel = new ViewModelProvider(requireActivity()).get(NewEntryViewModel.class);
         takenImageSVM = new ViewModelProvider(requireActivity()).get(TakenImageSVM.class);
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                takenImageSVM.reset();
+                NavController navController = NavHostFragment.findNavController(NewEntryFragment.this);
+                navController.navigateUp();
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+
     }
 
     private void handleNavigationArguments() {
@@ -140,7 +150,7 @@ public class NewEntryFragment extends Fragment {
         String unitOfQuantity = getString(unitOfQuantityEditText);
         String nameOfProduct = getString(nameOfProductEditText);
         String details = getString(detailsEditText);
-        Uri imageUri = takenImageSVM.getImageUri();
+        Uri imageUri = takenImageSVM.getImageLiveData().getValue();
         viewModel.addNewEntry(list, quantity, unitOfQuantity, nameOfProduct, details, imageUri);
         takenImageSVM.reset();
         closeFragment();

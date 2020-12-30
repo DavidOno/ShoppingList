@@ -57,12 +57,6 @@
             app:argType="string"
             app:nullable="true" />
         <action
-            android:id="@+id/action_newEntryFragment_to_cameraFragment"
-            app:destination="@id/cameraFragment" />
-        <action
-            android:id="@+id/action_newEntryFragment_to_cameraFragmentAlt"
-            app:destination="@id/cameraFragmentAlt" />
-        <action
             android:id="@+id/action_newEntryFragment_to_cameraFragmentAlt2"
             app:destination="@id/cameraFragmentAlt2" />
     </fragment>
@@ -77,6 +71,9 @@
         <argument
             android:name="list"
             app:argType="de.db.shoppinglist.model.ShoppingList" />
+        <action
+            android:id="@+id/action_modifyEntryFragment_to_modifyTakeImageFragment"
+            app:destination="@id/modifyTakeImageFragment" />
     </fragment>
     <fragment
         android:id="@+id/selectShoppingListModificationFragment"
@@ -120,7 +117,11 @@
         tools:layout="@layout/frament_camera_alt" />
     <fragment
         android:id="@+id/cameraFragmentAlt2"
-        android:name="de.db.shoppinglist.view.CameraFragmentAlt2"
+        android:name="de.db.shoppinglist.view.TakeImageFragment"
         android:label="fragment_camera_alt2"
-        tools:layout="@layout/fragment_camera_alt2" />
+        tools:layout="@layout/fragment_take_image" />
+    <fragment
+        android:id="@+id/modifyTakeImageFragment"
+        android:name="de.db.shoppinglist.view.ModifyTakeImageFragment"
+        android:label="ModifyTakeImageFragment" />
 </navigation>

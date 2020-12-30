@@ -16,7 +16,10 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcherOwner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,13 +27,14 @@ import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import de.db.shoppinglist.R;
+import de.db.shoppinglist.ifc.ModifyTakenImageSVM;
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.ModifyEntryViewModel;
@@ -49,6 +53,7 @@ public class ModifyEntryFragment extends Fragment {
     private String entryId;
     private ShoppingEntry entry;
     private ModifyEntryViewModel viewModel;
+    private ModifyTakenImageSVM takenImageSVM;
 
     @Nullable
     @Override
@@ -61,12 +66,34 @@ public class ModifyEntryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        entry = ModifyEntryFragmentArgs.fromBundle(getArguments()).getEntry();
-        initFields(entry);
-        entryId = getDocumentId(entry);
+        initFields();
+        entryId = getDocumentId();
         setUpViewModel();
         setTitle();
+        imageView.setOnClickListener(v -> modifyImage());
         deleteButton.setOnClickListener(v -> deleteEntryAndFinish());
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                takenImageSVM.reset();
+                NavController navController = NavHostFragment.findNavController(ModifyEntryFragment.this);
+                navController.navigateUp();
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+    }
+
+
+    private void modifyImage() {
+        setImageAsArgument();
+        NavController navController = NavHostFragment.findNavController(this);
+        NavDirections modifyImageDirection = ModifyEntryFragmentDirections.actionModifyEntryFragmentToModifyTakeImageFragment();
+        navController.navigate(modifyImageDirection);
+    }
+
+    private void setImageAsArgument() {
+        if(entry.getImageURI() != null && !entry.getImageURI().isEmpty())
+            takenImageSVM.setImage(Uri.parse(entry.getImageURI()));
     }
 
     private void setTitle() {
@@ -86,26 +113,46 @@ public class ModifyEntryFragment extends Fragment {
         viewModel.deleteEntry(list.getUid(), entryId);
     }
 
-    private String getDocumentId(ShoppingEntry entry) {
+    private String getDocumentId() {
         return entry.getUid();
     }
 
 
-    private void initFields(ShoppingEntry entry) {
+    private void initFields() {
         nameOfProductEditText.setText(entry.getName());
         quantityEditText.setText(String.valueOf(entry.getQuantity()));
         unitOfQuantityEditText.setText(entry.getUnitOfQuantity());
         detailsEditText.setText(entry.getDetails());
         doneCheckbox.setChecked(entry.isDone());
-        setImage(entry);
+        setImage();
         handleDoneChecked();
     }
 
-    private void setImage(ShoppingEntry entry) {
-        if(entry.getImageURI() != null && !entry.getImageURI().isEmpty())
+    private void setImage() {
+        if(isUriValid()){
+            imageView.setImageURI(takenImageSVM.getImageLiveData().getValue());
+            Toast.makeText(getContext(), "Using SVM-Uri", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(isDownloadLinkValid()) {
             Glide.with(getContext())
                     .load(entry.getImageURI())
+                    .skipMemoryCache(false)
                     .into(imageView);
+            Toast.makeText(getContext(), "Downloading image", Toast.LENGTH_SHORT).show();
+            return;
+        }
+    }
+
+    private boolean isUriValid() {
+        boolean hasContent =  takenImageSVM.getImageLiveData().getValue() != null && !takenImageSVM.getImageLiveData().getValue().toString().isEmpty();
+        if(hasContent)
+            return !takenImageSVM.getImageLiveData().getValue().toString().startsWith("https");
+        return false;
+    }
+
+    private boolean isDownloadLinkValid() {
+        return entry.getImageURI() != null && !entry.getImageURI().isEmpty() && entry.getImageURI().startsWith("https");
     }
 
     private void handleDoneChecked() {
@@ -120,6 +167,8 @@ public class ModifyEntryFragment extends Fragment {
         setHasOptionsMenu(true);
         ModifyEntryFragmentArgs modifyEntryFragmentArgs = ModifyEntryFragmentArgs.fromBundle(getArguments());
         list = modifyEntryFragmentArgs.getList();
+        entry = modifyEntryFragmentArgs.getEntry();
+        takenImageSVM = new ViewModelProvider(requireActivity()).get(ModifyTakenImageSVM.class);
     }
 
     @Override
@@ -179,6 +228,7 @@ public class ModifyEntryFragment extends Fragment {
         boolean done = doneCheckbox.isChecked();
         setValues(quantity, unitOfQuantity, nameOfProduct, details, done);
         viewModel.modifyEntry(list, entry);
+        takenImageSVM.reset();
         closeFragment();
     }
 

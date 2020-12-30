@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import de.db.shoppinglist.model.EntryHistoryElement;
@@ -60,7 +61,9 @@ public class FirebaseSource implements Source {
                 .addOnSuccessListener(aVoid -> {
                     updateListStatusCounter(listId);
                     addToHistory(newEntry);
-                    uploadImage(listId, newEntry.getUid(), uploadImageURI);
+                    if(uploadImageURI != null) {
+                        uploadImage(listId, newEntry.getUid(), uploadImageURI);
+                    }
                     Log.d(FIREBASE_TAG, "Success: Added Entry");
                 })
                 .addOnFailureListener(e ->
@@ -294,7 +297,7 @@ public class FirebaseSource implements Source {
     }
 
     private StorageReference buildStorageReference(){
-       return FirebaseStorage.getInstance().getReference(IMAGE_STORAGE_KEY);
+       return FirebaseStorage.getInstance().getReference(IMAGE_STORAGE_KEY+"/"+UUID.randomUUID());
     }
 
     private void updateImage(String listName, String entryName, String imageURI){
@@ -310,11 +313,13 @@ public class FirebaseSource implements Source {
 
     @Override
     public void uploadImage(String listName, String entryName, Uri imageURI) {
+        long start = System.currentTimeMillis();
         final StorageReference image = buildStorageReference();
         image.putFile(imageURI)
                 .addOnSuccessListener(taskSnapshot -> image.getDownloadUrl()
                         .addOnSuccessListener(imageURI1 -> {
                             updateImage(listName, entryName, imageURI1.toString());
+                            Log.d(FIREBASE_TAG, "TIME: "+(System.currentTimeMillis() - start));
                         }))
                 .addOnFailureListener(e -> Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
         );
