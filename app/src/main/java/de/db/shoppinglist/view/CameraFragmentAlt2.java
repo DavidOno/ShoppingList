@@ -4,7 +4,6 @@ import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -17,8 +16,6 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -59,7 +56,7 @@ public class CameraFragmentAlt2 extends Fragment {
     private String currentPhotoPath;
     private MenuItem done;
     private TakenImageSVM sharedViewModel;
-//    private StorageReference storageReference;
+    private Uri contentUri;
 
     @Nullable
     @Override
@@ -67,6 +64,7 @@ public class CameraFragmentAlt2 extends Fragment {
         View view = inflater.inflate(R.layout.fragment_camera_alt2, container, false);
         findViewsById(view);
         sharedViewModel = new ViewModelProvider(requireActivity()).get(TakenImageSVM.class);
+        selectedImage.setImageDrawable(sharedViewModel.getImageLiveData().getValue());
         cameraBtn.setOnClickListener(v -> askCameraPermissions());
 
         galleryBtn.setOnClickListener(v -> {
@@ -120,35 +118,14 @@ public class CameraFragmentAlt2 extends Fragment {
         return menu.findItem(R.id.menu_done_doneButton);
     }
 
-    //    private void uploadImageToFirebase(String name, Uri contentUri) {
-//        final StorageReference image = storageReference.child("pictures/" + name);
-//        image.putFile(contentUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//            @Override
-//            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                image.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                    @Override
-//                    public void onSuccess(Uri uri) {
-//                        Log.d("tag", "onSuccess: Uploaded Image URl is " + uri.toString());
-//                    }
-//                });
-//
-//                Toast.makeText(MainActivity.this, "Image Is Uploaded.", Toast.LENGTH_SHORT).show();
-//            }
-//        }).addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception e) {
-//                Toast.makeText(MainActivity.this, "Upload Failled.", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//
-//    }
+
 
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_done_doneButton:
-                sharedViewModel.setImageLiveData(selectedImage.getDrawable());
+                sharedViewModel.setImage(selectedImage.getDrawable(), contentUri);
                 NavController navController = NavHostFragment.findNavController(this);
                 navController.navigateUp();
                 break;
@@ -166,7 +143,7 @@ public class CameraFragmentAlt2 extends Fragment {
                 Log.d("tag", "ABsolute Url of Image is " + Uri.fromFile(f));
 
                 Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                Uri contentUri = Uri.fromFile(f);
+                contentUri = Uri.fromFile(f);
                 mediaScanIntent.setData(contentUri);
                 getActivity().sendBroadcast(mediaScanIntent);
                 done.setEnabled(true);
@@ -177,9 +154,9 @@ public class CameraFragmentAlt2 extends Fragment {
         }
         if(requestCode == GALLERY_REQUEST_CODE){
             if(resultCode == Activity.RESULT_OK && data != null){
-                Uri contentUri = data.getData();
+                contentUri = data.getData();
                 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                String imageFileName = "JPEG_" + timeStamp +"."+getFileExt(contentUri);
+                String imageFileName = "JPEG_" + timeStamp +"."+getFileExt();
                 Log.d("tag", "onActivityResult: Gallery Image Uri:  " +  imageFileName);
                 selectedImage.setImageURI(contentUri);
                 done.setEnabled(true);
@@ -190,7 +167,7 @@ public class CameraFragmentAlt2 extends Fragment {
         }
     }
 
-    private String getFileExt(Uri contentUri) {
+    private String getFileExt() {
         ContentResolver c = getActivity().getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(c.getType(contentUri));

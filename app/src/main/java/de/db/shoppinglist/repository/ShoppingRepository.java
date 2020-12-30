@@ -1,5 +1,6 @@
 package de.db.shoppinglist.repository;
 
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -36,9 +37,9 @@ public class ShoppingRepository {
         return instance;
     }
 
-    public void addEntry(String listId, ShoppingEntry newEntry){
+    public void addEntry(String listId, ShoppingEntry newEntry, Uri uploadImageUri){
         Runnable run = () -> {
-            db.addEntry(listId, newEntry);
+            db.addEntry(listId, newEntry, uploadImageUri);
         };
         startThread(run);
     }
@@ -124,6 +125,11 @@ public class ShoppingRepository {
 
     public void deleteAllLists() {
         Runnable run = () -> db.deleteAllLists();
+        startThread(run);
+    }
+
+    private void uploadImage(String listName, String entryName, Uri imageUri){
+        Runnable run = () -> db.uploadImage(listName, entryName, imageUri);
         startThread(run);
     }
 }

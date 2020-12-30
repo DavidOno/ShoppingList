@@ -1,8 +1,13 @@
 package de.db.shoppinglist.database;
 
+import android.net.Uri;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -10,6 +15,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,17 +47,20 @@ public class FirebaseSource implements Source {
     private static final String QUANTITY_PROPERTY = "quantity";
     private static final String UNIT_OF_QUANTITY_PROPERTY = "unitOfQuantity";
     public static final String NEXT_FREE_POSITION_PROPERTY = "nextFreePosition";
+    public static final String IMAGE_STORAGE_KEY = "uploads";
+    private static final String IMAGE_URI_PROPERTY = "imageURI";
     private final CollectionReference listsRootCollectionRef = FirebaseFirestore.getInstance().collection(LISTS_ROOT_KEY);
     private final CollectionReference historyRootCollectionRef = FirebaseFirestore.getInstance().collection(HISTORY_KEY);
 
 
     @Override
-    public void addEntry(String listId, ShoppingEntry newEntry) {
+    public void addEntry(String listId, ShoppingEntry newEntry, Uri uploadImageURI) {
         DocumentReference newEntryRef = listsRootCollectionRef.document(listId).collection(ENTRIES_KEY).document(newEntry.getUid());
         newEntryRef.set(newEntry)
                 .addOnSuccessListener(aVoid -> {
                     updateListStatusCounter(listId);
                     addToHistory(newEntry);
+                    uploadImage(listId, newEntry.getUid(), uploadImageURI);
                     Log.d(FIREBASE_TAG, "Success: Added Entry");
                 })
                 .addOnFailureListener(e ->
@@ -279,6 +290,31 @@ public class FirebaseSource implements Source {
             Log.d(FIREBASE_TAG, "Success: Deleted All Lists");
         }).addOnFailureListener(e ->
                 Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
+        );
+    }
+
+    private StorageReference buildStorageReference(){
+       return FirebaseStorage.getInstance().getReference(IMAGE_STORAGE_KEY);
+    }
+
+    private void updateImage(String listName, String entryName, String imageURI){
+        Map<String, Object> updateImageMap = new HashMap<>();
+        updateImageMap.put(IMAGE_URI_PROPERTY, imageURI);
+        listsRootCollectionRef.document(listName).collection(ENTRIES_KEY).document(entryName).update(updateImageMap).addOnSuccessListener(aVoid ->
+                Log.d(FIREBASE_TAG, "Success: Updated Image")
+
+        ).addOnFailureListener(e ->
+                Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
+        );
+    }
+
+    @Override
+    public void uploadImage(String listName, String entryName, Uri imageURI) {
+        final StorageReference image = buildStorageReference();
+        image.putFile(imageURI)
+                .addOnSuccessListener(taskSnapshot -> image.getDownloadUrl()
+                        .addOnSuccessListener(imageURI1 -> updateImage(listName, entryName, image.getDownloadUrl().toString())))
+                .addOnFailureListener(e -> Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
         );
     }
 }

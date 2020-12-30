@@ -1,6 +1,7 @@
 package de.db.shoppinglist.view;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -63,6 +64,7 @@ public class NewEntryFragment extends Fragment {
     }
 
     private void navigateToTakeImage() {
+        takenImageSVM.setImage(image.getDrawable(), null);
         NavController navController = NavHostFragment.findNavController(NewEntryFragment.this);
         NavDirections navDirections = NewEntryFragmentDirections.actionNewEntryFragmentToCameraFragmentAlt2();
         navController.navigate(navDirections);
@@ -138,8 +140,9 @@ public class NewEntryFragment extends Fragment {
         String unitOfQuantity = getString(unitOfQuantityEditText);
         String nameOfProduct = getString(nameOfProductEditText);
         String details = getString(detailsEditText);
-        viewModel.addNewEntry(list, quantity, unitOfQuantity, nameOfProduct, details);
-        takenImageSVM.freeImage();
+        Uri imageUri = takenImageSVM.getImageUri();
+        viewModel.addNewEntry(list, quantity, unitOfQuantity, nameOfProduct, details, imageUri);
+        takenImageSVM.reset();
         closeFragment();
     }
 

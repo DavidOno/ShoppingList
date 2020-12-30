@@ -1,5 +1,7 @@
 package de.db.shoppinglist.database;
 
+import android.net.Uri;
+
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
 import java.util.List;
@@ -11,7 +13,7 @@ import de.db.shoppinglist.model.ShoppingList;
 
 public interface Source {
 
-    void addEntry(String listUid, ShoppingEntry entry);
+    void addEntry(String listUid, ShoppingEntry entry, Uri uploadImageUri);
 
     void deleteEntry(String listUid, String documentUid);
 
@@ -36,5 +38,7 @@ public interface Source {
     void deleteHistory();
 
     void deleteAllLists();
+
+    void uploadImage(String listName, String entryName, Uri imageURI);
 }
 

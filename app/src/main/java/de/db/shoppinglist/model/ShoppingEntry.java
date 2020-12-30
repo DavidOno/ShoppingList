@@ -1,5 +1,6 @@
 package de.db.shoppinglist.model;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -14,6 +15,7 @@ public class ShoppingEntry implements Parcelable, PositionAware {
     private String details;
     private String uid;
     private int position = -1;
+    private String imageURI;
 
     /**
      * Empty constructor required by Firestore.
@@ -21,7 +23,7 @@ public class ShoppingEntry implements Parcelable, PositionAware {
     public ShoppingEntry(){
     }
 
-    public ShoppingEntry(float quantity, String unitOfQuantity, String name, String details, int position) {
+    public ShoppingEntry(float quantity, String unitOfQuantity, String name, String details, int position, String imageURI) {
         this.quantity = quantity;
         this.unitOfQuantity = unitOfQuantity;
         this.name = name;
@@ -29,6 +31,7 @@ public class ShoppingEntry implements Parcelable, PositionAware {
         done = false;
         uid = String.valueOf(UUID.randomUUID());
         this.position = position;
+        this.imageURI = imageURI;
     }
 
     public ShoppingEntry(ShoppingEntry other) {
@@ -39,6 +42,7 @@ public class ShoppingEntry implements Parcelable, PositionAware {
         done = false;
         uid = String.valueOf(UUID.randomUUID());
         position = other.position;
+        imageURI = other.imageURI;
     }
 
 
@@ -50,6 +54,24 @@ public class ShoppingEntry implements Parcelable, PositionAware {
         details = in.readString();
         uid = in.readString();
         position = in.readInt();
+        imageURI = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeFloat(quantity);
+        dest.writeString(unitOfQuantity);
+        dest.writeByte((byte) (done ? 1 : 0));
+        dest.writeString(name);
+        dest.writeString(details);
+        dest.writeString(uid);
+        dest.writeInt(position);
+        dest.writeString(imageURI);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<ShoppingEntry> CREATOR = new Creator<ShoppingEntry>() {
@@ -108,7 +130,13 @@ public class ShoppingEntry implements Parcelable, PositionAware {
         this.details = details;
     }
 
+    public void setImageURI(String imageURI){
+        this.imageURI = imageURI;
+    }
 
+    public String getImageURI(){
+        return imageURI;
+    }
 
 
     @Override
@@ -116,23 +144,11 @@ public class ShoppingEntry implements Parcelable, PositionAware {
         return position;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeFloat(quantity);
-        dest.writeString(unitOfQuantity);
-        dest.writeByte((byte) (done ? 1 : 0));
-        dest.writeString(name);
-        dest.writeString(details);
-        dest.writeString(uid);
-        dest.writeInt(position);
-    }
 
     public EntryHistoryElement extractHistoryElement(){
         return new EntryHistoryElement(name, unitOfQuantity, details);
     }
+
+
 }
