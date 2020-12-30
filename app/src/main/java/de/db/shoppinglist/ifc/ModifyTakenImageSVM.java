@@ -1,13 +1,10 @@
 package de.db.shoppinglist.ifc;
 
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-
-import de.db.shoppinglist.model.ShoppingEntry;
 
 public class ModifyTakenImageSVM extends ViewModel {
 
@@ -24,6 +21,10 @@ public class ModifyTakenImageSVM extends ViewModel {
 
     public void reset(){
         imageLiveData = new MutableLiveData<>();
+    }
+
+    public boolean isEmpty(){
+        return imageLiveData.getValue() == null;
     }
 
 }

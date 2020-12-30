@@ -16,10 +16,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.activity.OnBackPressedDispatcherOwner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,7 +29,6 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.ifc.ModifyTakenImageSVM;
@@ -80,6 +77,7 @@ public class ModifyEntryFragment extends Fragment {
                 navController.navigateUp();
             }
         };
+
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
     }
 
@@ -131,7 +129,6 @@ public class ModifyEntryFragment extends Fragment {
     private void setImage() {
         if(isUriValid()){
             imageView.setImageURI(takenImageSVM.getImageLiveData().getValue());
-            Toast.makeText(getContext(), "Using SVM-Uri", Toast.LENGTH_SHORT).show();
             return;
         }
         if(isDownloadLinkValid()) {
@@ -139,7 +136,6 @@ public class ModifyEntryFragment extends Fragment {
                     .load(entry.getImageURI())
                     .skipMemoryCache(false)
                     .into(imageView);
-            Toast.makeText(getContext(), "Downloading image", Toast.LENGTH_SHORT).show();
             return;
         }
     }
@@ -228,6 +224,10 @@ public class ModifyEntryFragment extends Fragment {
         boolean done = doneCheckbox.isChecked();
         setValues(quantity, unitOfQuantity, nameOfProduct, details, done);
         viewModel.modifyEntry(list, entry);
+        if(!takenImageSVM.isEmpty()) {
+            String imageUri = takenImageSVM.getImageLiveData().getValue().toString();
+            viewModel.modifyImageOfEntry(list, entry, imageUri);
+        }
         takenImageSVM.reset();
         closeFragment();
     }

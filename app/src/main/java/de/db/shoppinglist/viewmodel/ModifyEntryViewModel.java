@@ -22,4 +22,8 @@ public class ModifyEntryViewModel extends ViewModel {
     public void modifyEntry(ShoppingList list, ShoppingEntry entry){
         repo.modifyWholeEntry(list, entry);
     }
+
+    public void modifyImageOfEntry(ShoppingList list, ShoppingEntry entry, String imageUri) {
+        repo.modifyImageOfEntry(list, entry, imageUri);
+    }
 }

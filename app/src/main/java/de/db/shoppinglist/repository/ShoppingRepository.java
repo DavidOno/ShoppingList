@@ -132,4 +132,12 @@ public class ShoppingRepository {
         Runnable run = () -> db.uploadImage(listName, entryName, imageUri);
         startThread(run);
     }
+
+    public void modifyImageOfEntry(ShoppingList list, ShoppingEntry entry, String imageUri) {
+        String listName = list.getUid();
+        String entryname = entry.getUid();
+        Uri uri = Uri.parse(imageUri);
+        Runnable run = () -> db.uploadImage(listName, entryname, uri);
+        startThread(run);
+    }
 }

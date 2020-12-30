@@ -305,7 +305,6 @@ public class FirebaseSource implements Source {
         updateImageMap.put(IMAGE_URI_PROPERTY, imageURI);
         listsRootCollectionRef.document(listName).collection(ENTRIES_KEY).document(entryName).update(updateImageMap).addOnSuccessListener(aVoid ->
                 Log.d(FIREBASE_TAG, "Success: Updated Image")
-
         ).addOnFailureListener(e ->
                 Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
         );
@@ -313,13 +312,11 @@ public class FirebaseSource implements Source {
 
     @Override
     public void uploadImage(String listName, String entryName, Uri imageURI) {
-        long start = System.currentTimeMillis();
         final StorageReference image = buildStorageReference();
         image.putFile(imageURI)
                 .addOnSuccessListener(taskSnapshot -> image.getDownloadUrl()
                         .addOnSuccessListener(imageURI1 -> {
                             updateImage(listName, entryName, imageURI1.toString());
-                            Log.d(FIREBASE_TAG, "TIME: "+(System.currentTimeMillis() - start));
                         }))
                 .addOnFailureListener(e -> Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
         );
