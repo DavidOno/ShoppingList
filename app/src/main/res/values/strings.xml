@@ -28,4 +28,7 @@
     <string name="Camera_persective">Camera Perspective</string>
     <string name="ChooseImage">Choose an image</string>
     <string name="ModifyImage">Modify Image</string>
+    <string name="welcome">WELCOME</string>
+    <string name="fragment_login">Login</string>
+    <string name="signOut">Sign Out</string>
 </resources>

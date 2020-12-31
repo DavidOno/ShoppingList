@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.adapter.FireShoppingListsRecViewAdapter;
@@ -106,8 +107,21 @@ public class ShoppingListsFragment extends Fragment implements FireShoppingLists
             case R.id.Main_menuItemDeleteAllLists:
                 shoppingListsViewModel.deleteAllLists();
                 break;
+            case R.id.Main_menu_sign_out:
+                signOut();
+                break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    //TODO: remove from fragment
+    private void signOut() {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth.signOut();
+        NavController navController = NavHostFragment.findNavController(this);
+        NavDirections toLoginFragment = ShoppingListsFragmentDirections.actionShoppingListsFragmentToLoginFragment();
+        navController.navigate(toLoginFragment);
+
     }
 
     @Override
