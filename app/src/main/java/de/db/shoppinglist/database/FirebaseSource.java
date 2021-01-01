@@ -6,10 +6,14 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -27,6 +31,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import de.db.shoppinglist.R;
 import de.db.shoppinglist.model.EntryHistoryElement;
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
@@ -327,5 +332,20 @@ public class FirebaseSource implements Source {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuth.signOut();
         googleSignInClient.signOut().addOnCompleteListener(task -> Log.d(FIREBASE_TAG, "Completly logged out"));
+    }
+
+    @Override
+    public void signIn(String idToken, Runnable postSignInAction) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d(FIREBASE_TAG, "signInWithCredential:success");
+                        postSignInAction.run();
+                    } else {
+                        Log.w(FIREBASE_TAG, "signInWithCredential:failure", task.getException());
+                    }
+                });
     }
 }

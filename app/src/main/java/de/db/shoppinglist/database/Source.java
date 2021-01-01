@@ -43,5 +43,7 @@ public interface Source {
     void uploadImage(String listName, String entryName, Uri imageURI);
 
     void signOut(GoogleSignInClient googleSignInClient);
+
+    void signIn(String idToken, Runnable navigationToShoppingList);
 }
 

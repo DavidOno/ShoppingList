@@ -21,15 +21,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseAuth;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.adapter.FireShoppingListsRecViewAdapter;
@@ -104,9 +99,7 @@ public class ShoppingListsFragment extends Fragment implements FireShoppingLists
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.Main_menu_edit:
-                NavController navController = NavHostFragment.findNavController(this);
-                NavDirections modifyListsDirection = ShoppingListsFragmentDirections.actionShoppingListsFragmentToSelectShoppingListModificationFragment();
-                navController.navigate(modifyListsDirection);
+                navigateToModifyLists();
                 break;
             case R.id.Main_menu_delete_history:
                 shoppingListsViewModel.deleteHistory();
@@ -121,23 +114,39 @@ public class ShoppingListsFragment extends Fragment implements FireShoppingLists
         return super.onOptionsItemSelected(item);
     }
 
-    //TODO: remove from fragment
+    private void navigateToModifyLists() {
+        NavController navController = NavHostFragment.findNavController(this);
+        NavDirections modifyListsDirection = ShoppingListsFragmentDirections.actionShoppingListsFragmentToSelectShoppingListModificationFragment();
+        navController.navigate(modifyListsDirection);
+    }
+
     private void signOut() {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
+        GoogleSignInOptions gso = getGoogleSignOptions();
         GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
         shoppingListsViewModel.signOut(googleSignInClient);
+        navigateToLoginPage();
+    }
+
+    private GoogleSignInOptions getGoogleSignOptions() {
+        return new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build();
+    }
+
+    private void navigateToLoginPage() {
         NavController navController = NavHostFragment.findNavController(this);
         NavDirections toLoginFragment = ShoppingListsFragmentDirections.actionShoppingListsFragmentToLoginFragment();
         navController.navigate(toLoginFragment);
-
     }
 
     @Override
     public void onListClick(int position) {
         ShoppingList list = fireAdapter.getItem(position);
+        navigateToSelectedList(list);
+    }
+
+    private void navigateToSelectedList(ShoppingList list) {
         NavController navController = NavHostFragment.findNavController(this);
         NavDirections openSelectedListDirection = ShoppingListsFragmentDirections.actionShoppingListsFragmentToShoppingListFragment(list);
         navController.navigate(openSelectedListDirection);

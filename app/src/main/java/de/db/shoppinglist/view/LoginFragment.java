@@ -10,9 +10,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
-import androidx.navigation.NavHostController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -21,23 +21,22 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
 
 import de.db.shoppinglist.R;
+import de.db.shoppinglist.viewmodel.LoginViewModel;
 
+/**
+ * This fragment displays basic login information.
+ * Currently only Google-SignIn is supported.
+ */
 public class LoginFragment extends Fragment {
 
     private static final int RC_SIGN_IN = 120;
     private static final String LOGIN_TAG = "Login";
-    private FirebaseAuth firebaseAuth;
     private GoogleSignInClient googleSignInClient;
     private SignInButton signInButton;
+    private LoginViewModel viewModel;
 
     @Nullable
     @Override
@@ -49,15 +48,23 @@ public class LoginFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
+        GoogleSignInOptions gso = getGoogleSignInOptions();
         googleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
-
-        firebaseAuth = FirebaseAuth.getInstance();
         signInButton.setOnClickListener(v -> signIn());
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
+    }
+
+    private GoogleSignInOptions getGoogleSignInOptions() {
+        return new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build();
     }
 
     private void signIn() {
@@ -81,28 +88,17 @@ public class LoginFragment extends Fragment {
             }else{
                 Log.w(LOGIN_TAG, "Google sign in failed");
             }
-
         }
     }
 
     private void firebaseAuthWithGoogle(String idToken) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        firebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(LOGIN_TAG, "signInWithCredential:success");
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
-                            NavController navController = NavHostFragment.findNavController(LoginFragment.this);
-                            NavDirections toShoppingListsFragment = LoginFragmentDirections.actionLoginFragmentToShoppingListsFragment();
-                            navController.navigate(toShoppingListsFragment);
-                        } else {
-                            Log.w(LOGIN_TAG, "signInWithCredential:failure", task.getException());
-                        }
-                    }
-                });
+        Runnable navigationToShoppingList = this::navigateToShoppingLists;
+        viewModel.signInWithCredential(idToken, navigationToShoppingList);
+    }
 
-
+    private void navigateToShoppingLists() {
+        NavController navController = NavHostFragment.findNavController(LoginFragment.this);
+        NavDirections toShoppingListsFragment = LoginFragmentDirections.actionLoginFragmentToShoppingListsFragment();
+        navController.navigate(toShoppingListsFragment);
     }
 }

@@ -147,4 +147,9 @@ public class ShoppingRepository {
         Runnable run = () -> db.signOut(googleSignInClient);
         startThread(run);
     }
+
+    public void signInWithCredential(String idToken, Runnable navigationToShoppingList) {
+        Runnable run = () -> db.signIn(idToken, navigationToShoppingList);
+        startThread(run);
+    }
 }
