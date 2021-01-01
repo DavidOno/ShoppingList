@@ -23,7 +23,7 @@
                 android:id="@+id/new_list_dialog_backButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Back"
+                android:text="@string/Back"
                 android:layout_alignParentLeft="true"
                 android:background="@android:color/transparent">
             </Button>
@@ -42,7 +42,7 @@
                 android:id="@+id/new_list_dialog_doneButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Done"
+                android:text="@string/done"
                 android:layout_alignParentRight="true"
                 android:background="@android:color/transparent">
             </Button>

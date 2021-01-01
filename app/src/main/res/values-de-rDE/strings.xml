@@ -32,4 +32,10 @@
     <string name="welcome">Willkommen</string>
     <string name="fragment_login">Login</string>
     <string name="signOut">Ausloggen</string>
+    <string name="Details">Details</string>
+    <string name="unitOfQuantity">Mengeneinheit</string>
+    <string name="quantity">Menge</string>
+    <string name="nameOfProduct">Name des Produkts</string>
+    <string name="Back">Zurück</string>
+    <string name="gallery">Galerie</string>
 </resources>

@@ -25,14 +25,14 @@
         android:id="@+id/item_search_name_of_product"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Name of Product"
+        android:text="@string/nameOfProduct"
         />
 
     <TextView
         android:id="@+id/item_search_unit_of_quantity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Unit of Quantity"
+        android:text="@string/unitOfQuantity"
         android:gravity="right"
         android:layout_toRightOf="@+id/item_search_name_of_product"
         android:layout_alignParentRight="true"
@@ -42,7 +42,7 @@
         android:id="@+id/item_search_details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Details"
+        android:text="@string/Details"
         android:layout_below="@id/item_search_name_of_product"
         />
 
