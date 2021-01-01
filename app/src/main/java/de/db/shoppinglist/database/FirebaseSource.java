@@ -3,13 +3,8 @@ package de.db.shoppinglist.database;
 import android.net.Uri;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,7 +26,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import de.db.shoppinglist.R;
 import de.db.shoppinglist.model.EntryHistoryElement;
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
@@ -43,6 +37,7 @@ import static java.util.stream.Collectors.toSet;
 public class FirebaseSource implements Source {
 
     private static final String FIREBASE_TAG = "FIREBASE";
+    private static final String USER_ROOT_KEY = "Users";
     private static final String LISTS_ROOT_KEY = "Lists";
     private static final String ENTRIES_KEY = "Entries";
     private static final String HISTORY_KEY = "History";
@@ -56,14 +51,30 @@ public class FirebaseSource implements Source {
     public static final String NEXT_FREE_POSITION_PROPERTY = "nextFreePosition";
     public static final String IMAGE_STORAGE_KEY = "uploads";
     private static final String IMAGE_URI_PROPERTY = "imageURI";
-    private final CollectionReference listsRootCollectionRef = FirebaseFirestore.getInstance().collection(LISTS_ROOT_KEY);
-    private final CollectionReference historyRootCollectionRef = FirebaseFirestore.getInstance().collection(HISTORY_KEY);
     private final ToastUtility toastMaker = ToastUtility.getInstance();
 
 
+    private CollectionReference getListsRootCollectionRef(){
+        String uid = getUserId();
+        return FirebaseFirestore.getInstance().collection(USER_ROOT_KEY).document(uid).collection(LISTS_ROOT_KEY);
+    }
+
+    private String getUserId() {
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid != null) {
+            Log.d(FIREBASE_TAG, "FirebaseAuth returned null for userId");
+        }
+        return uid;
+    }
+
+    private CollectionReference getHistoryRootCollectionRef(){
+        String uid = getUserId();
+        return FirebaseFirestore.getInstance().collection(USER_ROOT_KEY).document(uid).collection(HISTORY_KEY);
+    }
+
     @Override
     public void addEntry(String listId, ShoppingEntry newEntry, Uri uploadImageURI) {
-        DocumentReference newEntryRef = listsRootCollectionRef.document(listId).collection(ENTRIES_KEY).document(newEntry.getUid());
+        DocumentReference newEntryRef = getListsRootCollectionRef().document(listId).collection(ENTRIES_KEY).document(newEntry.getUid());
         newEntryRef.set(newEntry)
                 .addOnSuccessListener(aVoid -> {
                     updateListStatusCounter(listId);
@@ -80,7 +91,7 @@ public class FirebaseSource implements Source {
                 );
         Map<String, Object> updateNextFreePosition = new HashMap<>();
         updateNextFreePosition.put(NEXT_FREE_POSITION_PROPERTY, newEntry.getPosition());
-        listsRootCollectionRef.document(listId).update(updateNextFreePosition)
+        getListsRootCollectionRef().document(listId).update(updateNextFreePosition)
                 .addOnSuccessListener(aVoid -> {
                     updateListStatusCounter(listId);
                     Log.d(FIREBASE_TAG, "Success: Updated nextFreePosition");
@@ -101,7 +112,7 @@ public class FirebaseSource implements Source {
             boolean contains = collectedHistory.contains(newEntry.extractHistoryElement());
             if(!contains){
                 EntryHistoryElement historyElement = newEntry.extractHistoryElement();
-                historyRootCollectionRef.add(historyElement)
+                getHistoryRootCollectionRef().add(historyElement)
                         .addOnSuccessListener(aVoid ->
                             Log.d(FIREBASE_TAG, "Success: Added to History")
                         )
@@ -117,7 +128,7 @@ public class FirebaseSource implements Source {
 
     @Override
     public void deleteEntry(String listId, String documentUid) {
-        DocumentReference entryRef = listsRootCollectionRef.document(listId).collection(ENTRIES_KEY).document(documentUid);
+        DocumentReference entryRef = getListsRootCollectionRef().document(listId).collection(ENTRIES_KEY).document(documentUid);
         entryRef.delete()
                 .addOnSuccessListener(aVoid -> {
                     updateListStatusCounter(listId);
@@ -131,14 +142,14 @@ public class FirebaseSource implements Source {
     }
 
     private void updateListStatusCounter(String listId){
-        Task<QuerySnapshot> querySnapshotTask = listsRootCollectionRef.document(listId).collection(ENTRIES_KEY).get();
+        Task<QuerySnapshot> querySnapshotTask = getListsRootCollectionRef().document(listId).collection(ENTRIES_KEY).get();
         querySnapshotTask.addOnSuccessListener(queryDocumentSnapshots -> {
             long done = queryDocumentSnapshots.getDocuments().stream().filter(doc -> (Boolean) doc.get(FirebaseSource.DONE_PROPERTY)).count();
             long total = queryDocumentSnapshots.getDocuments().size();
             Map<String, Object> counterVars = new HashMap<>();
             counterVars.put(DONE_PROPERTY, done);
             counterVars.put(TOTAL_PROPERTY, total);
-            listsRootCollectionRef.document(listId).update(counterVars)
+            getListsRootCollectionRef().document(listId).update(counterVars)
                     .addOnSuccessListener(aVoid ->
                         Log.d(FIREBASE_TAG, "Success: " + done+"/"+total)
                     )
@@ -152,7 +163,7 @@ public class FirebaseSource implements Source {
 
     @Override
     public void addList(ShoppingList shoppingList) {
-        listsRootCollectionRef.document(shoppingList.getUid()).set(shoppingList)
+        getListsRootCollectionRef().document(shoppingList.getUid()).set(shoppingList)
                 .addOnSuccessListener(aVoid ->
                     Log.d(FIREBASE_TAG, "Success: Added List")
                 )
@@ -166,7 +177,7 @@ public class FirebaseSource implements Source {
 
     @Override
     public void deleteList(String listId) {
-        Task<QuerySnapshot> query = listsRootCollectionRef.document(listId).collection(ENTRIES_KEY).get();
+        Task<QuerySnapshot> query = getListsRootCollectionRef().document(listId).collection(ENTRIES_KEY).get();
         query.addOnSuccessListener(aVoid -> {
             Objects.requireNonNull(query.getResult()).getDocuments().stream()
                     .map(doc -> buildPathForEntryDoc(listId, doc))
@@ -182,7 +193,7 @@ public class FirebaseSource implements Source {
 
     @Override
     public FirestoreRecyclerOptions<ShoppingEntry> getShoppingListRecyclerViewOptions(String listId) {
-        Query query = listsRootCollectionRef.document(listId).collection(ENTRIES_KEY).orderBy(POSITION_PROPERTY);
+        Query query = getListsRootCollectionRef().document(listId).collection(ENTRIES_KEY).orderBy(POSITION_PROPERTY);
         return new FirestoreRecyclerOptions.Builder<ShoppingEntry>()
                 .setQuery(query, ShoppingEntry.class)
                 .build();
@@ -190,7 +201,7 @@ public class FirebaseSource implements Source {
 
     @Override
     public FirestoreRecyclerOptions<ShoppingList> getShoppingListsRecyclerViewOptions() {
-        Query lists = listsRootCollectionRef.orderBy(NAME_PROPERTY);
+        Query lists = getListsRootCollectionRef().orderBy(NAME_PROPERTY);
         return new FirestoreRecyclerOptions.Builder<ShoppingList>()
                 .setQuery(lists, ShoppingList.class)
                 .build();
@@ -200,14 +211,14 @@ public class FirebaseSource implements Source {
     public void updateEntryPosition(ShoppingList list, ShoppingEntry entry, int position) {
         Map<String, Object> updatePosition = new HashMap<>();
         updatePosition.put(POSITION_PROPERTY, position);
-        listsRootCollectionRef.document(list.getUid()).collection(ENTRIES_KEY).document(entry.getUid()).update(updatePosition);
+        getListsRootCollectionRef().document(list.getUid()).collection(ENTRIES_KEY).document(entry.getUid()).update(updatePosition);
     }
 
     @Override
     public void updateStatusDone(String listId, ShoppingEntry entry) {
         Map<String, Object> updateIsDone = new HashMap<>();
         updateIsDone.put(DONE_PROPERTY, entry.isDone());
-        listsRootCollectionRef.document(listId).collection(ENTRIES_KEY).document(entry.getUid())
+        getListsRootCollectionRef().document(listId).collection(ENTRIES_KEY).document(entry.getUid())
                 .update(updateIsDone)
                 .addOnSuccessListener(aVoid -> {
                     updateListStatusCounter(listId);
@@ -224,7 +235,7 @@ public class FirebaseSource implements Source {
     public void updateListName(ShoppingList list) {
         Map<String, Object> updateName = new HashMap<>();
         updateName.put(NAME_PROPERTY, list.getName());
-        listsRootCollectionRef.document(list.getUid()).update(updateName)
+        getListsRootCollectionRef().document(list.getUid()).update(updateName)
                 .addOnSuccessListener(aVoid ->
                     Log.d(FIREBASE_TAG, "Success: Updated Name")
                 )
@@ -244,7 +255,7 @@ public class FirebaseSource implements Source {
         updateEntryMap.put(POSITION_PROPERTY, entry.getPosition());
         updateEntryMap.put(QUANTITY_PROPERTY, entry.getQuantity());
         updateEntryMap.put(UNIT_OF_QUANTITY_PROPERTY, entry.getUnitOfQuantity());
-        listsRootCollectionRef.document(list.getUid()).collection(ENTRIES_KEY).document(entry.getUid()).update(updateEntryMap)
+        getListsRootCollectionRef().document(list.getUid()).collection(ENTRIES_KEY).document(entry.getUid()).update(updateEntryMap)
                 .addOnSuccessListener(aVoid -> {
                     addToHistory(entry);
                     Log.d(FIREBASE_TAG, "Success: Updated Entry");
@@ -259,7 +270,7 @@ public class FirebaseSource implements Source {
 
     @Override
     public void getHistory(Consumer<List<EntryHistoryElement>> callback) {
-        Task<QuerySnapshot> querySnapshotTask = historyRootCollectionRef.get();
+        Task<QuerySnapshot> querySnapshotTask = getHistoryRootCollectionRef().get();
         querySnapshotTask.addOnSuccessListener(snapshots -> {
             List<EntryHistoryElement> collectedHistory = snapshots.getDocuments()
                     .stream()
@@ -276,7 +287,7 @@ public class FirebaseSource implements Source {
 
 
     private Task<QuerySnapshot> getHistory() {
-        return historyRootCollectionRef.get();
+        return getHistoryRootCollectionRef().get();
     }
 
     private EntryHistoryElement makeHistoryElement(DocumentSnapshot doc) {
@@ -284,18 +295,18 @@ public class FirebaseSource implements Source {
     }
 
     private DocumentReference buildPathForEntryDoc(String listId, DocumentSnapshot doc) {
-        return listsRootCollectionRef.document(listId).collection(ENTRIES_KEY).document(doc.getId());
+        return getHistoryRootCollectionRef().document(listId).collection(ENTRIES_KEY).document(doc.getId());
     }
 
 
     private DocumentReference buildPathForHistoryDoc(DocumentSnapshot doc) {
-        return historyRootCollectionRef.document(doc.getId());
+        return getHistoryRootCollectionRef().document(doc.getId());
     }
 
 
 
     private void deleteListOnly(String listId) {
-        DocumentReference entryRef = listsRootCollectionRef.document(listId);
+        DocumentReference entryRef = getListsRootCollectionRef().document(listId);
         entryRef.delete().addOnSuccessListener(aVoid ->
             Log.d(FIREBASE_TAG, "Success: Deleted List")
 
@@ -308,7 +319,7 @@ public class FirebaseSource implements Source {
 
     @Override
     public void deleteHistory(){
-        historyRootCollectionRef.get().addOnSuccessListener(documentSnapshots -> {
+        getHistoryRootCollectionRef().get().addOnSuccessListener(documentSnapshots -> {
             documentSnapshots.getDocuments().stream()
                     .map(this::buildPathForHistoryDoc)
                     .forEach(DocumentReference::delete);
@@ -322,7 +333,7 @@ public class FirebaseSource implements Source {
 
     @Override
     public void deleteAllLists() {
-        listsRootCollectionRef.get().addOnSuccessListener(documentSnapshots -> {
+        getListsRootCollectionRef().get().addOnSuccessListener(documentSnapshots -> {
             documentSnapshots.getDocuments().stream()
                     .map(DocumentSnapshot::getId)
                     .forEach(this::deleteList);
@@ -341,7 +352,7 @@ public class FirebaseSource implements Source {
     private void updateImage(String listName, String entryName, String imageURI){
         Map<String, Object> updateImageMap = new HashMap<>();
         updateImageMap.put(IMAGE_URI_PROPERTY, imageURI);
-        listsRootCollectionRef.document(listName).collection(ENTRIES_KEY).document(entryName).update(updateImageMap).addOnSuccessListener(aVoid ->
+        getListsRootCollectionRef().document(listName).collection(ENTRIES_KEY).document(entryName).update(updateImageMap).addOnSuccessListener(aVoid ->
                 Log.d(FIREBASE_TAG, "Success: Updated Image")
         ).addOnFailureListener(e -> {
                     Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
