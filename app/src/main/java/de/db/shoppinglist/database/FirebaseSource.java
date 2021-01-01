@@ -35,6 +35,7 @@ import de.db.shoppinglist.R;
 import de.db.shoppinglist.model.EntryHistoryElement;
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
+import de.db.shoppinglist.utility.ToastUtility;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -57,6 +58,7 @@ public class FirebaseSource implements Source {
     private static final String IMAGE_URI_PROPERTY = "imageURI";
     private final CollectionReference listsRootCollectionRef = FirebaseFirestore.getInstance().collection(LISTS_ROOT_KEY);
     private final CollectionReference historyRootCollectionRef = FirebaseFirestore.getInstance().collection(HISTORY_KEY);
+    private final ToastUtility toastMaker = ToastUtility.getInstance();
 
 
     @Override
@@ -71,8 +73,10 @@ public class FirebaseSource implements Source {
                     }
                     Log.d(FIREBASE_TAG, "Success: Added Entry");
                 })
-                .addOnFailureListener(e ->
-                    Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
+                .addOnFailureListener(e -> {
+                            Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                            toastMaker.prepareToast("Fail: Add new Entry");
+                        }
                 );
         Map<String, Object> updateNextFreePosition = new HashMap<>();
         updateNextFreePosition.put(NEXT_FREE_POSITION_PROPERTY, newEntry.getPosition());
@@ -81,8 +85,10 @@ public class FirebaseSource implements Source {
                     updateListStatusCounter(listId);
                     Log.d(FIREBASE_TAG, "Success: Updated nextFreePosition");
                 })
-                .addOnFailureListener(e ->
-                    Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
+                .addOnFailureListener(e -> {
+                            Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                            toastMaker.prepareToast("Fail: Updated \"next free position\"");
+                        }
                 );
     }
 
@@ -99,8 +105,10 @@ public class FirebaseSource implements Source {
                         .addOnSuccessListener(aVoid ->
                             Log.d(FIREBASE_TAG, "Success: Added to History")
                         )
-                        .addOnFailureListener(e ->
-                            Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
+                        .addOnFailureListener(e -> {
+                                    Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                                    toastMaker.prepareToast("Fail: Add To History");
+                                }
                         );
             }
         });
@@ -110,13 +118,16 @@ public class FirebaseSource implements Source {
     @Override
     public void deleteEntry(String listId, String documentUid) {
         DocumentReference entryRef = listsRootCollectionRef.document(listId).collection(ENTRIES_KEY).document(documentUid);
-        entryRef.delete().addOnSuccessListener(aVoid -> {
-            updateListStatusCounter(listId);
-            Log.d(FIREBASE_TAG, "Success: Deleted Entry");
-        })
-        .addOnFailureListener(e ->
-            Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
-        );
+        entryRef.delete()
+                .addOnSuccessListener(aVoid -> {
+                    updateListStatusCounter(listId);
+                    Log.d(FIREBASE_TAG, "Success: Deleted Entry");
+                })
+                .addOnFailureListener(e -> {
+                            Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                            toastMaker.prepareToast("Fail: Delete Entry");
+                        }
+                );
     }
 
     private void updateListStatusCounter(String listId){
@@ -131,8 +142,10 @@ public class FirebaseSource implements Source {
                     .addOnSuccessListener(aVoid ->
                         Log.d(FIREBASE_TAG, "Success: " + done+"/"+total)
                     )
-                    .addOnFailureListener(e ->
-                        Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
+                    .addOnFailureListener(e -> {
+                            Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                            toastMaker.prepareToast("Fail: Update List Counter");
+                        }
                     );
         });
     }
@@ -143,8 +156,10 @@ public class FirebaseSource implements Source {
                 .addOnSuccessListener(aVoid ->
                     Log.d(FIREBASE_TAG, "Success: Added List")
                 )
-                .addOnFailureListener(e ->
-                    Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
+                .addOnFailureListener(e -> {
+                        Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                        toastMaker.prepareToast("Fail: Add List");
+                    }
                 );
     }
 
@@ -158,7 +173,11 @@ public class FirebaseSource implements Source {
                     .forEach(DocumentReference::delete);
             Log.d(FIREBASE_TAG, "Success: Deleted all entries");
             deleteListOnly(listId);
-        });
+        }).addOnFailureListener(e -> {
+                    Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                    toastMaker.prepareToast("Fail: Delete List");
+                }
+        );
     }
 
     @Override
@@ -194,8 +213,10 @@ public class FirebaseSource implements Source {
                     updateListStatusCounter(listId);
                     Log.d(FIREBASE_TAG, "Success: Updated Status");
                 })
-                .addOnFailureListener(e ->
-                    Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
+                .addOnFailureListener(e -> {
+                            Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                            toastMaker.prepareToast("Fail: Update Status \"Done\"");
+                        }
                 );
     }
 
@@ -207,8 +228,10 @@ public class FirebaseSource implements Source {
                 .addOnSuccessListener(aVoid ->
                     Log.d(FIREBASE_TAG, "Success: Updated Name")
                 )
-                .addOnFailureListener(e ->
-                    Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
+                .addOnFailureListener(e -> {
+                            Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                            toastMaker.prepareToast("Fail: Update List Name");
+                        }
                 );
     }
 
@@ -226,8 +249,10 @@ public class FirebaseSource implements Source {
                     addToHistory(entry);
                     Log.d(FIREBASE_TAG, "Success: Updated Entry");
 
-                }).addOnFailureListener(e ->
-            Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
+                }).addOnFailureListener(e -> {
+                    Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                    toastMaker.prepareToast("Fail: Modify Entry");
+                }
         );
         updateListStatusCounter(list.getUid());
     }
@@ -242,8 +267,10 @@ public class FirebaseSource implements Source {
                     .collect(toList());
             callback.accept(collectedHistory);
             Log.d(FIREBASE_TAG, "Success: Retrieved history");
-        }).addOnFailureListener(e ->
-            Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
+        }).addOnFailureListener(e -> {
+                    Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                    toastMaker.prepareToast("Fail: Retrieve History");
+                }
         );
     }
 
@@ -272,8 +299,10 @@ public class FirebaseSource implements Source {
         entryRef.delete().addOnSuccessListener(aVoid ->
             Log.d(FIREBASE_TAG, "Success: Deleted List")
 
-        ).addOnFailureListener(e ->
-            Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
+        ).addOnFailureListener(e -> {
+                    Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                    toastMaker.prepareToast("Fail: Delete List");
+                }
         );
     }
 
@@ -284,8 +313,10 @@ public class FirebaseSource implements Source {
                     .map(this::buildPathForHistoryDoc)
                     .forEach(DocumentReference::delete);
             Log.d(FIREBASE_TAG, "Success: Deleted History");
-        }).addOnFailureListener(e ->
-                Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
+        }).addOnFailureListener(e -> {
+                    Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                    toastMaker.prepareToast("Fail: Delete History");
+                }
         );
     }
 
@@ -296,8 +327,10 @@ public class FirebaseSource implements Source {
                     .map(DocumentSnapshot::getId)
                     .forEach(this::deleteList);
             Log.d(FIREBASE_TAG, "Success: Deleted All Lists");
-        }).addOnFailureListener(e ->
-                Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
+        }).addOnFailureListener(e -> {
+                    Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                    toastMaker.prepareToast("Fail: Delete all List");
+                }
         );
     }
 
@@ -310,8 +343,10 @@ public class FirebaseSource implements Source {
         updateImageMap.put(IMAGE_URI_PROPERTY, imageURI);
         listsRootCollectionRef.document(listName).collection(ENTRIES_KEY).document(entryName).update(updateImageMap).addOnSuccessListener(aVoid ->
                 Log.d(FIREBASE_TAG, "Success: Updated Image")
-        ).addOnFailureListener(e ->
-                Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
+        ).addOnFailureListener(e -> {
+                    Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                    toastMaker.prepareToast("Fail: Update Image");
+                }
         );
     }
 
@@ -323,8 +358,11 @@ public class FirebaseSource implements Source {
                         .addOnSuccessListener(imageURI1 -> {
                             updateImage(listName, entryName, imageURI1.toString());
                         }))
-                .addOnFailureListener(e -> Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()))
-        );
+                .addOnFailureListener(e -> {
+                            Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                            toastMaker.prepareToast("Fail: Upload Image");
+                        }
+                );
     }
 
     @Override
