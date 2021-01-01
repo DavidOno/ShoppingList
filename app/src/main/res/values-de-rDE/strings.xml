@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Einkaufsliste</string>
+    <string name="AddNewList">Neue Liste</string>
+    <string name="ListsTitle">Meine Listen</string>
+    <string name="AddNewEntry">Neuer Eintrag</string>
+    <string name="options">Optionen</string>
+    <string name="deleteAllEntries">Lösche alle Einträge</string>
+    <string name="CheckAll">Alle abhacken</string>
+    <string name="share">Teilen</string>
+    <string name="deleteAllLists">Lösche alle Listen</string>
+    <string name="done">Fertig</string>
+    <string name="name_of_the_list">Name der Liste</string>
+    <string name="ShoppingListFragmentTitle">Einkaufsliste</string>
+    <string name="ShoppingListsFragmentTitle">Einkaufslisten</string>
+    <string name="newEntryFragmentTitle">Neuer Einkaufseintrag</string>
+    <string name="bought">Gekauft</string>
+    <string name="modifyEntryFragmentTitle">Bearbeite Eintrag</string>
+    <string name="deleteEntry">Lösche Eintrag</string>
+    <string name="DeleteAllChecked">Lösche alle Erledigten</string>
+    <string name="EditList">Bearbeite Liste</string>
+    <string name="EditShoppingLists">Bearbeiten</string>
+    <string name="SelectListForModification">Wähle eine Liste zum Bearbeiten aus</string>
+    <string name="searchEntry">Suche oder Erstelle neuen Eintrag</string>
+    <string name="deleteHistory">Lösche Historie</string>
+    <string name="Camera">Kamera</string>
+    <string name="Archive">Foto-Gallery</string>
+    <string name="take_picture">Nimm ein Bild auf</string>
+    <string name="Camera_persective">Kamera-Perspektive</string>
+    <string name="ChooseImage">Wähle ein Bild</string>
+    <string name="ModifyImage">Bearbeite Bild</string>
+    <string name="welcome">Willkommen</string>
+    <string name="fragment_login">Login</string>
+    <string name="signOut">Ausloggen</string>
+</resources>
