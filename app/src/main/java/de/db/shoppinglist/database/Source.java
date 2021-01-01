@@ -3,6 +3,7 @@ package de.db.shoppinglist.database;
 import android.net.Uri;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -40,5 +41,7 @@ public interface Source {
     void deleteAllLists();
 
     void uploadImage(String listName, String entryName, Uri imageURI);
+
+    void signOut(GoogleSignInClient googleSignInClient);
 }
 

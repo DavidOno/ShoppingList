@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 
 import java.util.ArrayList;
 
@@ -128,6 +129,7 @@ public class ShoppingRepository {
         startThread(run);
     }
 
+    //TODO: really never used?
     private void uploadImage(String listName, String entryName, Uri imageUri){
         Runnable run = () -> db.uploadImage(listName, entryName, imageUri);
         startThread(run);
@@ -138,6 +140,11 @@ public class ShoppingRepository {
         String entryname = entry.getUid();
         Uri uri = Uri.parse(imageUri);
         Runnable run = () -> db.uploadImage(listName, entryname, uri);
+        startThread(run);
+    }
+
+    public void signOut(GoogleSignInClient googleSignInClient) {
+        Runnable run = () -> db.signOut(googleSignInClient);
         startThread(run);
     }
 }
