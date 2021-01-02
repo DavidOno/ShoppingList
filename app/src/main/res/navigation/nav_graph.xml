@@ -8,7 +8,8 @@
     <fragment
         android:id="@+id/shoppingListsFragment"
         android:name="de.db.shoppinglist.view.ShoppingListsFragment"
-        android:label="@string/ShoppingListsFragmentTitle">
+        android:label="@string/ShoppingListsFragmentTitle"
+        tools:layout="@layout/fragment_shoppinglists">
         <action
             android:id="@+id/action_shoppingListsFragment_to_shoppingListFragment"
             app:destination="@id/shoppingListFragment"
@@ -111,12 +112,13 @@
     <fragment
         android:id="@+id/cameraFragmentAlt2"
         android:name="de.db.shoppinglist.view.TakeImageFragment"
-        android:label="fragment_camera_alt2"
-        tools:layout="@string/ChooseImage" />
+        android:label="@string/ChooseImage"
+        tools:layout="@layout/fragment_take_image" />
     <fragment
         android:id="@+id/modifyTakeImageFragment"
         android:name="de.db.shoppinglist.view.ModifyTakeImageFragment"
-        android:label="@string/ModifyImage" />
+        android:label="@string/ModifyImage"
+        tools:layout="@layout/fragment_take_image"/>
     <fragment
         android:id="@+id/loginFragment"
         android:name="de.db.shoppinglist.view.LoginFragment"
