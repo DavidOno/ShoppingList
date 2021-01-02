@@ -1,5 +1,7 @@
 package de.db.shoppinglist.utility;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -41,8 +43,8 @@ public class ToastUtility {
      */
     public void prepareToast(String message){
         lock.lock();
-        isToastNew.setValue(true);
         this.message = message;
+        isToastNew.setValue(true);
     }
 
     public LiveData<Boolean> getNewToast(){
@@ -55,8 +57,9 @@ public class ToastUtility {
      * @return Returns the message, which should be displayed via Toast
      */
     public String getMessage(){
+        String result = message;
         isToastNew.setValue(false);
         lock.unlock();
-        return message;
+        return result;
     }
 }
