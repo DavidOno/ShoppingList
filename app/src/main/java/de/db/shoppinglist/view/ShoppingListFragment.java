@@ -46,7 +46,6 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
         View view = inflater.inflate(R.layout.fragment_shoppinglist, container, false);
         findViewsById(view);
         newEntryButton.setOnClickListener(v -> openNewEntryFragment());
-        entriesView.setLayoutManager(new LinearLayoutManager(getContext())); //TODO: put in setUpRecyclerView method
         setUpViewModel();
         setUpRecyclerView();
         setTitleOfFragment();
@@ -101,6 +100,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
     }
 
     private void setUpRecyclerView() {
+        entriesView.setLayoutManager(new LinearLayoutManager(getContext()));
         FirestoreRecyclerOptions<ShoppingEntry> options = shoppingListViewModel.getRecylerViewOptions(list);
         fireAdapter = new FireShoppingListRecViewAdapter(options, this);
         entriesView.setAdapter(fireAdapter);

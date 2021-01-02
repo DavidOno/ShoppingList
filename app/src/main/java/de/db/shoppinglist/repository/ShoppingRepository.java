@@ -129,17 +129,11 @@ public class ShoppingRepository {
         startThread(run);
     }
 
-    //TODO: really never used?
-    private void uploadImage(String listName, String entryName, Uri imageUri){
-        Runnable run = () -> db.uploadImage(listName, entryName, imageUri);
-        startThread(run);
-    }
-
     public void modifyImageOfEntry(ShoppingList list, ShoppingEntry entry, String imageUri) {
         String listName = list.getUid();
-        String entryname = entry.getUid();
+        String entryName = entry.getUid();
         Uri uri = Uri.parse(imageUri);
-        Runnable run = () -> db.uploadImage(listName, entryname, uri);
+        Runnable run = () -> db.uploadImage(listName, entryName, uri);
         startThread(run);
     }
 
