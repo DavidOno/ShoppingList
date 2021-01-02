@@ -1,58 +1,48 @@
 package de.db.shoppinglist.adapter.viewholder;
 
-
 import android.graphics.Paint;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.bumptech.glide.Glide;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.adapter.FireShoppingListRecViewAdapter;
-import de.db.shoppinglist.adapter.FireShoppingListRecViewAdapter.OnEntryListener;
 import de.db.shoppinglist.model.ShoppingEntry;
 
-public class ViewHolderWithImage extends FireShoppingListRecViewAdapter.ViewHolder{
-        private TextView nameOfEntry;
-        private TextView quantity;
-        private TextView unitOfQuantity;
-        private CheckBox isDone;
-        private ImageButton dropDown;
-        private TextView details;
-        private ImageView imageView;
-        private OnEntryListener onEntryListener;
-        private FireShoppingListRecViewAdapter adapter;
+public class JustNameViewHolder extends FireShoppingListRecViewAdapter.ViewHolder {
+    private TextView nameOfEntry;
+    private TextView quantity;
+    private CheckBox isDone;
+    private ImageButton dropDown;
+    private TextView details;
+    private FireShoppingListRecViewAdapter.OnEntryListener onEntryListener;
+    private FireShoppingListRecViewAdapter adapter;
 
-        public ViewHolderWithImage(@NonNull View itemView, OnEntryListener onEntryListener, FireShoppingListRecViewAdapter adapter) {
-            super(itemView);
-            findViewsById(itemView);
-            this.onEntryListener = onEntryListener;
-            itemView.setOnClickListener(this);
-            this.adapter = adapter;
-        }
+    public JustNameViewHolder(@NonNull View itemView, FireShoppingListRecViewAdapter.OnEntryListener onEntryListener, FireShoppingListRecViewAdapter adapter) {
+        super(itemView);
+        findViewsById(itemView);
+        this.onEntryListener = onEntryListener;
+        itemView.setOnClickListener(this);
+        this.adapter = adapter;
+    }
 
-        private void findViewsById(@NonNull View itemView) {
-            nameOfEntry = itemView.findViewById(R.id.entry_name_textview);
-            quantity = itemView.findViewById(R.id.entry_quantity_textview);
-            unitOfQuantity = itemView.findViewById(R.id.entry_unit_of_quantity_textview);
-            isDone = itemView.findViewById(R.id.entry_isDoneCheckbox);
-            dropDown = itemView.findViewById(R.id.entry_dropDownButton);
-            details = itemView.findViewById(R.id.entry_details);
-            imageView = itemView.findViewById(R.id.entry_image);
-        }
+    private void findViewsById(@NonNull View itemView) {
+        nameOfEntry = itemView.findViewById(R.id.entry_name_textview);
+        quantity = itemView.findViewById(R.id.entry_quantity_textview);
+        isDone = itemView.findViewById(R.id.entry_isDoneCheckbox);
+        dropDown = itemView.findViewById(R.id.entry_dropDownButton);
+        details = itemView.findViewById(R.id.entry_details);
+    }
 
-        @Override
-        public void onClick(View v) {
-            onEntryListener.onEntryClick(getAdapterPosition());
-        }
+    @Override
+    public void onClick(View v) {
+        onEntryListener.onEntryClick(getAdapterPosition());
+    }
 
     @Override
     public void onBindViewHolder(FireShoppingListRecViewAdapter.ViewHolder holder, int position, ShoppingEntry shoppingEntry) {
@@ -68,34 +58,10 @@ public class ViewHolderWithImage extends FireShoppingListRecViewAdapter.ViewHold
     private void initHolderProperties(FireShoppingListRecViewAdapter.ViewHolder holder, ShoppingEntry shoppingEntry) {
         nameOfEntry.setText(shoppingEntry.getName());
         quantity.setText(getQuantityText(shoppingEntry.getQuantity()));
-        unitOfQuantity.setText(shoppingEntry.getUnitOfQuantity());
         isDone.setChecked(shoppingEntry.isDone());
         details.setText(shoppingEntry.getDetails());
-        Glide.with(holder.itemView.getContext())
-                .load(shoppingEntry.getImageURI())
-                .skipMemoryCache(false)
-                .into(imageView);
     }
 
-    private String getQuantityText(float quantity) {
-        if(isZero(quantity)){
-            return "";
-        }else{
-            if(isInteger(quantity)){
-                int quantityAsInt = (int) quantity;
-                return quantityAsInt + " x ";
-            }
-            return quantity + " x ";
-        }
-    }
-
-    private boolean isInteger(float quantity) {
-        return (int)quantity == quantity;
-    }
-
-    private boolean isZero(float quantity) {
-        return quantity - 0 < 0.0001;
-    }
 
     private void onCheckedChangeListenerForDone(FireShoppingListRecViewAdapter.ViewHolder holder, ShoppingEntry shoppingEntry){
         isDone.setOnClickListener(view -> {
@@ -122,14 +88,12 @@ public class ViewHolderWithImage extends FireShoppingListRecViewAdapter.ViewHold
     private void unstrikeAllTextProperties(@NonNull FireShoppingListRecViewAdapter.ViewHolder holder) {
         nameOfEntry.setPaintFlags(nameOfEntry.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         quantity.setPaintFlags(quantity.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-        unitOfQuantity.setPaintFlags(unitOfQuantity.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         details.setPaintFlags(details.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
     }
 
     private void strikeAllTextPropertiesThrough(@NonNull FireShoppingListRecViewAdapter.ViewHolder holder) {
         nameOfEntry.setPaintFlags(nameOfEntry.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         quantity.setPaintFlags(quantity.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-        unitOfQuantity.setPaintFlags(unitOfQuantity.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         details.setPaintFlags(details.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
     }
 
@@ -172,4 +136,23 @@ public class ViewHolderWithImage extends FireShoppingListRecViewAdapter.ViewHold
         });
     }
 
+    private String getQuantityText(float quantity) {
+        if(isZero(quantity)){
+            return "";
+        }else{
+            if(isInteger(quantity)){
+                int quantityAsInt = (int) quantity;
+                return quantityAsInt + " x ";
+            }
+            return quantity + " x ";
+        }
+    }
+
+    private boolean isInteger(float quantity) {
+        return (int)quantity == quantity;
+    }
+
+    private boolean isZero(float quantity) {
+        return quantity - 0 < 0.0001;
+    }
 }

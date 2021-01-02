@@ -21,6 +21,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.adapter.viewholder.DefaultViewHolder;
+import de.db.shoppinglist.adapter.viewholder.JustNameViewHolder;
 import de.db.shoppinglist.adapter.viewholder.ViewHolderWithImage;
 import de.db.shoppinglist.model.ShoppingEntry;
 
@@ -30,6 +31,7 @@ public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<Sho
 
     private static final int DEFAULT_VIEWHOLDER = 0;
     private static final int IMAGE_VIEWHOLDER = 1;
+    private static final int JUST_NAME_VIEWHOLDER = 2;
     private MutableLiveData<Boolean> wasChecked = new MutableLiveData<>(false);
     private ShoppingEntry entryContainingCheckedBox = null;
     private OnEntryListener onEntryListener;
@@ -53,13 +55,19 @@ public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<Sho
         ShoppingEntry item = getItem(position);
         if(hasItemImage(item)){
             return IMAGE_VIEWHOLDER;
+        }else if(hasMissingUnitOfQuantity(item)){
+            return JUST_NAME_VIEWHOLDER;
         }else{
             return DEFAULT_VIEWHOLDER;
         }
     }
 
+    private boolean hasMissingUnitOfQuantity(ShoppingEntry item) {
+        return item.getUnitOfQuantity().isEmpty();
+    }
+
     private boolean hasItemImage(ShoppingEntry item) {
-        return item.getImageURI() == null || item.getImageURI().isEmpty();
+        return item.getImageURI() != null && !item.getImageURI().isEmpty();
     }
 
     @Override
@@ -78,6 +86,9 @@ public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<Sho
         else if(viewType == IMAGE_VIEWHOLDER) {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_entry_with_image, parent, false);
             return new ViewHolderWithImage(view, onEntryListener, this);
+        }else if(viewType == JUST_NAME_VIEWHOLDER){
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_entry_just_name, parent, false);
+            return new JustNameViewHolder(view, onEntryListener, this);
         }
         throw new IllegalArgumentException("Found no suitable viewType");
     }
