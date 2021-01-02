@@ -38,7 +38,7 @@ import de.db.shoppinglist.viewmodel.ModifyEntryViewModel;
 
 public class ModifyEntryFragment extends Fragment {
 
-    public static final String MODIFY = "Modify "; //TODO: @string/...
+    public static final int MODIFY_RESOURCE = R.string.modify_;
     private EditText nameOfProductEditText;
     private EditText quantityEditText;
     private EditText unitOfQuantityEditText;
@@ -94,8 +94,12 @@ public class ModifyEntryFragment extends Fragment {
             takenImageSVM.setImage(Uri.parse(entry.getImageURI()));
     }
 
+    private String getTitlePrefix(){
+        return getResources().getString(MODIFY_RESOURCE)+" ";
+    }
+
     private void setTitle() {
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(MODIFY + entry.getName());
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getTitlePrefix() + entry.getName());
     }
 
     private void setUpViewModel() {
@@ -202,10 +206,10 @@ public class ModifyEntryFragment extends Fragment {
                 String name = nameOfProductEditText.getText().toString();
                 if(name.isEmpty()){
                     doneMenuItem.setEnabled(false);
-                    ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(MODIFY + name);
+                    ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getTitlePrefix() + name);
                 }else{
                     doneMenuItem.setEnabled(true);
-                    ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(MODIFY + name);
+                    ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getTitlePrefix() + name);
                 }
             }
 
