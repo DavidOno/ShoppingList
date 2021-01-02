@@ -26,6 +26,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/nameOfProduct"
+        android:textSize="@dimen/text_size"
+        android:textStyle="bold"
         />
 
     <TextView
@@ -36,6 +38,7 @@
         android:gravity="right"
         android:layout_toRightOf="@+id/item_search_name_of_product"
         android:layout_alignParentRight="true"
+        android:textSize="@dimen/text_size"
         />
 
     <TextView
@@ -44,6 +47,7 @@
         android:layout_height="wrap_content"
         android:text="@string/Details"
         android:layout_below="@id/item_search_name_of_product"
+        android:textSize="@dimen/text_size"
         />
 
 

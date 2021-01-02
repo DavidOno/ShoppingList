@@ -1,5 +1,6 @@
 package de.db.shoppinglist.adapter;
 
+
 import android.graphics.Paint;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,10 +20,16 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
 import de.db.shoppinglist.R;
+import de.db.shoppinglist.adapter.viewholder.DefaultViewHolder;
+import de.db.shoppinglist.adapter.viewholder.ViewHolderWithImage;
 import de.db.shoppinglist.model.ShoppingEntry;
+
 
 public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<ShoppingEntry, FireShoppingListRecViewAdapter.ViewHolder> implements Checkable<ShoppingEntry> {
 
+
+    private static final int DEFAULT_VIEWHOLDER = 0;
+    private static final int IMAGE_VIEWHOLDER = 1;
     private MutableLiveData<Boolean> wasChecked = new MutableLiveData<>(false);
     private ShoppingEntry entryContainingCheckedBox = null;
     private OnEntryListener onEntryListener;
@@ -42,123 +49,61 @@ public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<Sho
     }
 
     @Override
+    public int getItemViewType(int position) {
+        ShoppingEntry item = getItem(position);
+        if(hasItemImage(item)){
+            return IMAGE_VIEWHOLDER;
+        }else{
+            return DEFAULT_VIEWHOLDER;
+        }
+    }
+
+    private boolean hasItemImage(ShoppingEntry item) {
+        return item.getImageURI() == null || item.getImageURI().isEmpty();
+    }
+
+    @Override
     protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull ShoppingEntry shoppingEntry) {
-        initHolderProperties(holder, shoppingEntry);
-        onCheckedChangeListenerForDone(holder, shoppingEntry);
-        strikeItemsThroughIfDone(holder);
-        final boolean isExpanded = setVisibilityOfDetails(holder, position);
-        textChangeListenerForDetails(holder);
-        manageDropDownIconVisibility(holder);
-        manageDropDownBehaviour(holder, position, isExpanded);
-    }
-
-    private void onCheckedChangeListenerForDone(@NonNull ViewHolder holder, @NonNull ShoppingEntry shoppingEntry) {
-        holder.isDone.setOnClickListener(view -> {
-            entryContainingCheckedBox = shoppingEntry;
-            wasChecked.setValue(true);
-        });
-    }
-
-    private boolean setVisibilityOfDetails(@NonNull ViewHolder holder, int position) {
-        final boolean isExpanded = position== expandedPosition;
-        holder.details.setVisibility(isExpanded? View.VISIBLE:View.GONE);
-        return isExpanded;
-    }
-
-    private void strikeItemsThroughIfDone(@NonNull ViewHolder holder) {
-        if(holder.isDone.isChecked()){
-            strikeAllTextPropertiesThrough(holder);
-        }else{
-            unstrikeAllTextProperties(holder);
-        }
-    }
-
-    private void unstrikeAllTextProperties(@NonNull ViewHolder holder) {
-        holder.nameOfEntry.setPaintFlags(holder.nameOfEntry.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-        holder.quantity.setPaintFlags(holder.quantity.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-        holder.unitOfQuantity.setPaintFlags(holder.unitOfQuantity.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-        holder.details.setPaintFlags(holder.details.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-    }
-
-    private void strikeAllTextPropertiesThrough(@NonNull ViewHolder holder) {
-        holder.nameOfEntry.setPaintFlags(holder.nameOfEntry.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-        holder.quantity.setPaintFlags(holder.quantity.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-        holder.unitOfQuantity.setPaintFlags(holder.unitOfQuantity.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-        holder.details.setPaintFlags(holder.details.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-    }
-
-    private void textChangeListenerForDetails(@NonNull ViewHolder holder) {
-        holder.details.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                //not required
-            }
-
-            @Override
-            public void onTextChanged(CharSequence sequence, int start, int before, int count) {
-                manageDropDownIconVisibility(holder);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                //not required
-            }
-        });
-    }
-
-    private void initHolderProperties(@NonNull ViewHolder holder, @NonNull ShoppingEntry shoppingEntry) {
-        holder.nameOfEntry.setText(shoppingEntry.getName());
-        holder.quantity.setText(getQuantityText(shoppingEntry.getQuantity()));
-        holder.unitOfQuantity.setText(shoppingEntry.getUnitOfQuantity());
-        holder.isDone.setChecked(shoppingEntry.isDone());
-        holder.details.setText(shoppingEntry.getDetails());
-    }
-
-    private void manageDropDownIconVisibility(@NonNull ViewHolder holder) {
-        if (holder.details.getText().toString().isEmpty()) {
-            holder.dropDown.setVisibility(View.INVISIBLE);
-        } else {
-            holder.dropDown.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void manageDropDownBehaviour(@NonNull ViewHolder holder, int position, boolean isExpanded) {
-        holder.dropDown.setActivated(isExpanded);
-        if(isExpanded){
-            previousExpandedPosition = position;
-        }
-        holder.dropDown.setOnClickListener(v -> {
-            expandedPosition = isExpanded ? -1:position;
-            notifyItemChanged(previousExpandedPosition);
-            notifyItemChanged(position);
-        });
-    }
-
-    private String getQuantityText(float quantity) {
-        if(isZero(quantity)){
-            return "";
-        }else{
-            if(isInteger(quantity)){
-                int quantityAsInt = (int) quantity;
-                return quantityAsInt + " x ";
-            }
-            return quantity + " x ";
-        }
-    }
-
-    private boolean isInteger(float quantity) {
-        return (int)quantity == quantity;
-    }
-
-    private boolean isZero(float quantity) {
-        return quantity - 0 < 0.0001;
+        holder.onBindViewHolder(holder, position, shoppingEntry);
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_entry, parent, false);
-        return new ViewHolder(view, onEntryListener);
+        View view = null;
+        if(viewType == DEFAULT_VIEWHOLDER) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_entry, parent, false);
+            return new DefaultViewHolder(view, onEntryListener, this);
+        }
+        else if(viewType == IMAGE_VIEWHOLDER) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_entry_with_image, parent, false);
+            return new ViewHolderWithImage(view, onEntryListener, this);
+        }
+        throw new IllegalArgumentException("Found no suitable viewType");
+    }
+
+    public void setPreviousExpandedPosition(int previousExpandedPosition){
+        this.previousExpandedPosition = previousExpandedPosition;
+    }
+
+    public void setExpandedPosition(int expandedPosition){
+        this.expandedPosition = expandedPosition;
+    }
+
+    public int getPreviousExpandedPosition(){
+        return previousExpandedPosition;
+    }
+
+    public int getExpandedPosition(){
+        return expandedPosition;
+    }
+
+    public void setWasChecked(boolean wasCheckedBoolean){
+        wasChecked.setValue(wasCheckedBoolean);
+    }
+
+    public void setEntryContainingCheckedBox(ShoppingEntry entry){
+        entryContainingCheckedBox = entry;
     }
 
     @Override
@@ -181,35 +126,21 @@ public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<Sho
         void onEntryClick(int position);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public static abstract class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        private TextView nameOfEntry;
-        private TextView quantity;
-        private TextView unitOfQuantity;
-        private CheckBox isDone;
-        private ImageButton dropDown;
-        private TextView details;
-        private OnEntryListener onEntryListener;
-
-        public ViewHolder(@NonNull View itemView, OnEntryListener onEntryListener) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            findViewsById(itemView);
-            this.onEntryListener = onEntryListener;
-            itemView.setOnClickListener(this);
         }
 
-        private void findViewsById(@NonNull View itemView) {
-            nameOfEntry = itemView.findViewById(R.id.entry_name_textview);
-            quantity = itemView.findViewById(R.id.entry_quantity_textview);
-            unitOfQuantity = itemView.findViewById(R.id.entry_unit_of_quantity_textview);
-            isDone = itemView.findViewById(R.id.entry_isDoneCheckbox);
-            dropDown = itemView.findViewById(R.id.entry_dropDownButton);
-            details = itemView.findViewById(R.id.entry_details);
-        }
-
-        @Override
-        public void onClick(View v) {
-            onEntryListener.onEntryClick(getAdapterPosition());
-        }
+        public abstract void onBindViewHolder(ViewHolder holder, int position, ShoppingEntry shoppingEntry);
     }
+
+
+
+
+
+
+
+
+
 }

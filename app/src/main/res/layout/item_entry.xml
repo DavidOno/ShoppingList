@@ -36,7 +36,7 @@
                         android:maxLines="1"
                         android:ellipsize="end"
                         android:layout_marginLeft="8dp"
-                        android:textSize="14dp"/>
+                        android:textSize="@dimen/text_size"/>
 
                     <TextView
                         android:id="@+id/entry_name_textview"
@@ -45,7 +45,8 @@
                         android:text="TextView"
                         android:maxLines="1"
                         android:ellipsize="end"
-                        android:textSize="14dp"/>
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_size"/>
                 </LinearLayout>
 
                 <TextView
@@ -57,7 +58,7 @@
                     android:ellipsize="end"
                     android:layout_marginLeft="8dp"
                     android:layout_marginBottom="3dp"
-                    android:textSize="12dp"/>
+                    android:textSize="@dimen/text_size"/>
             </LinearLayout>
 
             <ImageButton
@@ -82,7 +83,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
-                android:layout_below="@id/outerLinearLayout"/>
+                android:layout_below="@id/outerLinearLayout"
+                android:textSize="@dimen/text_size"
+                />
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 </LinearLayout>
