@@ -29,6 +29,7 @@ import de.db.shoppinglist.viewmodel.SearchEntryViewModel;
 
 public class SearchEntryFragment extends Fragment implements SearchEntryRecyclerViewAdapter.OnEntryListener {
 
+    private static final String SEARCH_QUERY_KEY = "Search_query_key";
     private SearchView searchView;
     private ImageButton addEntryButton;
     private RecyclerView historyOfEntries;
@@ -36,6 +37,7 @@ public class SearchEntryFragment extends Fragment implements SearchEntryRecycler
     private SearchEntryViewModel viewModel;
     private ShoppingList list;
     private View view;
+    private String query;
 
     @Nullable
     @Override
@@ -55,7 +57,8 @@ public class SearchEntryFragment extends Fragment implements SearchEntryRecycler
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                adapter.getFilter().filter(newText);
+                query = newText;
+                adapter.getFilter().filter(query);
                 return false;
             }
         });
@@ -74,6 +77,7 @@ public class SearchEntryFragment extends Fragment implements SearchEntryRecycler
         history.observe(getViewLifecycleOwner(),entryHistoryElements -> {
             adapter.setHistory(history.getValue());
             adapter.notifyDataSetChanged();
+            adapter.getFilter().filter(query);
             Log.d("SEARCH_ENTRY", "Observed change");
         });
         historyOfEntries.setAdapter(adapter);
@@ -101,4 +105,19 @@ public class SearchEntryFragment extends Fragment implements SearchEntryRecycler
         navController.navigate(newEntry);
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if(query != null)
+            outState.putString(SEARCH_QUERY_KEY, query);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if(savedInstanceState != null){
+            String query = savedInstanceState.getString(SEARCH_QUERY_KEY);
+            adapter.getFilter().filter(query);
+        }
+    }
 }

@@ -88,7 +88,7 @@ public class NewEntryFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-//        setRetainInstance(true);
+        setRetainInstance(true);
         handleNavigationArguments();
         viewModel = new ViewModelProvider(requireActivity()).get(NewEntryViewModel.class);
         takenImageSVM = new ViewModelProvider(requireActivity()).get(TakenImageSVM.class);
@@ -224,8 +224,4 @@ public class NewEntryFragment extends Fragment {
         image = view.findViewById(R.id.new_entry_imageView);
     }
 
-//    @Override
-//    public void onDestroyView() {
-//        super.onDestroyView();
-//    }
 }
