@@ -128,6 +128,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+//        setRetainInstance(true);
         ShoppingListFragmentArgs shoppingListFragmentArgs = ShoppingListFragmentArgs.fromBundle(getArguments());
         list = shoppingListFragmentArgs.getList();
     }

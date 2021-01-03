@@ -76,6 +76,7 @@ public class ShoppingListsFragment extends Fragment implements FireShoppingLists
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+//        setRetainInstance(true);
     }
 
     private void findViewsById(View view) {

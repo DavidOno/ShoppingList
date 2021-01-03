@@ -25,13 +25,14 @@ public class ShoppingListsActivity extends AppCompatActivity{
     private NavController navController;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser currentUser;
+    private NavHostFragment navHostFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         navController = NavHostFragment.findNavController(navHostFragment);
         selectStartFragment();
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -41,6 +42,7 @@ public class ShoppingListsActivity extends AppCompatActivity{
         });
         NavigationUI.setupActionBarWithNavController(this, navController);
         displayReceivedToasts();
+
     }
 
     private void displayReceivedToasts() {
@@ -57,12 +59,14 @@ public class ShoppingListsActivity extends AppCompatActivity{
         NavGraph graph = navInflater.inflate(R.navigation.nav_graph);
         firebaseAuth = FirebaseAuth.getInstance();
         currentUser = firebaseAuth.getCurrentUser();
-        if (currentUser != null) {
-            graph.setStartDestination(R.id.shoppingListsFragment);
-        } else {
-            graph.setStartDestination(R.id.loginFragment);
+        if (navHostFragment.getChildFragmentManager().getBackStackEntryCount() == 0) {
+            if (currentUser != null) {
+                graph.setStartDestination(R.id.shoppingListsFragment);
+            } else {
+                graph.setStartDestination(R.id.loginFragment);
+            }
+            navController.setGraph(graph);
         }
-        navController.setGraph(graph);
     }
 
     @Override
