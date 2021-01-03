@@ -25,6 +25,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.bumptech.glide.Glide;
+
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.ifc.TakenImageSVM;
 import de.db.shoppinglist.model.EntryHistoryElement;
@@ -54,6 +56,13 @@ public class NewEntryFragment extends Fragment {
             nameOfProductEditText.setText(entry.getName());
             unitOfQuantityEditText.setText(entry.getUnitOfQuantity());
             detailsEditText.setText(entry.getDetails());
+            if(hasValidImageUri()) {
+                takenImageSVM.setImage(Uri.parse(entry.getImageURI()));
+                Glide.with(getContext())
+                        .load(entry.getImageURI())
+                        .skipMemoryCache(false)
+                        .into(image);
+            }
         }else{
             nameOfProductEditText.setText(entryName);
         }
@@ -62,6 +71,10 @@ public class NewEntryFragment extends Fragment {
             image.setImageURI(takenImage);
         });
         return view;
+    }
+
+    private boolean hasValidImageUri() {
+        return entry.getImageURI() != null && !entry.getImageURI().isEmpty();
     }
 
     private void navigateToTakeImage() {
@@ -150,10 +163,18 @@ public class NewEntryFragment extends Fragment {
         String unitOfQuantity = getString(unitOfQuantityEditText);
         String nameOfProduct = getString(nameOfProductEditText);
         String details = getString(detailsEditText);
-        Uri imageUri = takenImageSVM.getImageLiveData().getValue();
-        viewModel.addNewEntry(list, quantity, unitOfQuantity, nameOfProduct, details, imageUri);
+        Uri imageUri = getImageUri();
+        viewModel.addNewEntry(list, quantity, unitOfQuantity, nameOfProduct, details, imageUri, getContext());
         takenImageSVM.reset();
         closeFragment();
+    }
+
+    private Uri getImageUri() {
+        return takenImageSVM.getImageLiveData().getValue();
+    }
+
+    private boolean isNotDownloadUri(Uri image) {
+        return !image.toString().startsWith("http");
     }
 
 

@@ -1,5 +1,6 @@
 package de.db.shoppinglist.database;
 
+import android.content.Context;
 import android.net.Uri;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -14,7 +15,7 @@ import de.db.shoppinglist.model.ShoppingList;
 
 public interface Source {
 
-    void addEntry(String listUid, ShoppingEntry entry, Uri uploadImageUri);
+    void addEntry(String listUid, ShoppingEntry entry, Uri uploadImageUri, Context context);
 
     void deleteEntry(String listUid, String documentUid);
 
@@ -32,7 +33,7 @@ public interface Source {
 
     void updateListName(ShoppingList list);
 
-    void modifyWholeEntry(ShoppingList list, ShoppingEntry entry);
+    void modifyWholeEntry(ShoppingList list, ShoppingEntry entry, String imageUri, Context context);
 
     void getHistory(Consumer<List<EntryHistoryElement>> callback);
 
@@ -40,7 +41,7 @@ public interface Source {
 
     void deleteAllLists();
 
-    void uploadImage(String listName, String entryName, Uri imageURI);
+    void uploadImage(String listName, ShoppingEntry entry, Uri imageURI, Context context);
 
     void signOut(GoogleSignInClient googleSignInClient);
 

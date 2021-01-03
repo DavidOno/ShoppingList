@@ -9,6 +9,7 @@ public class EntryHistoryElement implements Parcelable {
     private String name;
     private String unitOfQuantity;
     private String details;
+    private String imageURI;
     /**
      * Firebase requires an empty constructor.
      */
@@ -16,16 +17,19 @@ public class EntryHistoryElement implements Parcelable {
 
     }
 
-    public EntryHistoryElement(String name, String unitOfQuantity, String details) {
+    public EntryHistoryElement(String name, String unitOfQuantity, String details, String imageUri) {
         this.name = name;
         this.unitOfQuantity = unitOfQuantity;
         this.details = details;
+        this.imageURI = imageUri;
     }
+
 
     protected EntryHistoryElement(Parcel in) {
         name = in.readString();
         unitOfQuantity = in.readString();
         details = in.readString();
+        imageURI = in.readString();
     }
 
     @Override
@@ -33,6 +37,7 @@ public class EntryHistoryElement implements Parcelable {
         dest.writeString(name);
         dest.writeString(unitOfQuantity);
         dest.writeString(details);
+        dest.writeString(imageURI);
     }
 
     @Override
@@ -64,6 +69,9 @@ public class EntryHistoryElement implements Parcelable {
         return details;
     }
 
+    public String getImageURI(){
+        return imageURI;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -72,12 +80,13 @@ public class EntryHistoryElement implements Parcelable {
         EntryHistoryElement that = (EntryHistoryElement) o;
         return name.equals(that.name) &&
                 Objects.equals(unitOfQuantity, that.unitOfQuantity) &&
-                Objects.equals(details, that.details);
+                Objects.equals(details, that.details) &&
+                Objects.equals(imageURI, that.imageURI);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, unitOfQuantity, details);
+        return Objects.hash(name, unitOfQuantity, details, imageURI);
     }
 
     @Override
@@ -86,6 +95,7 @@ public class EntryHistoryElement implements Parcelable {
                 "name='" + name + '\'' +
                 ", unitOfQuantity='" + unitOfQuantity + '\'' +
                 ", details='" + details + '\'' +
+                ", imageUri='" + imageURI + '\'' +
                 '}';
     }
 }

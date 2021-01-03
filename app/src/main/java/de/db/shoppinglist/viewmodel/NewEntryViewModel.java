@@ -1,5 +1,6 @@
 package de.db.shoppinglist.viewmodel;
 
+import android.content.Context;
 import android.net.Uri;
 
 import androidx.lifecycle.ViewModel;
@@ -12,9 +13,20 @@ public class NewEntryViewModel extends ViewModel {
 
     private ShoppingRepository repo = ShoppingRepository.getInstance();
 
-    public void addNewEntry(ShoppingList list, float quantity, String unitOfQuantity, String nameOfProduct, String details, Uri uploadImageUri) {
+    public void addNewEntry(ShoppingList list, float quantity, String unitOfQuantity, String nameOfProduct, String details, Uri imageUri, Context context) {
         int position = list.getNextFreePosition();
-        ShoppingEntry shoppingEntry = new ShoppingEntry(quantity, unitOfQuantity, nameOfProduct, details, position, null);
-        repo.addEntry(list.getUid(), shoppingEntry, uploadImageUri);
+        String downloadUri = null;
+        if(imageUri != null) {
+            if (isDownLoadUri(imageUri)) {
+                downloadUri = imageUri.toString();
+                imageUri = null;
+            }
+        }
+        ShoppingEntry shoppingEntry = new ShoppingEntry(quantity, unitOfQuantity, nameOfProduct, details, position, downloadUri);
+        repo.addEntry(list.getUid(), shoppingEntry, imageUri, context);
+    }
+
+    private boolean isDownLoadUri(Uri uploadImageUri) {
+        return uploadImageUri.toString().startsWith("http");
     }
 }

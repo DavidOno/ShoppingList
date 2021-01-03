@@ -1,5 +1,7 @@
 package de.db.shoppinglist.viewmodel;
 
+import android.content.Context;
+
 import androidx.lifecycle.ViewModel;
 
 import de.db.shoppinglist.model.ShoppingEntry;
@@ -19,11 +21,11 @@ public class ModifyEntryViewModel extends ViewModel {
         repo.updateDoneStatus(list.getUid(), entry);
     }
 
-    public void modifyEntry(ShoppingList list, ShoppingEntry entry){
-        repo.modifyWholeEntry(list, entry);
+    public void modifyEntry(ShoppingList list, ShoppingEntry entry, String imageUri, Context context){
+        repo.modifyWholeEntry(list, entry, imageUri, context);
     }
 
-    public void modifyImageOfEntry(ShoppingList list, ShoppingEntry entry, String imageUri) {
-        repo.modifyImageOfEntry(list, entry, imageUri);
+    public void modifyImageOfEntry(ShoppingList list, ShoppingEntry entry, String imageUri, Context context) {
+        repo.modifyImageOfEntry(list, entry, imageUri, context);
     }
 }

@@ -227,11 +227,13 @@ public class ModifyEntryFragment extends Fragment {
         String details = detailsEditText.getText().toString();
         boolean done = doneCheckbox.isChecked();
         setValues(quantity, unitOfQuantity, nameOfProduct, details, done);
-        viewModel.modifyEntry(list, entry);
+        String imageUri = null;
         if(!takenImageSVM.isEmpty()) {
-            String imageUri = takenImageSVM.getImageLiveData().getValue().toString();
-            viewModel.modifyImageOfEntry(list, entry, imageUri);
+            imageUri = takenImageSVM.getImageLiveData().getValue().toString();
+//            viewModel.modifyImageOfEntry(list, entry, imageUri, getContext());
         }
+        viewModel.modifyEntry(list, entry, imageUri, getContext());
+
         takenImageSVM.reset();
         closeFragment();
     }

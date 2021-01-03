@@ -1,5 +1,6 @@
 package de.db.shoppinglist.repository;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
@@ -38,9 +39,9 @@ public class ShoppingRepository {
         return instance;
     }
 
-    public void addEntry(String listId, ShoppingEntry newEntry, Uri uploadImageUri){
+    public void addEntry(String listId, ShoppingEntry newEntry, Uri uploadImageUri, Context context){
         Runnable run = () -> {
-            db.addEntry(listId, newEntry, uploadImageUri);
+            db.addEntry(listId, newEntry, uploadImageUri, context);
         };
         startThread(run);
     }
@@ -95,9 +96,9 @@ public class ShoppingRepository {
         startThread(run);
     }
 
-    public void modifyWholeEntry(ShoppingList list, ShoppingEntry entry) {
+    public void modifyWholeEntry(ShoppingList list, ShoppingEntry entry, String imageUri, Context context) {
         Runnable run = () -> {
-            db.modifyWholeEntry(list, entry);
+            db.modifyWholeEntry(list, entry, imageUri, context);
         };
         startThread(run);
     }
@@ -129,11 +130,10 @@ public class ShoppingRepository {
         startThread(run);
     }
 
-    public void modifyImageOfEntry(ShoppingList list, ShoppingEntry entry, String imageUri) {
+    public void modifyImageOfEntry(ShoppingList list, ShoppingEntry entry, String imageUri, Context context) {
         String listName = list.getUid();
-        String entryName = entry.getUid();
         Uri uri = Uri.parse(imageUri);
-        Runnable run = () -> db.uploadImage(listName, entryName, uri);
+        Runnable run = () -> db.uploadImage(listName, entry, uri, context);
         startThread(run);
     }
 

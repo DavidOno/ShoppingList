@@ -1,22 +1,24 @@
 package de.db.shoppinglist.adapter;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.model.EntryHistoryElement;
-import de.db.shoppinglist.model.ShoppingEntry;
 
 public class SearchEntryRecyclerViewAdapter extends RecyclerView.Adapter<SearchEntryRecyclerViewAdapter.ViewHolder> implements Filterable {
 
@@ -43,6 +45,11 @@ public class SearchEntryRecyclerViewAdapter extends RecyclerView.Adapter<SearchE
         holder.nameOfProduct.setText(entries.get(position).getName());
         holder.unitOfQuantity.setText(entries.get(position).getUnitOfQuantity());
         holder.details.setText(entries.get(position).getDetails());
+        if(entries.get(position).getImageURI() != null)
+            Glide.with(holder.itemView.getContext())
+                    .load(entries.get(position).getImageURI())
+                    .skipMemoryCache(false)
+                    .into(holder.imageView);
     }
 
     @Override
@@ -102,6 +109,7 @@ public class SearchEntryRecyclerViewAdapter extends RecyclerView.Adapter<SearchE
         private TextView nameOfProduct;
         private TextView unitOfQuantity;
         private TextView details;
+        private ImageView imageView;
         private OnEntryListener onEntryListener;
 
         public ViewHolder(@NonNull View itemView, OnEntryListener onEntryListener) {
@@ -109,6 +117,7 @@ public class SearchEntryRecyclerViewAdapter extends RecyclerView.Adapter<SearchE
             nameOfProduct = itemView.findViewById(R.id.item_search_name_of_product);
             unitOfQuantity = itemView.findViewById(R.id.item_search_unit_of_quantity);
             details = itemView.findViewById(R.id.item_search_details);
+            imageView = itemView.findViewById(R.id.item_search_image);
             this.onEntryListener = onEntryListener;
             itemView.setOnClickListener(this);
         }

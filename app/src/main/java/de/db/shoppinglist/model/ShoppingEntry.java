@@ -148,7 +148,7 @@ public class ShoppingEntry implements Parcelable, PositionAware {
 
 
     public EntryHistoryElement extractHistoryElement(){
-        return new EntryHistoryElement(name, unitOfQuantity, details);
+        return new EntryHistoryElement(name, unitOfQuantity, details, imageURI);
     }
 
     @Override
