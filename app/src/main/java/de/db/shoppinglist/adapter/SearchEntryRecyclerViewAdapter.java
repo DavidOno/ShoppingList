@@ -45,11 +45,14 @@ public class SearchEntryRecyclerViewAdapter extends RecyclerView.Adapter<SearchE
         holder.nameOfProduct.setText(entries.get(position).getName());
         holder.unitOfQuantity.setText(entries.get(position).getUnitOfQuantity());
         holder.details.setText(entries.get(position).getDetails());
-        if(entries.get(position).getImageURI() != null)
+        if(entries.get(position).getImageURI() != null) {
             Glide.with(holder.itemView.getContext())
                     .load(entries.get(position).getImageURI())
                     .skipMemoryCache(false)
                     .into(holder.imageView);
+        }else{
+            Glide.with(holder.itemView.getContext()).clear(holder.imageView);
+        }
     }
 
     @Override
