@@ -1,8 +1,10 @@
 package de.db.shoppinglist.database;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageDecoder;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -23,14 +25,17 @@ public class ImageCompressor {
     public byte[] compress(Uri imageUri, int quality) {
         byte[] compressed = null;
         try {
-            InputStream is = context.getContentResolver().openInputStream(imageUri);
-            BitmapFactory.Options dbo = new BitmapFactory.Options();
-            dbo.inJustDecodeBounds = true;
-            Bitmap bitmap = BitmapFactory.decodeStream(is, null, dbo);
-            is.close();
+//            InputStream is = context.getContentResolver().openInputStream(imageUri);
+//            BitmapFactory.Options dbo = new BitmapFactory.Options();
+//            dbo.inJustDecodeBounds = true;
+//            Bitmap bitmap = BitmapFactory.decodeStream(is, null, dbo);
+//            is.close();
 //            BitmapFactory.Options options = new BitmapFactory.Options();
 //            Bitmap bitmap = BitmapFactory.decodeFile(imageUri.toString(), options);
-//            Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
+//            ContentResolver cr = context.getContentResolver();
+//            InputStream in = cr.openInputStream(imageUri);
+//            Bitmap bitmap = BitmapFactory.decodeStream(in,null,null);
             Bitmap rotatedBitmap;
             int orientation = getOrientation(imageUri);
             rotatedBitmap = rotateBitmap(bitmap, orientation);
@@ -45,11 +50,11 @@ public class ImageCompressor {
 
     private byte[] compress(Uri imageUri, int quality, Bitmap bitmap, Bitmap rotatedBitmap) throws IOException {
         byte[] compressedImageBytes = null;
-        if (rotatedBitmap != bitmap) {
+//        if (rotatedBitmap != bitmap) {//TODO: remove???
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos);
             compressedImageBytes = baos.toByteArray();
-        }
+//        }
         return compressedImageBytes;
     }
 

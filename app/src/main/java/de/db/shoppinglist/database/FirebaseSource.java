@@ -20,6 +20,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 import java.util.List;
@@ -355,8 +356,9 @@ public class FirebaseSource implements Source {
 
     @Override
     public void deleteAllLists() {
-        getListsRootCollectionRef().get().addOnSuccessListener(documentSnapshots -> {
-            documentSnapshots.getDocuments().stream()
+        Task<QuerySnapshot> querySnapshotTask = getListsRootCollectionRef().get();
+        querySnapshotTask.addOnSuccessListener(aVoid -> {
+            querySnapshotTask.getResult().getDocuments().stream()
                     .map(DocumentSnapshot::getId)
                     .forEach(this::deleteList);
             Log.d(FIREBASE_TAG, "Success: Deleted All Lists");
@@ -389,21 +391,52 @@ public class FirebaseSource implements Source {
         );
     }
 
+    /**
+     * Uploads Image to Firebase Storage.
+     * Afterwards an update of the specific ShoppingEntry is triggert.
+     * Tries to compress images if possible.
+     * @param listName Name of the Shoppinglist
+     * @param entry Entry which
+     * @param imageURI Uri of the image
+     * @param context Context of the image-uri
+     */
     @Override
     public void uploadImage(String listName, ShoppingEntry entry, Uri imageURI, Context context) {
         final StorageReference image = buildStorageReference();
-        long start = System.currentTimeMillis();
         byte[] compressedImageBytes = new ImageCompressor(context).compress(imageURI, 30);
-        image.putBytes(compressedImageBytes)
+        if(isCompressable(compressedImageBytes)) {
+            uploadCompressedImage(listName, entry, image, compressedImageBytes);
+        }else{
+            uploadNotCompressedImage(listName, entry, image, imageURI);
+        }
+    }
+
+    private void uploadNotCompressedImage(String listName, ShoppingEntry entry, StorageReference image, Uri imageURI) {
+        image.putFile(imageURI)
                 .addOnSuccessListener(taskSnapshot -> image.getDownloadUrl()
                         .addOnSuccessListener(imageURI1 -> {
-                            toastMaker.prepareToast(String.valueOf((System.currentTimeMillis() - start)));
                             updateImage(listName, entry, imageURI1.toString());
-                            toastMaker.prepareToast(String.valueOf((System.currentTimeMillis() - start)));
                         }))
                 .addOnFailureListener(e -> {
                             Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
                             toastMaker.prepareToast("Fail: Upload Image");
+                        }
+                );
+    }
+
+    private boolean isCompressable(byte[] compressedImageBytes) {
+        return compressedImageBytes != null;
+    }
+
+    private void uploadCompressedImage(String listName, ShoppingEntry entry, StorageReference image, byte[] compressedImageBytes) {
+        image.putBytes(compressedImageBytes)
+                .addOnSuccessListener(taskSnapshot -> image.getDownloadUrl()
+                        .addOnSuccessListener(imageURI1 -> {
+                            updateImage(listName, entry, imageURI1.toString());
+                        }))
+                .addOnFailureListener(e -> {
+                            Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                            toastMaker.prepareToast("Fail: Upload compressed Image");
                         }
                 );
     }
