@@ -44,7 +44,7 @@ import de.db.shoppinglist.ifc.ModifyTakenImageSVM;
 import de.db.shoppinglist.ifc.TakenImageSVM;
 
 /**
- * Taken mainly from
+ * Important parts taken from
  * https://github.com/bikashthapa01/basic-camera-app-android/blob/master/app/src/main/java/net/smallacademy/cameraandgallery/MainActivity.java
  * and adapted.
  */
@@ -53,6 +53,7 @@ public class TakeImageFragment extends Fragment {
     public static final int CAMERA_PERM_CODE = 101;
     public static final int CAMERA_REQUEST_CODE = 102;
     public static final int GALLERY_REQUEST_CODE = 105;
+    private static final String CONTENT_URI_KEY = "Content_uri_key";
     private ImageView selectedImage;
     private Button cameraBtn;
     private Button galleryBtn;
@@ -88,6 +89,7 @@ public class TakeImageFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        setRetainInstance(true);
         sharedViewModel = new ViewModelProvider(requireActivity()).get(TakenImageSVM.class);
     }
 
@@ -121,8 +123,12 @@ public class TakeImageFragment extends Fragment {
         inflater.inflate(R.menu.menu_done, menu);
         MenuCompat.setGroupDividerEnabled(menu, true);
         done = getDoneMenuItem(menu);
-        done.setEnabled(false);
+        done.setEnabled(hasImage());
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private boolean hasImage() {
+        return contentUri != null;
     }
 
     private MenuItem getDoneMenuItem(Menu menu) {
@@ -207,6 +213,24 @@ public class TakeImageFragment extends Fragment {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
             }
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if(contentUri != null) {
+            outState.putString(CONTENT_URI_KEY, contentUri.toString());
+        }
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if(savedInstanceState != null){
+            String contentUriString = savedInstanceState.getString(CONTENT_URI_KEY);
+            contentUri = Uri.parse(contentUriString);
+            selectedImage.setImageURI(contentUri);
         }
     }
 }
