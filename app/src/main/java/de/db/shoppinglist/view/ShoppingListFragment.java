@@ -38,7 +38,9 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
     private FloatingActionButton newEntryButton;
     private ShoppingListViewModel shoppingListViewModel;
     private ShoppingList list;
-    private FirestoreRecyclerAdapter fireAdapter;
+    private FireShoppingListRecViewAdapter fireAdapter;
+    private static final String EXPANDED_POSITION_KEY = "Exp_key";
+    private static final String PREV_EXPANDED_POSITION_KEY = "Prev_exp_key";
 
     @Nullable
     @Override
@@ -173,4 +175,23 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
         NavDirections openSelectedEntry = ShoppingListFragmentDirections.actionShoppingListFragmentToModifyEntryFragment(entry, list);
         navController.navigate(openSelectedEntry);
     }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if(savedInstanceState != null){
+            int expandedPosition = savedInstanceState.getInt(EXPANDED_POSITION_KEY);
+            fireAdapter.setExpandedPosition(expandedPosition);
+            int previousPosition = savedInstanceState.getInt(PREV_EXPANDED_POSITION_KEY);
+            fireAdapter.setExpandedPosition(previousPosition);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(EXPANDED_POSITION_KEY, fireAdapter.getExpandedPosition());
+        outState.putInt(PREV_EXPANDED_POSITION_KEY, fireAdapter.getPreviousExpandedPosition());
+    }
 }
+
