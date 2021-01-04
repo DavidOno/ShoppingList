@@ -146,4 +146,9 @@ public class ShoppingRepository {
         Runnable run = () -> db.signIn(idToken, navigationToShoppingList);
         startThread(run);
     }
+
+    public void deleteHistoryEntry(EntryHistoryElement historyEntry) {
+        Runnable run = () -> db.deleteHistoryEntry(historyEntry);
+        startThread(run);
+    }
 }

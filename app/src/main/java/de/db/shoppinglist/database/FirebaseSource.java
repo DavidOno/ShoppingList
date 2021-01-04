@@ -4,8 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
-import androidx.lifecycle.MutableLiveData;
-
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.tasks.Task;
@@ -20,7 +18,6 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +52,7 @@ public class FirebaseSource implements Source {
     private static final String NEXT_FREE_POSITION_PROPERTY = "nextFreePosition";
     private static final String IMAGE_STORAGE_KEY = "uploads";
     private static final String IMAGE_URI_PROPERTY = "imageURI";
+    private static final String HIST_UID_PROPERTY = "uid";
     private final ToastUtility toastMaker = ToastUtility.getInstance();
 
 
@@ -128,7 +126,7 @@ public class FirebaseSource implements Source {
 
     private void addNewElementToHistory(ShoppingEntry newEntry) {
         EntryHistoryElement historyElement = newEntry.extractHistoryElement();
-        getHistoryRootCollectionRef().add(historyElement)
+        getHistoryRootCollectionRef().document(historyElement.getUid()).set(historyElement)
                 .addOnSuccessListener(aVoid ->
                     Log.d(FIREBASE_TAG, "Success: Added to History")
                 )
@@ -314,7 +312,9 @@ public class FirebaseSource implements Source {
     }
 
     private EntryHistoryElement makeHistoryElement(DocumentSnapshot doc) {
-        return new EntryHistoryElement((String) doc.get(NAME_PROPERTY), (String) doc.get(UNIT_OF_QUANTITY_PROPERTY), (String) doc.get(DETAILS_PROPERTY), (String)doc.get(IMAGE_URI_PROPERTY));
+        return new EntryHistoryElement((String) doc.get(NAME_PROPERTY), (String) doc.get(UNIT_OF_QUANTITY_PROPERTY), 
+                (String) doc.get(DETAILS_PROPERTY), (String)doc.get(IMAGE_URI_PROPERTY),
+                (String)doc.get(HIST_UID_PROPERTY));
     }
 
     private DocumentReference buildPathForEntryDoc(String listId, DocumentSnapshot doc) {
@@ -461,5 +461,18 @@ public class FirebaseSource implements Source {
                         Log.w(FIREBASE_TAG, "signInWithCredential:failure", task.getException());
                     }
                 });
+    }
+
+    @Override
+    public void deleteHistoryEntry(EntryHistoryElement historyEntry) {
+        String historyId = historyEntry.getUid();
+        getHistoryRootCollectionRef().document(historyId).delete()
+        .addOnSuccessListener(aVoid -> {
+            Log.d(FIREBASE_TAG, "Success: Deleted history-entry");
+        }).addOnFailureListener(e -> {
+                    Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                    toastMaker.prepareToast("Fail: Delete List");
+                }
+        );
     }
 }

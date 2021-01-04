@@ -46,5 +46,7 @@ public interface Source {
     void signOut(GoogleSignInClient googleSignInClient);
 
     void signIn(String idToken, Runnable navigationToShoppingList);
+
+    void deleteHistoryEntry(EntryHistoryElement historyEntry);
 }
 

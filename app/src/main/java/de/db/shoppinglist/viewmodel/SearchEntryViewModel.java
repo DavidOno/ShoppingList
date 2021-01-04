@@ -16,4 +16,8 @@ public class SearchEntryViewModel extends ViewModel {
     public LiveData<List<EntryHistoryElement>> getHistory() {
         return repo.getHistory();
     }
+
+    public void deleteList(EntryHistoryElement historyEntry) {
+        repo.deleteHistoryEntry(historyEntry);
+    }
 }

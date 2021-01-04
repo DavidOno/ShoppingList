@@ -4,12 +4,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class EntryHistoryElement implements Parcelable {
     private String name;
     private String unitOfQuantity;
     private String details;
     private String imageURI;
+    private String uid;
     /**
      * Firebase requires an empty constructor.
      */
@@ -22,6 +24,15 @@ public class EntryHistoryElement implements Parcelable {
         this.unitOfQuantity = unitOfQuantity;
         this.details = details;
         this.imageURI = imageUri;
+        this.uid = UUID.randomUUID().toString();
+    }
+
+    public EntryHistoryElement(String name, String unitOfQuantity, String details, String imageUri, String uid) {
+        this.name = name;
+        this.unitOfQuantity = unitOfQuantity;
+        this.details = details;
+        this.imageURI = imageUri;
+        this.uid = uid;
     }
 
 
@@ -30,6 +41,7 @@ public class EntryHistoryElement implements Parcelable {
         unitOfQuantity = in.readString();
         details = in.readString();
         imageURI = in.readString();
+        uid = in.readString();
     }
 
     @Override
@@ -38,6 +50,7 @@ public class EntryHistoryElement implements Parcelable {
         dest.writeString(unitOfQuantity);
         dest.writeString(details);
         dest.writeString(imageURI);
+        dest.writeString(uid);
     }
 
     @Override
@@ -71,6 +84,10 @@ public class EntryHistoryElement implements Parcelable {
 
     public String getImageURI(){
         return imageURI;
+    }
+
+    public String getUid(){
+        return uid;
     }
 
     @Override
