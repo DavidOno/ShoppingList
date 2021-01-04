@@ -115,9 +115,9 @@ public class ShareDialog extends AppCompatDialogFragment {
     }
 
     private void finish() {
-        String listName = emailEditText.getText().toString();
-        list.setName(listName);
-        viewModel.share(list);
+        String email = emailEditText.getText().toString();
+        String name = list.getName();
+        viewModel.share(list, email);
         closeDialog();
     }
 }

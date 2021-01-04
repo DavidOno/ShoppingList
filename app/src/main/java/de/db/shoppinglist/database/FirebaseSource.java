@@ -30,6 +30,7 @@ import java.util.function.Consumer;
 import de.db.shoppinglist.model.EntryHistoryElement;
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
+import de.db.shoppinglist.model.UserInfo;
 import de.db.shoppinglist.utility.ToastUtility;
 
 import static java.util.stream.Collectors.toList;
@@ -37,23 +38,26 @@ import static java.util.stream.Collectors.toSet;
 
 public class FirebaseSource implements Source {
 
-    private static final String FIREBASE_TAG = "FIREBASE";
-    private static final String USER_ROOT_KEY = "Users";
-    private static final String LISTS_ROOT_KEY = "Lists";
-    private static final String ENTRIES_KEY = "Entries";
-    private static final String HISTORY_KEY = "History";
-    private static final String TOTAL_PROPERTY = "total";
-    private static final String POSITION_PROPERTY = "position";
-    private static final String NAME_PROPERTY = "name";
-    private static final String DONE_PROPERTY = "done";
-    private static final String DETAILS_PROPERTY = "details";
-    private static final String QUANTITY_PROPERTY = "quantity";
-    private static final String UNIT_OF_QUANTITY_PROPERTY = "unitOfQuantity";
-    private static final String NEXT_FREE_POSITION_PROPERTY = "nextFreePosition";
-    private static final String IMAGE_STORAGE_KEY = "uploads";
-    private static final String IMAGE_URI_PROPERTY = "imageURI";
-    private static final String HIST_UID_PROPERTY = "uid";
+
     private final ToastUtility toastMaker = ToastUtility.getInstance();
+    private static final String FIREBASE_TAG = "FIREBASE";
+    public static final String USER_ROOT_KEY = "Users";
+    public static final String LISTS_ROOT_KEY = "Lists";
+    public static final String ENTRIES_KEY = "Entries";
+    public static final String HISTORY_KEY = "History";
+    public static final String TOTAL_PROPERTY = "total";
+    public static final String POSITION_PROPERTY = "position";
+    public static final String NAME_PROPERTY = "name";
+    public static final String DONE_PROPERTY = "done";
+    public static final String DETAILS_PROPERTY = "details";
+    public static final String QUANTITY_PROPERTY = "quantity";
+    public static final String UNIT_OF_QUANTITY_PROPERTY = "unitOfQuantity";
+    public static final String NEXT_FREE_POSITION_PROPERTY = "nextFreePosition";
+    public static final String IMAGE_STORAGE_KEY = "uploads";
+    public static final String IMAGE_URI_PROPERTY = "imageURI";
+    public static final String HIST_UID_PROPERTY = "uid";
+    public static final String USERS_KEY = "User";
+
 
 
     private CollectionReference getListsRootCollectionRef(){
@@ -445,7 +449,7 @@ public class FirebaseSource implements Source {
     public void signOut(GoogleSignInClient googleSignInClient) {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuth.signOut();
-        googleSignInClient.signOut().addOnCompleteListener(task -> Log.d(FIREBASE_TAG, "Completly logged out"));
+        googleSignInClient.signOut().addOnCompleteListener(task -> Log.d(FIREBASE_TAG, "Completely logged out"));
     }
 
     @Override
@@ -456,11 +460,21 @@ public class FirebaseSource implements Source {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d(FIREBASE_TAG, "signInWithCredential:success");
+                        addToUsers();
                         postSignInAction.run();
                     } else {
                         Log.w(FIREBASE_TAG, "signInWithCredential:failure", task.getException());
                     }
                 });
+    }
+
+    private void addToUsers() {
+        UserInfo userInfo = extractUserInfomation();
+        FirebaseFirestore.getInstance().collection(USERS_KEY).document(getUserId()).set(userInfo);
+    }
+
+    private UserInfo extractUserInfomation(){
+        return new UserInfo(FirebaseAuth.getInstance());
     }
 
     @Override

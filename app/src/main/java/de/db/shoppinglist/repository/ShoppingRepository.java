@@ -155,8 +155,8 @@ public class ShoppingRepository {
         startThread(run);
     }
 
-    public void share(ShoppingList list) {
-        Runnable run = () -> sharer.share(list);
+    public void share(ShoppingList list, String email) {
+        Runnable run = () -> sharer.share(list, email);
         startThread(run);
     }
 }

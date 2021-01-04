@@ -9,7 +9,7 @@ public class ShareListViewModel extends ViewModel {
 
     private ShoppingRepository repo = ShoppingRepository.getInstance();
 
-    public void share(ShoppingList list) {
-        repo.share(list);
+    public void share(ShoppingList list, String email) {
+        repo.share(list, email);
     }
 }
