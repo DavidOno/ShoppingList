@@ -39,4 +39,5 @@
     <string name="Back">Zurück</string>
     <string name="gallery">Galerie</string>
     <string name="modify_">Bearbeite</string>
+    <string name="email_adress">Email Adresse</string>
 </resources>

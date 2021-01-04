@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:id="@+id/newEntryDialog_CoordLayout"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".view.ShareDialog">
+
+
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/dialog_background">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/dialog_share_list_backButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/Back"
+                android:layout_alignParentStart="true"
+                android:background="@android:color/transparent">
+            </Button>
+
+
+
+            <TextView
+                android:id="@+id/dialog_share_list_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="List to Share"
+                android:layout_centerInParent="true"
+                android:textSize="24dp">
+            </TextView>
+
+            <Button
+                android:id="@+id/dialog_share_list_doneButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/done"
+                android:layout_alignParentEnd="true"
+                android:background="@android:color/transparent">
+            </Button>
+
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/send_icon"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:scaleType="centerCrop"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_list">
+        </ImageView>
+
+
+        <EditText
+            android:id="@+id/dialog_share_list_email_adress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/email_adress"
+            android:gravity="center"
+            android:inputType="textEmailAddress">
+
+        </EditText>
+
+    </LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

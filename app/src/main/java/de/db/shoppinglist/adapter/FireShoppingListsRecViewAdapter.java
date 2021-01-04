@@ -3,20 +3,28 @@ package de.db.shoppinglist.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
 import de.db.shoppinglist.R;
+import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
+import de.db.shoppinglist.view.ModifyEntryFragmentDirections;
+import de.db.shoppinglist.view.ShoppingListsFragmentDirections;
 
 public class FireShoppingListsRecViewAdapter extends FirestoreRecyclerAdapter<ShoppingList, FireShoppingListsRecViewAdapter.ViewHolder> {
 
-
+    private NavController navController;
     private OnListListener onListListener;
 
     /**
@@ -25,15 +33,22 @@ public class FireShoppingListsRecViewAdapter extends FirestoreRecyclerAdapter<Sh
      *
      * @param options
      */
-    public FireShoppingListsRecViewAdapter(@NonNull FirestoreRecyclerOptions<ShoppingList> options, OnListListener onListListener) {
+    public FireShoppingListsRecViewAdapter(@NonNull FirestoreRecyclerOptions<ShoppingList> options, OnListListener onListListener, NavController navController) {
         super(options);
         this.onListListener = onListListener;
+        this.navController = navController;
     }
 
     @Override
     protected void onBindViewHolder(@NonNull ViewHolder holder, int i, @NonNull ShoppingList shoppingList) {
         holder.nameOfShoppingList.setText(shoppingList.getName());
         holder.relation.setText((shoppingList.getDone() +"/"+shoppingList.getTotal()));
+        holder.shareButton.setOnClickListener(v -> openDialog(shoppingList));
+    }
+
+    private void openDialog(ShoppingList list) {
+        NavDirections modifyImageDirection = ShoppingListsFragmentDirections.actionShoppingListsFragmentToShareDialog(list);
+        navController.navigate(modifyImageDirection);
     }
 
     @NonNull
@@ -51,12 +66,14 @@ public class FireShoppingListsRecViewAdapter extends FirestoreRecyclerAdapter<Sh
 
         private TextView nameOfShoppingList;
         private TextView relation;
+        private ImageButton shareButton;
         private OnListListener onListListener;
 
         public ViewHolder(@NonNull View itemView, OnListListener onListListener) {
             super(itemView);
             nameOfShoppingList = itemView.findViewById(R.id.item_list_name);
             relation = itemView.findViewById(R.id.item_list_counter);
+            shareButton = itemView.findViewById(R.id.item_list_share);
             this.onListListener = onListListener;
             itemView.setOnClickListener(this);
         }

@@ -68,7 +68,8 @@ public class ShoppingListsFragment extends Fragment implements FireShoppingLists
 
     private void setUpRecyclerView() {
         FirestoreRecyclerOptions<ShoppingList> options = shoppingListsViewModel.getRecyclerViewOptions();
-        fireAdapter = new FireShoppingListsRecViewAdapter(options, this);
+        NavController navController = NavHostFragment.findNavController(this);
+        fireAdapter = new FireShoppingListsRecViewAdapter(options, this, navController);
         listOfListsView.setAdapter(fireAdapter);
     }
 

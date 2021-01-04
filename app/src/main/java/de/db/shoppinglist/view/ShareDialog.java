@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,48 +21,61 @@ import androidx.lifecycle.ViewModelProvider;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.model.ShoppingList;
-import de.db.shoppinglist.viewmodel.ModifyListDialogViewModel;
-import de.db.shoppinglist.viewmodel.NewListDialogViewModel;
+import de.db.shoppinglist.viewmodel.ShareListViewModel;
 
-public class ModifyListDialog extends AppCompatDialogFragment {
-
-    private EditText listNameEditText;
+public class ShareDialog extends AppCompatDialogFragment {
+    private static final int SHARE = R.string.share;
+    private EditText emailEditText;
     private Button doneButton;
     private Button backButton;
-
-    private ModifyListDialogViewModel viewModel;
+    private TextView listNameTextView;
+    private ShareListViewModel viewModel;
     private ShoppingList list;
 
-    public ModifyListDialog(){
+    public ShareDialog(){
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_modify_list, null);
-        builder.setView(view);
-        listNameEditText = view.findViewById(R.id.editText_list_name);
-        doneButton = view.findViewById(R.id.new_list_dialog_doneButton);
+        View view = inflateDialogLayout();
+        Dialog dialog = buildDialog(view);
+        getViewsById(view);
         doneButton.setEnabled(false);
-        backButton = view.findViewById(R.id.new_list_dialog_backButton);
-        listNameEditText.setText(list.getName());
-        listNameEditText.requestFocus();
+        listNameTextView.setText(getResources().getString(SHARE)+": "+list.getName());
+        emailEditText.requestFocus();
         doneButton.setOnClickListener(item -> finish());
         backButton.setOnClickListener(item -> closeDialog());
+        emailEditText.addTextChangedListener(enableDoneMenuItemOnTextChange());
+        viewModel = new ViewModelProvider(requireActivity()).get(ShareListViewModel.class);
+        return dialog;
+    }
+
+    private Dialog buildDialog(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setView(view);
         Dialog dialog = builder.create();
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        listNameEditText.addTextChangedListener(enableDoneMenuItemOnTextChange());
-        viewModel = new ViewModelProvider(requireActivity()).get(ModifyListDialogViewModel.class);
         return dialog;
+    }
+
+    private View inflateDialogLayout() {
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        return inflater.inflate(R.layout.dialog_share_list, null);
+    }
+
+    private void getViewsById(View view) {
+        listNameTextView = view.findViewById(R.id.dialog_share_list_name);
+        emailEditText = view.findViewById(R.id.dialog_share_list_email_adress);
+        doneButton = view.findViewById(R.id.dialog_share_list_doneButton);
+        backButton = view.findViewById(R.id.dialog_share_list_backButton);
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ModifyListDialogArgs shoppingListFragmentArgs = ModifyListDialogArgs.fromBundle(getArguments());
+        ShareDialogArgs shoppingListFragmentArgs = ShareDialogArgs.fromBundle(getArguments());
         list = shoppingListFragmentArgs.getList();
     }
 
@@ -77,10 +91,10 @@ public class ModifyListDialog extends AppCompatDialogFragment {
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(listNameEditText.getText().toString().isEmpty()){
+            public void onTextChanged(CharSequence email, int start, int before, int count) {
+                if(isEmpty()){
                     doneButton.setEnabled(false);
-                }else{
+                }else if(isGoogleMailAdress(email.toString().toLowerCase())){
                     doneButton.setEnabled(true);
                 }
             }
@@ -92,11 +106,18 @@ public class ModifyListDialog extends AppCompatDialogFragment {
         };
     }
 
-    private void finish() {
-        String listName = listNameEditText.getText().toString();
-        list.setName(listName);
-        viewModel.updateListName(list);
-        closeDialog();
+    private boolean isGoogleMailAdress(String email) {
+        return email.endsWith("@gmail.com") || email.endsWith("@googlemail.com");
+    }
 
+    private boolean isEmpty() {
+        return emailEditText.getText().toString().isEmpty();
+    }
+
+    private void finish() {
+        String listName = emailEditText.getText().toString();
+        list.setName(listName);
+        viewModel.share(list);
+        closeDialog();
     }
 }

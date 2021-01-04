@@ -25,6 +25,9 @@
         <action
             android:id="@+id/action_shoppingListsFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_shoppingListsFragment_to_shareDialog"
+            app:destination="@id/shareDialog" />
     </fragment>
     <fragment
         android:id="@+id/shoppingListFragment"
@@ -128,4 +131,13 @@
             android:id="@+id/action_loginFragment_to_shoppingListsFragment"
             app:destination="@id/shoppingListsFragment" />
     </fragment>
+    <dialog
+        android:id="@+id/shareDialog"
+        android:name="de.db.shoppinglist.view.ShareDialog"
+        android:label="dialog_share_list"
+        tools:layout="@layout/dialog_share_list" >
+        <argument
+            android:name="list"
+            app:argType="de.db.shoppinglist.model.ShoppingList" />
+    </dialog>
 </navigation>
