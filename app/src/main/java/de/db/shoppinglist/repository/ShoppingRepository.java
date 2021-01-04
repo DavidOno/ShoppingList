@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import de.db.shoppinglist.database.FirebaseSource;
+import de.db.shoppinglist.database.GoogleSharer;
+import de.db.shoppinglist.database.Sharer;
 import de.db.shoppinglist.database.Source;
 import de.db.shoppinglist.model.EntryHistoryElement;
 import de.db.shoppinglist.model.ShoppingEntry;
@@ -27,6 +29,7 @@ public class ShoppingRepository {
 
     private static ShoppingRepository instance;
     private Source db = new FirebaseSource();
+    private Sharer sharer = new GoogleSharer();
 
     /**
      * Ensures that all viewmodels retrieve their information from the same source.
@@ -149,6 +152,11 @@ public class ShoppingRepository {
 
     public void deleteHistoryEntry(EntryHistoryElement historyEntry) {
         Runnable run = () -> db.deleteHistoryEntry(historyEntry);
+        startThread(run);
+    }
+
+    public void share(ShoppingList list) {
+        Runnable run = () -> sharer.share(list);
         startThread(run);
     }
 }
