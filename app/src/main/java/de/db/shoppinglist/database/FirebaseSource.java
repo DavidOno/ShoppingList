@@ -60,8 +60,7 @@ public class FirebaseSource implements Source {
     public static final String USERS_KEY = "User";
 
 
-
-    private CollectionReference getListsRootCollectionRef(){
+    private CollectionReference getListsRootCollectionRef() {
         String uid = getUserId();
         return FirebaseFirestore.getInstance().collection(USER_ROOT_KEY).document(uid).collection(LISTS_ROOT_KEY);
     }
@@ -74,7 +73,7 @@ public class FirebaseSource implements Source {
         return uid;
     }
 
-    private CollectionReference getHistoryRootCollectionRef(){
+    private CollectionReference getHistoryRootCollectionRef() {
         String uid = getUserId();
         return FirebaseFirestore.getInstance().collection(USER_ROOT_KEY).document(uid).collection(HISTORY_KEY);
     }
@@ -85,9 +84,9 @@ public class FirebaseSource implements Source {
         newEntryRef.set(newEntry)
                 .addOnSuccessListener(aVoid -> {
                     updateListStatusCounter(listId);
-                    if(uploadImageURI != null){
+                    if (uploadImageURI != null) {
                         uploadImage(listId, newEntry, uploadImageURI, context);
-                    }else{
+                    } else {
                         addToHistory(newEntry);
                     }
                     Log.d(FIREBASE_TAG, "Success: Added Entry");
@@ -119,7 +118,7 @@ public class FirebaseSource implements Source {
         getHistory().addOnSuccessListener(snapshots -> {
             Set<EntryHistoryElement> collectedHistory = collectHistoryAsSet(snapshots);
             boolean alreadyContained = collectedHistory.contains(newEntry.extractHistoryElement());
-            if(!alreadyContained){
+            if (!alreadyContained) {
                 addNewElementToHistory(newEntry);
             }
         });
@@ -129,7 +128,7 @@ public class FirebaseSource implements Source {
         EntryHistoryElement historyElement = newEntry.extractHistoryElement();
         getHistoryRootCollectionRef().document(historyElement.getUid()).set(historyElement)
                 .addOnSuccessListener(aVoid ->
-                    Log.d(FIREBASE_TAG, "Success: Added to History")
+                        Log.d(FIREBASE_TAG, "Success: Added to History")
                 )
                 .addOnFailureListener(e -> {
                     Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
@@ -139,9 +138,9 @@ public class FirebaseSource implements Source {
 
     private Set<EntryHistoryElement> collectHistoryAsSet(QuerySnapshot snapshots) {
         return snapshots.getDocuments()
-                        .stream()
-                        .map(this::makeHistoryElement)
-                        .collect(toSet());
+                .stream()
+                .map(this::makeHistoryElement)
+                .collect(toSet());
     }
 
     @Override
@@ -159,7 +158,7 @@ public class FirebaseSource implements Source {
                 );
     }
 
-    private void updateListStatusCounter(String listId){
+    private void updateListStatusCounter(String listId) {
         Task<QuerySnapshot> querySnapshotTask = getListsRootCollectionRef().document(listId).collection(ENTRIES_KEY).get();
         querySnapshotTask.addOnSuccessListener(queryDocumentSnapshots -> {
             long done = queryDocumentSnapshots.getDocuments().stream().filter(doc -> (Boolean) doc.get(FirebaseSource.DONE_PROPERTY)).count();
@@ -169,12 +168,12 @@ public class FirebaseSource implements Source {
             counterVars.put(TOTAL_PROPERTY, total);
             getListsRootCollectionRef().document(listId).update(counterVars)
                     .addOnSuccessListener(aVoid ->
-                        Log.d(FIREBASE_TAG, "Success: " + done+"/"+total)
+                            Log.d(FIREBASE_TAG, "Success: " + done + "/" + total)
                     )
                     .addOnFailureListener(e -> {
-                            Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
-                            toastMaker.prepareToast("Fail: Update List Counter");
-                        }
+                                Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                                toastMaker.prepareToast("Fail: Update List Counter");
+                            }
                     );
         });
     }
@@ -183,12 +182,12 @@ public class FirebaseSource implements Source {
     public void addList(ShoppingList shoppingList) {
         getListsRootCollectionRef().document(shoppingList.getUid()).set(shoppingList)
                 .addOnSuccessListener(aVoid ->
-                    Log.d(FIREBASE_TAG, "Success: Added List")
+                        Log.d(FIREBASE_TAG, "Success: Added List")
                 )
                 .addOnFailureListener(e -> {
-                        Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
-                        toastMaker.prepareToast("Fail: Add List");
-                    }
+                            Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                            toastMaker.prepareToast("Fail: Add List");
+                        }
                 );
     }
 
@@ -255,7 +254,7 @@ public class FirebaseSource implements Source {
         updateName.put(NAME_PROPERTY, list.getName());
         getListsRootCollectionRef().document(list.getUid()).update(updateName)
                 .addOnSuccessListener(aVoid ->
-                    Log.d(FIREBASE_TAG, "Success: Updated Name")
+                        Log.d(FIREBASE_TAG, "Success: Updated Name")
                 )
                 .addOnFailureListener(e -> {
                             Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
@@ -269,9 +268,9 @@ public class FirebaseSource implements Source {
         Map<String, Object> updateEntryMap = buildUpdateMap(entry);
         getListsRootCollectionRef().document(list.getUid()).collection(ENTRIES_KEY).document(entry.getUid()).update(updateEntryMap)
                 .addOnSuccessListener(aVoid -> {
-                    if(imageUri != null){
+                    if (imageUri != null) {
                         uploadImage(list.getUid(), entry, Uri.parse(imageUri), context);
-                    }else {
+                    } else {
                         addToHistory(entry);
                     }
                     Log.d(FIREBASE_TAG, "Success: Updated Entry");
@@ -311,9 +310,9 @@ public class FirebaseSource implements Source {
 
     private List<EntryHistoryElement> collectHistoryAsList(QuerySnapshot snapshots) {
         return snapshots.getDocuments()
-                        .stream()
-                        .map(this::makeHistoryElement)
-                        .collect(toList());
+                .stream()
+                .map(this::makeHistoryElement)
+                .collect(toList());
     }
 
 
@@ -322,9 +321,9 @@ public class FirebaseSource implements Source {
     }
 
     private EntryHistoryElement makeHistoryElement(DocumentSnapshot doc) {
-        return new EntryHistoryElement((String) doc.get(NAME_PROPERTY), (String) doc.get(UNIT_OF_QUANTITY_PROPERTY), 
-                (String) doc.get(DETAILS_PROPERTY), (String)doc.get(IMAGE_URI_PROPERTY),
-                (String)doc.get(HIST_UID_PROPERTY));
+        return new EntryHistoryElement((String) doc.get(NAME_PROPERTY), (String) doc.get(UNIT_OF_QUANTITY_PROPERTY),
+                (String) doc.get(DETAILS_PROPERTY), (String) doc.get(IMAGE_URI_PROPERTY),
+                (String) doc.get(HIST_UID_PROPERTY));
     }
 
     private DocumentReference buildPathForEntryDoc(String listId, DocumentSnapshot doc) {
@@ -337,11 +336,10 @@ public class FirebaseSource implements Source {
     }
 
 
-
     private void deleteListOnly(String listId) {
         DocumentReference entryRef = getListsRootCollectionRef().document(listId);
         entryRef.delete().addOnSuccessListener(aVoid ->
-            Log.d(FIREBASE_TAG, "Success: Deleted List")
+                Log.d(FIREBASE_TAG, "Success: Deleted List")
 
         ).addOnFailureListener(e -> {
                     Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
@@ -351,7 +349,7 @@ public class FirebaseSource implements Source {
     }
 
     @Override
-    public void deleteHistory(){
+    public void deleteHistory() {
         getHistoryRootCollectionRef().get().addOnSuccessListener(documentSnapshots -> {
             documentSnapshots.getDocuments().stream()
                     .map(this::buildPathForHistoryDoc)
@@ -379,21 +377,21 @@ public class FirebaseSource implements Source {
         );
     }
 
-    private StorageReference buildStorageReference(){
-       return FirebaseStorage.getInstance().getReference(IMAGE_STORAGE_KEY+"/"+UUID.randomUUID());
+    private StorageReference buildStorageReference() {
+        return FirebaseStorage.getInstance().getReference(IMAGE_STORAGE_KEY + "/" + UUID.randomUUID());
     }
 
-    private void updateImage(String listName, ShoppingEntry entry, String imageURI){
+    private void updateImage(String listName, ShoppingEntry entry, String imageURI) {
         Map<String, Object> updateImageMap = new HashMap<>();
         updateImageMap.put(IMAGE_URI_PROPERTY, imageURI);
         long start = System.currentTimeMillis();
         getListsRootCollectionRef().document(listName).collection(ENTRIES_KEY).document(entry.getUid()).update(updateImageMap).addOnSuccessListener(aVoid -> {
-                Log.d(FIREBASE_TAG, "Success: Updated Image");
-        toastMaker.prepareToast(String.valueOf((System.currentTimeMillis() - start)));
-        ShoppingEntry entryWithImage = new ShoppingEntry(entry);
-        entryWithImage.setImageURI(imageURI);
-        addToHistory(entryWithImage);
-    }
+                    Log.d(FIREBASE_TAG, "Success: Updated Image");
+                    toastMaker.prepareToast(String.valueOf((System.currentTimeMillis() - start)));
+                    ShoppingEntry entryWithImage = new ShoppingEntry(entry);
+                    entryWithImage.setImageURI(imageURI);
+                    addToHistory(entryWithImage);
+                }
         ).addOnFailureListener(e -> {
                     Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
                     toastMaker.prepareToast("Fail: Update Image");
@@ -405,19 +403,20 @@ public class FirebaseSource implements Source {
      * Uploads Image to Firebase Storage.
      * Afterwards an update of the specific ShoppingEntry is triggered.
      * Tries to compress images if possible.
+     *
      * @param listName Name of the shopping list
-     * @param entry Entry which
+     * @param entry    Entry which
      * @param imageURI Uri of the image
-     * @param context Context of the image-uri
+     * @param context  Context of the image-uri
      */
     @Override
     public void uploadImage(String listName, ShoppingEntry entry, Uri imageURI, Context context) {
         final StorageReference image = buildStorageReference();
         byte[] compressedImageBytes = new ImageCompressor(context).compress(imageURI, 30);
         UploadTask uploadTask;
-        if(isCompressed(compressedImageBytes)) {
+        if (isCompressed(compressedImageBytes)) {
             uploadTask = image.putBytes(compressedImageBytes);
-        }else{
+        } else {
             uploadTask = image.putFile(imageURI);
         }
         reactToResultOfUpload(uploadTask, image, listName, entry);
@@ -427,7 +426,7 @@ public class FirebaseSource implements Source {
         return compressedImageBytes != null;
     }
 
-    private void reactToResultOfUpload(UploadTask uploadTask, StorageReference image, String listName, ShoppingEntry entry){
+    private void reactToResultOfUpload(UploadTask uploadTask, StorageReference image, String listName, ShoppingEntry entry) {
         uploadTask.addOnSuccessListener(taskSnapshot -> image.getDownloadUrl()
                 .addOnSuccessListener(imageURI1 -> {
                     updateImage(listName, entry, imageURI1.toString());
@@ -440,15 +439,13 @@ public class FirebaseSource implements Source {
     }
 
 
-
-
     @Override
     public void deleteHistoryEntry(EntryHistoryElement historyEntry) {
         String historyId = historyEntry.getUid();
         getHistoryRootCollectionRef().document(historyId).delete()
-        .addOnSuccessListener(aVoid -> {
-            Log.d(FIREBASE_TAG, "Success: Deleted history-entry");
-        }).addOnFailureListener(e -> {
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(FIREBASE_TAG, "Success: Deleted history-entry");
+                }).addOnFailureListener(e -> {
                     Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
                     toastMaker.prepareToast("Fail: Delete List");
                 }
