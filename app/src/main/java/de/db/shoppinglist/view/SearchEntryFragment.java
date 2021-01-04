@@ -99,6 +99,7 @@ public class SearchEntryFragment extends Fragment implements SearchEntryRecycler
         });
         historyOfEntries.setAdapter(adapter);
         historyOfEntries.setLayoutManager(new LinearLayoutManager(getContext()));
+//        adapter.setStateRestorationPolicy(RecyclerView.Adapter.StateRestorationPolicy.ALLOW);
     }
 
     @Override
