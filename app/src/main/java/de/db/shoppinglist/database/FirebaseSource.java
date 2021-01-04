@@ -18,6 +18,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 import java.util.List;
@@ -89,10 +90,6 @@ public class FirebaseSource implements Source {
                     }else{
                         addToHistory(newEntry);
                     }
-//                    addToHistory(newEntry);
-//                    if(uploadImageURI != null) {
-//                        uploadImage(listId, newEntry.getUid(), uploadImageURI, context);
-//                    }
                     Log.d(FIREBASE_TAG, "Success: Added Entry");
                 })
                 .addOnFailureListener(e -> {
@@ -120,7 +117,7 @@ public class FirebaseSource implements Source {
 
     private void addToHistory(ShoppingEntry newEntry) {
         getHistory().addOnSuccessListener(snapshots -> {
-            Set<EntryHistoryElement> collectedHistory = collectHistory(snapshots);
+            Set<EntryHistoryElement> collectedHistory = collectHistoryAsSet(snapshots);
             boolean alreadyContained = collectedHistory.contains(newEntry.extractHistoryElement());
             if(!alreadyContained){
                 addNewElementToHistory(newEntry);
@@ -140,7 +137,7 @@ public class FirebaseSource implements Source {
                 });
     }
 
-    private Set<EntryHistoryElement> collectHistory(QuerySnapshot snapshots) {
+    private Set<EntryHistoryElement> collectHistoryAsSet(QuerySnapshot snapshots) {
         return snapshots.getDocuments()
                         .stream()
                         .map(this::makeHistoryElement)
@@ -269,13 +266,7 @@ public class FirebaseSource implements Source {
 
     @Override
     public void modifyWholeEntry(ShoppingList list, ShoppingEntry entry, String imageUri, Context context) {
-        Map<String, Object> updateEntryMap = new HashMap<>();
-        updateEntryMap.put(NAME_PROPERTY, entry.getName());
-        updateEntryMap.put(FirebaseSource.DONE_PROPERTY, entry.isDone());
-        updateEntryMap.put(DETAILS_PROPERTY, entry.getDetails());
-        updateEntryMap.put(POSITION_PROPERTY, entry.getPosition());
-        updateEntryMap.put(QUANTITY_PROPERTY, entry.getQuantity());
-        updateEntryMap.put(UNIT_OF_QUANTITY_PROPERTY, entry.getUnitOfQuantity());
+        Map<String, Object> updateEntryMap = buildUpdateMap(entry);
         getListsRootCollectionRef().document(list.getUid()).collection(ENTRIES_KEY).document(entry.getUid()).update(updateEntryMap)
                 .addOnSuccessListener(aVoid -> {
                     if(imageUri != null){
@@ -293,14 +284,22 @@ public class FirebaseSource implements Source {
         updateListStatusCounter(list.getUid());
     }
 
+    private Map<String, Object> buildUpdateMap(ShoppingEntry entry) {
+        Map<String, Object> updateEntryMap = new HashMap<>();
+        updateEntryMap.put(NAME_PROPERTY, entry.getName());
+        updateEntryMap.put(FirebaseSource.DONE_PROPERTY, entry.isDone());
+        updateEntryMap.put(DETAILS_PROPERTY, entry.getDetails());
+        updateEntryMap.put(POSITION_PROPERTY, entry.getPosition());
+        updateEntryMap.put(QUANTITY_PROPERTY, entry.getQuantity());
+        updateEntryMap.put(UNIT_OF_QUANTITY_PROPERTY, entry.getUnitOfQuantity());
+        return updateEntryMap;
+    }
+
     @Override
     public void getHistory(Consumer<List<EntryHistoryElement>> callback) {
         Task<QuerySnapshot> querySnapshotTask = getHistoryRootCollectionRef().get();
         querySnapshotTask.addOnSuccessListener(snapshots -> {
-            List<EntryHistoryElement> collectedHistory = snapshots.getDocuments()
-                    .stream()
-                    .map(this::makeHistoryElement)
-                    .collect(toList());
+            List<EntryHistoryElement> collectedHistory = collectHistoryAsList(snapshots);
             callback.accept(collectedHistory);
             Log.d(FIREBASE_TAG, "Success: Retrieved history");
         }).addOnFailureListener(e -> {
@@ -308,6 +307,13 @@ public class FirebaseSource implements Source {
                     toastMaker.prepareToast("Fail: Retrieve History");
                 }
         );
+    }
+
+    private List<EntryHistoryElement> collectHistoryAsList(QuerySnapshot snapshots) {
+        return snapshots.getDocuments()
+                        .stream()
+                        .map(this::makeHistoryElement)
+                        .collect(toList());
     }
 
 
@@ -397,9 +403,9 @@ public class FirebaseSource implements Source {
 
     /**
      * Uploads Image to Firebase Storage.
-     * Afterwards an update of the specific ShoppingEntry is triggert.
+     * Afterwards an update of the specific ShoppingEntry is triggered.
      * Tries to compress images if possible.
-     * @param listName Name of the Shoppinglist
+     * @param listName Name of the shopping list
      * @param entry Entry which
      * @param imageURI Uri of the image
      * @param context Context of the image-uri
@@ -408,42 +414,31 @@ public class FirebaseSource implements Source {
     public void uploadImage(String listName, ShoppingEntry entry, Uri imageURI, Context context) {
         final StorageReference image = buildStorageReference();
         byte[] compressedImageBytes = new ImageCompressor(context).compress(imageURI, 30);
-        if(isCompressable(compressedImageBytes)) {
-            uploadCompressedImage(listName, entry, image, compressedImageBytes);
+        UploadTask uploadTask;
+        if(isCompressed(compressedImageBytes)) {
+            uploadTask = image.putBytes(compressedImageBytes);
         }else{
-            uploadNotCompressedImage(listName, entry, image, imageURI);
+            uploadTask = image.putFile(imageURI);
         }
+        reactToResultOfUpload(uploadTask, image, listName, entry);
     }
 
-    private void uploadNotCompressedImage(String listName, ShoppingEntry entry, StorageReference image, Uri imageURI) {
-        image.putFile(imageURI)
-                .addOnSuccessListener(taskSnapshot -> image.getDownloadUrl()
-                        .addOnSuccessListener(imageURI1 -> {
-                            updateImage(listName, entry, imageURI1.toString());
-                        }))
-                .addOnFailureListener(e -> {
-                            Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
-                            toastMaker.prepareToast("Fail: Upload Image");
-                        }
-                );
-    }
-
-    private boolean isCompressable(byte[] compressedImageBytes) {
+    private boolean isCompressed(byte[] compressedImageBytes) {
         return compressedImageBytes != null;
     }
 
-    private void uploadCompressedImage(String listName, ShoppingEntry entry, StorageReference image, byte[] compressedImageBytes) {
-        image.putBytes(compressedImageBytes)
-                .addOnSuccessListener(taskSnapshot -> image.getDownloadUrl()
-                        .addOnSuccessListener(imageURI1 -> {
-                            updateImage(listName, entry, imageURI1.toString());
-                        }))
+    private void reactToResultOfUpload(UploadTask uploadTask, StorageReference image, String listName, ShoppingEntry entry){
+        uploadTask.addOnSuccessListener(taskSnapshot -> image.getDownloadUrl()
+                .addOnSuccessListener(imageURI1 -> {
+                    updateImage(listName, entry, imageURI1.toString());
+                }))
                 .addOnFailureListener(e -> {
                             Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
                             toastMaker.prepareToast("Fail: Upload compressed Image");
                         }
                 );
     }
+
 
     @Override
     public void signOut(GoogleSignInClient googleSignInClient) {
@@ -469,12 +464,8 @@ public class FirebaseSource implements Source {
     }
 
     private void addToUsers() {
-        UserInfo userInfo = extractUserInfomation();
+        UserInfo userInfo =  new UserInfo(FirebaseAuth.getInstance());
         FirebaseFirestore.getInstance().collection(USERS_KEY).document(getUserId()).set(userInfo);
-    }
-
-    private UserInfo extractUserInfomation(){
-        return new UserInfo(FirebaseAuth.getInstance());
     }
 
     @Override
