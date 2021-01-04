@@ -440,33 +440,7 @@ public class FirebaseSource implements Source {
     }
 
 
-    @Override
-    public void signOut(GoogleSignInClient googleSignInClient) {
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        firebaseAuth.signOut();
-        googleSignInClient.signOut().addOnCompleteListener(task -> Log.d(FIREBASE_TAG, "Completely logged out"));
-    }
 
-    @Override
-    public void signIn(String idToken, Runnable postSignInAction) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        firebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Log.d(FIREBASE_TAG, "signInWithCredential:success");
-                        addToUsers();
-                        postSignInAction.run();
-                    } else {
-                        Log.w(FIREBASE_TAG, "signInWithCredential:failure", task.getException());
-                    }
-                });
-    }
-
-    private void addToUsers() {
-        UserInfo userInfo =  new UserInfo(FirebaseAuth.getInstance());
-        FirebaseFirestore.getInstance().collection(USERS_KEY).document(getUserId()).set(userInfo);
-    }
 
     @Override
     public void deleteHistoryEntry(EntryHistoryElement historyEntry) {

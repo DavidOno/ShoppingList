@@ -16,7 +16,9 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import de.db.shoppinglist.database.FirebaseSource;
+import de.db.shoppinglist.database.GoogleLogin;
 import de.db.shoppinglist.database.GoogleSharer;
+import de.db.shoppinglist.database.Login;
 import de.db.shoppinglist.database.Sharer;
 import de.db.shoppinglist.database.Source;
 import de.db.shoppinglist.model.EntryHistoryElement;
@@ -30,6 +32,7 @@ public class ShoppingRepository {
     private static ShoppingRepository instance;
     private Source db = new FirebaseSource();
     private Sharer sharer = new GoogleSharer();
+    private Login login = new GoogleLogin();
 
     /**
      * Ensures that all viewmodels retrieve their information from the same source.
@@ -141,12 +144,12 @@ public class ShoppingRepository {
     }
 
     public void signOut(GoogleSignInClient googleSignInClient) {
-        Runnable run = () -> db.signOut(googleSignInClient);
+        Runnable run = () -> login.signOut(googleSignInClient);
         startThread(run);
     }
 
     public void signInWithCredential(String idToken, Runnable navigationToShoppingList) {
-        Runnable run = () -> db.signIn(idToken, navigationToShoppingList);
+        Runnable run = () -> login.signIn(idToken, navigationToShoppingList);
         startThread(run);
     }
 
