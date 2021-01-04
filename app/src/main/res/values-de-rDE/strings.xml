@@ -40,4 +40,5 @@
     <string name="gallery">Galerie</string>
     <string name="modify_">Bearbeite</string>
     <string name="email_adress">Email Adresse</string>
+    <string name="DeleteImage">Entfernen</string>
 </resources>
