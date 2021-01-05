@@ -82,8 +82,6 @@ public class FirebaseSource implements Source {
                     updateListStatusCounter(listId);
                     if (isUploadUri(newEntry)) {
                         uploadImage(listId, newEntry, context);
-                    } else if(isDownloadUri(newEntry)){
-                        updateImage(listId, newEntry);
                     }else{
                         updateImage(listId, newEntry);
                     }
@@ -268,8 +266,6 @@ public class FirebaseSource implements Source {
                 .addOnSuccessListener(aVoid -> {
                     if (isUploadUri(entry)) {
                         uploadImage(list.getUid(), entry, context);
-                    } else if(isDownloadUri(entry)){
-                        updateImage(list.getUid(), entry);
                     }else{
                         updateImage(list.getUid(), entry);
                     }
@@ -282,21 +278,11 @@ public class FirebaseSource implements Source {
         updateListStatusCounter(list.getUid());
     }
 
-    private boolean isDownloadUri(ShoppingEntry entry) {
-        return entry.getImageURI() != null && entry.getImageURI().startsWith("http");
-    }
 
     private boolean isUploadUri(ShoppingEntry entry) {
         return entry.getImageURI() != null && !entry.getImageURI().startsWith("http");
     }
 
-    private boolean isDownloadUri(Uri uri) {
-        return uri != null && uri.toString().startsWith("http");
-    }
-
-    private boolean isUploadUri(Uri uri) {
-        return uri != null && !uri.toString().startsWith("http");
-    }
 
     private Map<String, Object> buildUpdateMap(ShoppingEntry entry) {
         Map<String, Object> updateEntryMap = new HashMap<>();

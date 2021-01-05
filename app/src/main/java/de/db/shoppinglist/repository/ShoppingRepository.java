@@ -137,12 +137,6 @@ public class ShoppingRepository {
         startThread(run);
     }
 
-    public void modifyImageOfEntry(ShoppingList list, ShoppingEntry entry, Context context) {
-        String listName = list.getUid();
-        Runnable run = () -> db.uploadImage(listName, entry, context);
-        startThread(run);
-    }
-
     public void signOut(GoogleSignInClient googleSignInClient) {
         Runnable run = () -> login.signOut(googleSignInClient);
         startThread(run);
