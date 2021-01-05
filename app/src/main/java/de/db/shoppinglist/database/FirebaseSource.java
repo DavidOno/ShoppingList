@@ -429,6 +429,7 @@ public class FirebaseSource implements Source {
     private void reactToResultOfUpload(UploadTask uploadTask, StorageReference image, String listName, ShoppingEntry entry) {
         uploadTask.addOnSuccessListener(taskSnapshot -> image.getDownloadUrl()
                 .addOnSuccessListener(imageURI1 -> {
+                    entry.setImageURI(imageURI1.toString());
                     updateImage(listName, entry);
                 }))
                 .addOnFailureListener(e -> {
