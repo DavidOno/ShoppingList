@@ -45,9 +45,9 @@ public class ShoppingRepository {
         return instance;
     }
 
-    public void addEntry(String listId, ShoppingEntry newEntry, Uri uploadImageUri, Context context){
+    public void addEntry(String listId, ShoppingEntry newEntry, Uri uploadImageUri, Context context, boolean isImageUpdateRequired){
         Runnable run = () -> {
-            db.addEntry(listId, newEntry, uploadImageUri, context);
+            db.addEntry(listId, newEntry, uploadImageUri, context, isImageUpdateRequired);
         };
         startThread(run);
     }

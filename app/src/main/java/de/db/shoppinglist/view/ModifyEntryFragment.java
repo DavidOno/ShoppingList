@@ -32,6 +32,7 @@ import com.bumptech.glide.Glide;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.ifc.ModifyTakenImageSVM;
+import de.db.shoppinglist.ifc.TakenImageSVM;
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.ModifyEntryViewModel;
@@ -50,7 +51,7 @@ public class ModifyEntryFragment extends Fragment {
     private String entryId;
     private ShoppingEntry entry;
     private ModifyEntryViewModel viewModel;
-    private ModifyTakenImageSVM takenImageSVM;
+    private TakenImageSVM takenImageSVM;
 
     @Nullable
     @Override
@@ -85,7 +86,7 @@ public class ModifyEntryFragment extends Fragment {
     private void modifyImage() {
         setImageAsArgument();
         NavController navController = NavHostFragment.findNavController(this);
-        NavDirections modifyImageDirection = ModifyEntryFragmentDirections.actionModifyEntryFragmentToModifyTakeImageFragment();
+        NavDirections modifyImageDirection = ModifyEntryFragmentDirections.actionModifyEntryFragmentToCameraFragmentAlt2();
         navController.navigate(modifyImageDirection);
     }
 
@@ -168,7 +169,7 @@ public class ModifyEntryFragment extends Fragment {
         ModifyEntryFragmentArgs modifyEntryFragmentArgs = ModifyEntryFragmentArgs.fromBundle(getArguments());
         list = modifyEntryFragmentArgs.getList();
         entry = modifyEntryFragmentArgs.getEntry();
-        takenImageSVM = new ViewModelProvider(requireActivity()).get(ModifyTakenImageSVM.class);
+        takenImageSVM = new ViewModelProvider(requireActivity()).get(TakenImageSVM.class);
     }
 
     @Override
@@ -227,13 +228,12 @@ public class ModifyEntryFragment extends Fragment {
         String details = detailsEditText.getText().toString();
         boolean done = doneCheckbox.isChecked();
         setValues(quantity, unitOfQuantity, nameOfProduct, details, done);
-        String imageUri = null;
-        if(!takenImageSVM.isEmpty()) {
-            imageUri = takenImageSVM.getImageLiveData().getValue().toString();
+//        String imageUri = null;
+//        if(takenImageSVM.hasImage()) {
+        String  imageUri = takenImageSVM.getImageLiveData().getValue().toString();
 //            viewModel.modifyImageOfEntry(list, entry, imageUri, getContext());
-        }
+//        }
         viewModel.modifyEntry(list, entry, imageUri, getContext());
-
         takenImageSVM.reset();
         closeFragment();
     }

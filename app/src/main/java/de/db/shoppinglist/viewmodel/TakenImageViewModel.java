@@ -1,4 +1,4 @@
-package de.db.shoppinglist.ifc;
+package de.db.shoppinglist.viewmodel;
 
 import android.net.Uri;
 
@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class TakenImageSVM extends ViewModel {
+public class TakenImageViewModel extends ViewModel {
 
     private MutableLiveData<Uri> imageLiveData = new MutableLiveData<>();
 

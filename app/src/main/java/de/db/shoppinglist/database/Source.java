@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -15,7 +14,7 @@ import de.db.shoppinglist.model.ShoppingList;
 
 public interface Source {
 
-    void addEntry(String listUid, ShoppingEntry entry, Uri uploadImageUri, Context context);
+    void addEntry(String listUid, ShoppingEntry entry, Uri uploadImageUri, Context context, boolean isImageUpdateRequired);
 
     void deleteEntry(String listUid, String documentUid);
 

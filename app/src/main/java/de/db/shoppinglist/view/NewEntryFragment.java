@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -63,13 +62,18 @@ public class NewEntryFragment extends Fragment {
                         .load(entry.getImageURI())
                         .skipMemoryCache(false)
                         .into(image);
+            }else{
+                image.setImageResource(R.drawable.ic_shopping);
             }
         }else{
             nameOfProductEditText.setText(entryName);
         }
         image.setOnClickListener(v -> navigateToTakeImage());
         takenImageSVM.getImageLiveData().observe(getViewLifecycleOwner(), takenImage -> {
-            image.setImageURI(takenImage);
+            Glide.with(getContext())
+                    .load(takenImage)
+                    .skipMemoryCache(false)
+                    .into(image);
         });
         return view;
     }

@@ -40,8 +40,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.ifc.ModifyTakenImageSVM;
 import de.db.shoppinglist.ifc.TakenImageSVM;
+import de.db.shoppinglist.viewmodel.TakenImageViewModel;
 
 /**
  * Important parts taken from
@@ -55,34 +55,61 @@ public class TakeImageFragment extends Fragment {
     public static final int GALLERY_REQUEST_CODE = 105;
     private static final String CONTENT_URI_KEY = "Content_uri_key";
     private ImageView selectedImage;
-    private Button cameraBtn;
-    private Button galleryBtn;
+    private Button cameraButton;
+    private Button galleryButton;
+    private Button removeButton;
     private String currentPhotoPath;
     private MenuItem done;
     private TakenImageSVM sharedViewModel;
-    private Uri contentUri;
+    private TakenImageViewModel viewModel;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_take_image, container, false);
         findViewsById(view);
-
         setImage();
-        cameraBtn.setOnClickListener(v -> askCameraPermissions());
-
-        galleryBtn.setOnClickListener(v -> {
+        removeButton.setOnClickListener(v -> removeImage());
+        removeButton.setVisibility(isDisplayed());
+        cameraButton.setOnClickListener(v -> askCameraPermissions());
+        galleryButton.setOnClickListener(v -> {
             Intent gallery = new Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(gallery, GALLERY_REQUEST_CODE);
         });
         return view;
     }
 
+
+
+    public int isDisplayed(){
+        return viewModel.hasImage() ? View.VISIBLE : View.INVISIBLE;
+    }
+
+    private void removeImage() {
+        viewModel.setImage(null);
+    }
+
     private void setImage() {
-        Uri takenImageUri = sharedViewModel.getImageLiveData().getValue();
-        if(takenImageUri != null){
-            selectedImage.setImageURI(takenImageUri);
+        Uri takenImageUri = viewModel.getImageLiveData().getValue();
+        if(takenImageUri != null) {
+            Glide.with(getContext())
+                    .load(takenImageUri)
+                    .into(selectedImage);
+        }else{
+            selectedImage.setImageResource(R.drawable.ic_launcher_background);
         }
+        viewModel.getImageLiveData().observe(getViewLifecycleOwner(), uri -> {
+            if(uri != null) {
+                Glide.with(getContext())
+                        .load(uri)
+                        .into(selectedImage);
+            }else{
+                selectedImage.setImageResource(R.drawable.ic_launcher_background);
+            }
+            if(done != null) {
+                done.setEnabled(true);
+            }
+        });
     }
 
     @Override
@@ -90,13 +117,16 @@ public class TakeImageFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         setRetainInstance(true);
+        viewModel = new ViewModelProvider(requireActivity()).get(TakenImageViewModel.class);
         sharedViewModel = new ViewModelProvider(requireActivity()).get(TakenImageSVM.class);
+        viewModel.setImage(sharedViewModel.getImage());
     }
 
     private void findViewsById(View view) {
         selectedImage = view.findViewById(R.id.displayImageView);
-        cameraBtn = view.findViewById(R.id.cameraBtn);
-        galleryBtn = view.findViewById(R.id.galleryBtn);
+        cameraButton = view.findViewById(R.id.cameraBtn);
+        galleryButton = view.findViewById(R.id.galleryBtn);
+        removeButton = view.findViewById(R.id.take_image_delete_button);
     }
 
     private void askCameraPermissions() {
@@ -122,27 +152,16 @@ public class TakeImageFragment extends Fragment {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu_done, menu);
         MenuCompat.setGroupDividerEnabled(menu, true);
-        done = getDoneMenuItem(menu);
-        done.setEnabled(hasImage());
+        done = menu.findItem(R.id.menu_done_doneButton);
+        done.setEnabled(false); //TODO: Check if really always false
         super.onCreateOptionsMenu(menu, inflater);
     }
-
-    private boolean hasImage() {
-        return contentUri != null;
-    }
-
-    private MenuItem getDoneMenuItem(Menu menu) {
-        return menu.findItem(R.id.menu_done_doneButton);
-    }
-
-
-
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_done_doneButton:
-                sharedViewModel.setImage(contentUri);
+                sharedViewModel.setImage(viewModel.getImage());
                 NavController navController = NavHostFragment.findNavController(this);
                 navController.navigateUp();
                 break;
@@ -156,26 +175,30 @@ public class TakeImageFragment extends Fragment {
         if(requestCode == CAMERA_REQUEST_CODE){
             if(resultCode == Activity.RESULT_OK && data !=  null){
                 File f = new File(currentPhotoPath);
-                selectedImage.setImageURI(Uri.fromFile(f));
+//                selectedImage.setImageURI(Uri.fromFile(f));
                 Log.d("tag", "ABsolute Url of Image is " + Uri.fromFile(f));
 
                 Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                contentUri = Uri.fromFile(f);
+                Uri contentUri = Uri.fromFile(f);
                 mediaScanIntent.setData(contentUri);
+                viewModel.setImage(contentUri);
                 getActivity().sendBroadcast(mediaScanIntent);
                 done.setEnabled(true);
+                removeButton.setVisibility(View.VISIBLE);
             }else{
                 done.setEnabled(false);
             }
         }
         if(requestCode == GALLERY_REQUEST_CODE){
             if(resultCode == Activity.RESULT_OK && data != null){
-                contentUri = data.getData();
+                Uri contentUri = data.getData();
+                viewModel.setImage(contentUri);
                 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
                 String imageFileName = "JPEG_" + timeStamp +"."+getFileExt();
                 Log.d("tag", "onActivityResult: Gallery Image Uri:  " +  imageFileName);
-                selectedImage.setImageURI(contentUri);
+//                selectedImage.setImageURI(contentUri);
                 done.setEnabled(true);
+                removeButton.setVisibility(View.VISIBLE);
             }else{
                 done.setEnabled(false);
             }
@@ -185,7 +208,7 @@ public class TakeImageFragment extends Fragment {
     private String getFileExt() {
         ContentResolver c = getActivity().getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(c.getType(contentUri));
+        return mime.getExtensionFromMimeType(c.getType(viewModel.getImage()));
     }
 
 
@@ -216,21 +239,21 @@ public class TakeImageFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if(contentUri != null) {
-            outState.putString(CONTENT_URI_KEY, contentUri.toString());
-        }
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        if(savedInstanceState != null){
-            String contentUriString = savedInstanceState.getString(CONTENT_URI_KEY);
-            contentUri = Uri.parse(contentUriString);
-            selectedImage.setImageURI(contentUri);
-        }
-    }
+//    @Override
+//    public void onSaveInstanceState(@NonNull Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//        if(viewModel.hasImage()) {
+//            outState.putString(CONTENT_URI_KEY, viewModel.getImage().toString());
+//        }
+//    }
+//
+//    @Override
+//    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+//        super.onViewStateRestored(savedInstanceState);
+//        if(savedInstanceState != null){
+//            String contentUriString = savedInstanceState.getString(CONTENT_URI_KEY);
+//            sharedViewModel.setImage(Uri.parse(contentUriString));
+////            selectedImage.setImageURI(contentUri);
+//        }
+//    }
 }

@@ -79,8 +79,8 @@
             android:name="list"
             app:argType="de.db.shoppinglist.model.ShoppingList" />
         <action
-            android:id="@+id/action_modifyEntryFragment_to_modifyTakeImageFragment"
-            app:destination="@id/modifyTakeImageFragment" />
+            android:id="@+id/action_modifyEntryFragment_to_cameraFragmentAlt2"
+            app:destination="@id/cameraFragmentAlt2" />
     </fragment>
     <fragment
         android:id="@+id/selectShoppingListModificationFragment"
