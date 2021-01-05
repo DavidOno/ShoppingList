@@ -156,4 +156,9 @@ public class ShoppingRepository {
         Runnable run = () -> sharer.share(list, email);
         startThread(run);
     }
+
+    public void updateImageExpirationDate(Uri uri){
+        Runnable run = () -> db.updateExpirationDate(uri);
+        startThread(run);
+    }
 }

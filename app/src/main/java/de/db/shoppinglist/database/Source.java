@@ -42,6 +42,8 @@ public interface Source {
 
     void uploadImage(String listName, ShoppingEntry entry, Context context);
 
+    void updateExpirationDate(Uri downloadUri);
+
     void deleteHistoryEntry(EntryHistoryElement historyEntry);
 }
 
