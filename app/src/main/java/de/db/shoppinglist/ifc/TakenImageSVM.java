@@ -8,13 +8,13 @@ import androidx.lifecycle.ViewModel;
 
 public class TakenImageSVM extends ViewModel {
 
-    private MutableLiveData<Uri> imageLiveData = new MutableLiveData<>();
+    private MutableLiveData<String> imageLiveData = new MutableLiveData<>();
 
-    public LiveData<Uri> getImageLiveData(){
+    public LiveData<String> getImageLiveData(){
         return imageLiveData;
     }
 
-    public Uri getImage(){
+    public String getImage(){
         return imageLiveData.getValue();
     }
 
@@ -22,8 +22,23 @@ public class TakenImageSVM extends ViewModel {
         return getImage() != null;
     }
 
-    public void setImage(Uri imageUri){
+    public void setImage(String imageUri){
         imageLiveData.setValue(imageUri);
+    }
+
+    public void setImage(Uri imageUri){
+        if(imageUri != null) {
+            imageLiveData.setValue(imageUri.toString());
+        }else{
+            imageLiveData.setValue(null);
+        }
+    }
+
+    public boolean resetedImage(){
+        if(getImage() != null) {
+            return getImage().isEmpty();
+        }
+        return false;
     }
 
     /**

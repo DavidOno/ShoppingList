@@ -42,12 +42,13 @@ public class ShoppingRepository {
         if(instance == null){
             instance = new ShoppingRepository();
         }
+
         return instance;
     }
 
-    public void addEntry(String listId, ShoppingEntry newEntry, Uri uploadImageUri, Context context, boolean isImageUpdateRequired){
+    public void addEntry(String listId, ShoppingEntry newEntry, Context context){
         Runnable run = () -> {
-            db.addEntry(listId, newEntry, uploadImageUri, context, isImageUpdateRequired);
+            db.addEntry(listId, newEntry, context);
         };
         startThread(run);
     }
@@ -102,9 +103,9 @@ public class ShoppingRepository {
         startThread(run);
     }
 
-    public void modifyWholeEntry(ShoppingList list, ShoppingEntry entry, String imageUri, Context context) {
+    public void modifyWholeEntry(ShoppingList list, ShoppingEntry entry, Context context) {
         Runnable run = () -> {
-            db.modifyWholeEntry(list, entry, imageUri, context);
+            db.modifyWholeEntry(list, entry, context);
         };
         startThread(run);
     }
@@ -136,10 +137,9 @@ public class ShoppingRepository {
         startThread(run);
     }
 
-    public void modifyImageOfEntry(ShoppingList list, ShoppingEntry entry, String imageUri, Context context) {
+    public void modifyImageOfEntry(ShoppingList list, ShoppingEntry entry, Context context) {
         String listName = list.getUid();
-        Uri uri = Uri.parse(imageUri);
-        Runnable run = () -> db.uploadImage(listName, entry, uri, context);
+        Runnable run = () -> db.uploadImage(listName, entry, context);
         startThread(run);
     }
 

@@ -91,8 +91,9 @@ public class ModifyEntryFragment extends Fragment {
     }
 
     private void setImageAsArgument() {
-        if(entry.getImageURI() != null && !entry.getImageURI().isEmpty())
-            takenImageSVM.setImage(Uri.parse(entry.getImageURI()));
+        if(entry.getImageURI() != null && !entry.getImageURI().isEmpty()) {
+//            takenImageSVM.setImage(Uri.parse(entry.getImageURI()));
+        }
     }
 
     private String getTitlePrefix(){
@@ -133,7 +134,7 @@ public class ModifyEntryFragment extends Fragment {
 
     private void setImage() {
         if(isUriValid()){
-            imageView.setImageURI(takenImageSVM.getImageLiveData().getValue());
+//            imageView.setImageURI(takenImageSVM.getImageLiveData().getValue());
             return;
         }
         if(isDownloadLinkValid()) {
@@ -227,24 +228,29 @@ public class ModifyEntryFragment extends Fragment {
         String nameOfProduct = nameOfProductEditText.getText().toString();
         String details = detailsEditText.getText().toString();
         boolean done = doneCheckbox.isChecked();
-        setValues(quantity, unitOfQuantity, nameOfProduct, details, done);
-//        String imageUri = null;
-//        if(takenImageSVM.hasImage()) {
-        String  imageUri = takenImageSVM.getImageLiveData().getValue().toString();
-//            viewModel.modifyImageOfEntry(list, entry, imageUri, getContext());
-//        }
-        viewModel.modifyEntry(list, entry, imageUri, getContext());
+        Uri imageUri = getImageUri();
+        setValues(quantity, unitOfQuantity, nameOfProduct, details, done, imageUri);
+        viewModel.modifyEntry(list, entry, getContext());
         takenImageSVM.reset();
         closeFragment();
     }
 
+    private Uri getImageUri() {
+        Uri imageUri = viewModel.getImageLiveData().getValue();
+        if(imageUri != null) {
+            return imageUri;
+        }
+        return null;
+    }
 
-    private void setValues(float quantity, String unitOfQuantity, String nameOfProduct, String details, boolean done) {
+
+    private void setValues(float quantity, String unitOfQuantity, String nameOfProduct, String details, boolean done, Uri imageUri) {
         entry.setQuantity(quantity);
         entry.setUnitOfQuantity(unitOfQuantity);
         entry.setName(nameOfProduct);
         entry.setDetails(details);
         entry.setDone(done);
+        entry.setImageURI(imageUri.toString());
     }
 
     @Override

@@ -13,21 +13,18 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -54,6 +51,7 @@ public class TakeImageFragment extends Fragment {
     public static final int CAMERA_REQUEST_CODE = 102;
     public static final int GALLERY_REQUEST_CODE = 105;
     private static final String CONTENT_URI_KEY = "Content_uri_key";
+    private static final String WAS_REPLACED = "";
     private ImageView selectedImage;
     private Button cameraButton;
     private Button galleryButton;
@@ -68,7 +66,6 @@ public class TakeImageFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_take_image, container, false);
         findViewsById(view);
-        setImage();
         removeButton.setOnClickListener(v -> removeImage());
         removeButton.setVisibility(isDisplayed());
         cameraButton.setOnClickListener(v -> askCameraPermissions());
@@ -76,32 +73,23 @@ public class TakeImageFragment extends Fragment {
             Intent gallery = new Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(gallery, GALLERY_REQUEST_CODE);
         });
+        observeImage();
         return view;
     }
-
-
 
     public int isDisplayed(){
         return viewModel.hasImage() ? View.VISIBLE : View.INVISIBLE;
     }
 
     private void removeImage() {
-        viewModel.setImage(null);
+        viewModel.setImage(WAS_REPLACED);
     }
 
-    private void setImage() {
-        Uri takenImageUri = viewModel.getImageLiveData().getValue();
-        if(takenImageUri != null) {
-            Glide.with(getContext())
-                    .load(takenImageUri)
-                    .into(selectedImage);
-        }else{
-            selectedImage.setImageResource(R.drawable.ic_launcher_background);
-        }
+    private void observeImage() {
         viewModel.getImageLiveData().observe(getViewLifecycleOwner(), uri -> {
-            if(uri != null) {
+            if(uri != null && !uri.isEmpty()) {
                 Glide.with(getContext())
-                        .load(uri)
+                        .load(Uri.parse(uri))
                         .into(selectedImage);
             }else{
                 selectedImage.setImageResource(R.drawable.ic_launcher_background);
@@ -153,7 +141,7 @@ public class TakeImageFragment extends Fragment {
         inflater.inflate(R.menu.menu_done, menu);
         MenuCompat.setGroupDividerEnabled(menu, true);
         done = menu.findItem(R.id.menu_done_doneButton);
-        done.setEnabled(false); //TODO: Check if really always false
+        done.setEnabled(false);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -175,9 +163,6 @@ public class TakeImageFragment extends Fragment {
         if(requestCode == CAMERA_REQUEST_CODE){
             if(resultCode == Activity.RESULT_OK && data !=  null){
                 File f = new File(currentPhotoPath);
-//                selectedImage.setImageURI(Uri.fromFile(f));
-                Log.d("tag", "ABsolute Url of Image is " + Uri.fromFile(f));
-
                 Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
                 Uri contentUri = Uri.fromFile(f);
                 mediaScanIntent.setData(contentUri);
@@ -193,22 +178,12 @@ public class TakeImageFragment extends Fragment {
             if(resultCode == Activity.RESULT_OK && data != null){
                 Uri contentUri = data.getData();
                 viewModel.setImage(contentUri);
-                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                String imageFileName = "JPEG_" + timeStamp +"."+getFileExt();
-                Log.d("tag", "onActivityResult: Gallery Image Uri:  " +  imageFileName);
-//                selectedImage.setImageURI(contentUri);
                 done.setEnabled(true);
                 removeButton.setVisibility(View.VISIBLE);
             }else{
                 done.setEnabled(false);
             }
         }
-    }
-
-    private String getFileExt() {
-        ContentResolver c = getActivity().getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(c.getType(viewModel.getImage()));
     }
 
 

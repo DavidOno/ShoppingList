@@ -75,19 +75,17 @@ public class FirebaseSource implements Source {
     }
 
     @Override
-    public void addEntry(String listId, ShoppingEntry newEntry, Uri uploadImageURI, Context context, boolean isImageUpdateRequired) {
+    public void addEntry(String listId, ShoppingEntry newEntry, Context context) {
         DocumentReference newEntryRef = getListsRootCollectionRef().document(listId).collection(ENTRIES_KEY).document(newEntry.getUid());
         newEntryRef.set(newEntry)
                 .addOnSuccessListener(aVoid -> {
                     updateListStatusCounter(listId);
-                    if(isImageUpdateRequired) {
-                        if (uploadImageURI != null) {
-                            uploadImage(listId, newEntry, uploadImageURI, context);
-                        } else {
-                            updateImage(listId, newEntry, null);
-                        }
+                    if (isUploadUri(newEntry)) {
+                        uploadImage(listId, newEntry, context);
+                    } else if(isDownloadUri(newEntry)){
+                        updateImage(listId, newEntry);
                     }else{
-                        addToHistory(newEntry);
+                        updateImage(listId, newEntry);
                     }
                     Log.d(FIREBASE_TAG, "Success: Added Entry");
                 })
@@ -264,23 +262,40 @@ public class FirebaseSource implements Source {
     }
 
     @Override
-    public void modifyWholeEntry(ShoppingList list, ShoppingEntry entry, String imageUri, Context context) {
+    public void modifyWholeEntry(ShoppingList list, ShoppingEntry entry, Context context) {
         Map<String, Object> updateEntryMap = buildUpdateMap(entry);
         getListsRootCollectionRef().document(list.getUid()).collection(ENTRIES_KEY).document(entry.getUid()).update(updateEntryMap)
                 .addOnSuccessListener(aVoid -> {
-                    if (imageUri != null) {
-                        uploadImage(list.getUid(), entry, Uri.parse(imageUri), context);
-                    } else {
-                        updateImage(list.getUid(), entry, null);
+                    if (isUploadUri(entry)) {
+                        uploadImage(list.getUid(), entry, context);
+                    } else if(isDownloadUri(entry)){
+                        updateImage(list.getUid(), entry);
+                    }else{
+                        updateImage(list.getUid(), entry);
                     }
                     Log.d(FIREBASE_TAG, "Success: Updated Entry");
-
                 }).addOnFailureListener(e -> {
                     Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
                     toastMaker.prepareToast("Fail: Modify Entry");
                 }
         );
         updateListStatusCounter(list.getUid());
+    }
+
+    private boolean isDownloadUri(ShoppingEntry entry) {
+        return entry.getImageURI() != null && entry.getImageURI().startsWith("http");
+    }
+
+    private boolean isUploadUri(ShoppingEntry entry) {
+        return entry.getImageURI() != null && !entry.getImageURI().startsWith("http");
+    }
+
+    private boolean isDownloadUri(Uri uri) {
+        return uri != null && uri.toString().startsWith("http");
+    }
+
+    private boolean isUploadUri(Uri uri) {
+        return uri != null && !uri.toString().startsWith("http");
     }
 
     private Map<String, Object> buildUpdateMap(ShoppingEntry entry) {
@@ -381,7 +396,8 @@ public class FirebaseSource implements Source {
         return FirebaseStorage.getInstance().getReference(IMAGE_STORAGE_KEY + "/" + UUID.randomUUID());
     }
 
-    private void updateImage(String listName, ShoppingEntry entry, String imageURI) {
+    private void updateImage(String listName, ShoppingEntry entry) {
+        String imageURI = entry.getImageURI();
         Map<String, Object> updateImageMap = new HashMap<>();
         updateImageMap.put(IMAGE_URI_PROPERTY, imageURI);
         getListsRootCollectionRef().document(listName).collection(ENTRIES_KEY).document(entry.getUid()).update(updateImageMap).addOnSuccessListener(aVoid -> {
@@ -404,11 +420,11 @@ public class FirebaseSource implements Source {
      *
      * @param listName Name of the shopping list
      * @param entry    Entry which
-     * @param imageURI Uri of the image
      * @param context  Context of the image-uri
      */
     @Override
-    public void uploadImage(String listName, ShoppingEntry entry, Uri imageURI, Context context) {
+    public void uploadImage(String listName, ShoppingEntry entry, Context context) {
+        Uri imageURI = Uri.parse(entry.getImageURI());
         final StorageReference image = buildStorageReference();
         byte[] compressedImageBytes = new ImageCompressor(context).compress(imageURI, 30);
         UploadTask uploadTask;
@@ -427,7 +443,7 @@ public class FirebaseSource implements Source {
     private void reactToResultOfUpload(UploadTask uploadTask, StorageReference image, String listName, ShoppingEntry entry) {
         uploadTask.addOnSuccessListener(taskSnapshot -> image.getDownloadUrl()
                 .addOnSuccessListener(imageURI1 -> {
-                    updateImage(listName, entry, imageURI1.toString());
+                    updateImage(listName, entry);
                 }))
                 .addOnFailureListener(e -> {
                             Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));

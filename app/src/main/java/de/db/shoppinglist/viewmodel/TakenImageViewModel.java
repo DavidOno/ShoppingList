@@ -8,13 +8,13 @@ import androidx.lifecycle.ViewModel;
 
 public class TakenImageViewModel extends ViewModel {
 
-    private MutableLiveData<Uri> imageLiveData = new MutableLiveData<>();
+    private MutableLiveData<String> imageLiveData = new MutableLiveData<>();
 
-    public LiveData<Uri> getImageLiveData(){
+    public LiveData<String> getImageLiveData(){
         return imageLiveData;
     }
 
-    public Uri getImage(){
+    public String getImage(){
         return imageLiveData.getValue();
     }
 
@@ -23,7 +23,17 @@ public class TakenImageViewModel extends ViewModel {
     }
 
     public void setImage(Uri imageUri){
-        imageLiveData.setValue(imageUri);
+        imageLiveData.setValue(imageUri.toString());
+    }
+
+    public void setImage(String imageUri){
+        if(imageUri != null && imageUri.isEmpty()){
+            imageLiveData.setValue("");
+        }else if(imageUri != null) {
+            imageLiveData.setValue(imageUri);
+        }else{
+            imageLiveData.setValue(null);
+        }
     }
 
     /**

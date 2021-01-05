@@ -1,7 +1,9 @@
 package de.db.shoppinglist.viewmodel;
 
 import android.content.Context;
+import android.net.Uri;
 
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import de.db.shoppinglist.model.ShoppingEntry;
@@ -12,6 +14,24 @@ public class ModifyEntryViewModel extends ViewModel {
 
     private ShoppingRepository repo = ShoppingRepository.getInstance();
 
+    private MutableLiveData<Uri> imageLiveData = new MutableLiveData<>();
+
+    public MutableLiveData<Uri> getImageLiveData() {
+        return imageLiveData;
+    }
+
+    public void setImageLiveData(String uri) {
+        if(uri != null && !uri.isEmpty()) {
+            imageLiveData.setValue(Uri.parse(uri));
+        }else{
+            imageLiveData.setValue(null);
+        }
+    }
+
+    public Uri getImage(){
+        return imageLiveData.getValue();
+    }
+
     public void deleteEntry(String listUid, String documentUid){
         repo.deleteEntry(listUid, documentUid);
     }
@@ -21,11 +41,11 @@ public class ModifyEntryViewModel extends ViewModel {
         repo.updateDoneStatus(list.getUid(), entry);
     }
 
-    public void modifyEntry(ShoppingList list, ShoppingEntry entry, String imageUri, Context context){
-        repo.modifyWholeEntry(list, entry, imageUri, context);
+    public void modifyEntry(ShoppingList list, ShoppingEntry entry, Context context){
+        repo.modifyWholeEntry(list, entry, context);
     }
 
     public void modifyImageOfEntry(ShoppingList list, ShoppingEntry entry, String imageUri, Context context) {
-        repo.modifyImageOfEntry(list, entry, imageUri, context);
+        repo.modifyImageOfEntry(list, entry, context);
     }
 }

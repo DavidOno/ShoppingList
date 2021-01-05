@@ -42,7 +42,7 @@ public class NewEntryFragment extends Fragment {
     private EditText detailsEditText;
     private ImageView image;
     private ShoppingList list;
-    private EntryHistoryElement entry;
+    private EntryHistoryElement historyEntry;
     private String entryName;
     private NewEntryViewModel viewModel;
     private TakenImageSVM takenImageSVM;
@@ -52,37 +52,38 @@ public class NewEntryFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_new_entry, container, false);
         findViewsById(view);
-        if(entryName == null){
-            nameOfProductEditText.setText(entry.getName());
-            unitOfQuantityEditText.setText(entry.getUnitOfQuantity());
-            detailsEditText.setText(entry.getDetails());
-            if(hasValidImageUri()) {
-                takenImageSVM.setImage(Uri.parse(entry.getImageURI()));
+        initViews();
+        image.setOnClickListener(v -> navigateToTakeImage());
+        observeImage();
+        return view;
+    }
+
+    private void observeImage() {
+        viewModel.getImageLiveData().observe(getViewLifecycleOwner(), takenImage -> {
+            if(takenImage != null) {
                 Glide.with(getContext())
-                        .load(entry.getImageURI())
+                        .load(takenImage)
                         .skipMemoryCache(false)
                         .into(image);
             }else{
                 image.setImageResource(R.drawable.ic_shopping);
             }
+        });
+    }
+
+    private void initViews() {
+        if(entryName == null){
+            nameOfProductEditText.setText(historyEntry.getName());
+            unitOfQuantityEditText.setText(historyEntry.getUnitOfQuantity());
+            detailsEditText.setText(historyEntry.getDetails());
         }else{
             nameOfProductEditText.setText(entryName);
         }
-        image.setOnClickListener(v -> navigateToTakeImage());
-        takenImageSVM.getImageLiveData().observe(getViewLifecycleOwner(), takenImage -> {
-            Glide.with(getContext())
-                    .load(takenImage)
-                    .skipMemoryCache(false)
-                    .into(image);
-        });
-        return view;
-    }
-
-    private boolean hasValidImageUri() {
-        return entry.getImageURI() != null && !entry.getImageURI().isEmpty();
+        assignImageInViewModel();
     }
 
     private void navigateToTakeImage() {
+        takenImageSVM.setImage(viewModel.getImage());
         NavController navController = NavHostFragment.findNavController(NewEntryFragment.this);
         NavDirections navDirections = NewEntryFragmentDirections.actionNewEntryFragmentToCameraFragmentAlt2();
         navController.navigate(navDirections);
@@ -93,13 +94,14 @@ public class NewEntryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         setRetainInstance(true);
-        handleNavigationArguments();
         viewModel = new ViewModelProvider(requireActivity()).get(NewEntryViewModel.class);
         takenImageSVM = new ViewModelProvider(requireActivity()).get(TakenImageSVM.class);
+        getNavigationArguments();
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 takenImageSVM.reset();
+                viewModel.reset();
                 NavController navController = NavHostFragment.findNavController(NewEntryFragment.this);
                 navController.navigateUp();
             }
@@ -108,16 +110,43 @@ public class NewEntryFragment extends Fragment {
 
     }
 
-    private void handleNavigationArguments() {
-        getNavigationArguments();
-    }
-
     private void getNavigationArguments() {
         NewEntryFragmentArgs newEntryFragmentArgs = NewEntryFragmentArgs.fromBundle(getArguments());
         list = newEntryFragmentArgs.getList();
-        entry = newEntryFragmentArgs.getEntry();
+        historyEntry = newEntryFragmentArgs.getEntry();
         entryName = newEntryFragmentArgs.getName();
     }
+
+    private void assignImageInViewModel() {
+        if(noHistoryEntryProvided() || historyProvidesNoImage()){
+            viewModel.setImageLiveData(takenImageSVM.getImage());
+        }else{
+            if(imageWasReseted()){
+                viewModel.setImageLiveData(null);
+            }else if(imageWasReplaced()){
+                viewModel.setImageLiveData(takenImageSVM.getImage());
+            }else{
+                viewModel.setImageLiveData(historyEntry.getImageURI());
+            }
+        }
+    }
+
+    private boolean noHistoryEntryProvided() {
+        return historyEntry == null;
+    }
+
+    private boolean imageWasReplaced() {
+        return takenImageSVM.getImage() != null && !takenImageSVM.getImage().isEmpty();
+    }
+
+    private boolean imageWasReseted() {
+        return takenImageSVM.resetedImage();
+    }
+
+    private boolean historyProvidesNoImage() {
+        return historyEntry.getImageURI() == null;
+    }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -172,15 +201,16 @@ public class NewEntryFragment extends Fragment {
         Uri imageUri = getImageUri();
         viewModel.addNewEntry(list, quantity, unitOfQuantity, nameOfProduct, details, imageUri, getContext());
         takenImageSVM.reset();
+        viewModel.reset();
         closeFragment();
     }
 
     private Uri getImageUri() {
-        return takenImageSVM.getImageLiveData().getValue();
-    }
-
-    private boolean isNotDownloadUri(Uri image) {
-        return !image.toString().startsWith("http");
+        Uri imageUri = viewModel.getImageLiveData().getValue();
+        if(imageUri != null) {
+            return imageUri;
+        }
+        return null;
     }
 
 
@@ -207,11 +237,6 @@ public class NewEntryFragment extends Fragment {
         final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
 
-    }
-
-    private void openKeyBoard(){
-        final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(getView(), 0);
     }
 
     private void closeFragment() {

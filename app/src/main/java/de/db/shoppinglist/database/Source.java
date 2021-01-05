@@ -14,7 +14,7 @@ import de.db.shoppinglist.model.ShoppingList;
 
 public interface Source {
 
-    void addEntry(String listUid, ShoppingEntry entry, Uri uploadImageUri, Context context, boolean isImageUpdateRequired);
+    void addEntry(String listUid, ShoppingEntry entry, Context context);
 
     void deleteEntry(String listUid, String documentUid);
 
@@ -32,7 +32,7 @@ public interface Source {
 
     void updateListName(ShoppingList list);
 
-    void modifyWholeEntry(ShoppingList list, ShoppingEntry entry, String imageUri, Context context);
+    void modifyWholeEntry(ShoppingList list, ShoppingEntry entry, Context context);
 
     void getHistory(Consumer<List<EntryHistoryElement>> callback);
 
@@ -40,9 +40,7 @@ public interface Source {
 
     void deleteAllLists();
 
-    void uploadImage(String listName, ShoppingEntry entry, Uri imageURI, Context context);
-
-
+    void uploadImage(String listName, ShoppingEntry entry, Context context);
 
     void deleteHistoryEntry(EntryHistoryElement historyEntry);
 }
