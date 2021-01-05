@@ -28,7 +28,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.bumptech.glide.Glide;
 
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.database.GlideExtension;
 import de.db.shoppinglist.ifc.TakenImageSVM;
 import de.db.shoppinglist.model.EntryHistoryElement;
 import de.db.shoppinglist.model.ShoppingList;

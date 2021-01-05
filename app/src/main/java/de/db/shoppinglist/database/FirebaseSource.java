@@ -17,8 +17,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +26,6 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import de.db.shoppinglist.model.EntryHistoryElement;
-import de.db.shoppinglist.model.ImageExpiration;
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.utility.ToastUtility;
@@ -39,8 +36,6 @@ import static java.util.stream.Collectors.toSet;
 public class FirebaseSource implements Source {
 
 
-    public static final String DOWNLOAD_URI_PROPERTY = "downloadUri";
-    public static final String IMAGE_EXPIRATION_DATE_PROPERTY = "date";
     private final ToastUtility toastMaker = ToastUtility.getInstance();
     private static final String FIREBASE_TAG = "FIREBASE";
     public static final String USER_ROOT_KEY = "Users";
@@ -59,7 +54,6 @@ public class FirebaseSource implements Source {
     public static final String IMAGE_URI_PROPERTY = "imageURI";
     public static final String HIST_UID_PROPERTY = "uid";
     public static final String USERS_KEY = "User";
-    public static final String IMAGE_EXPIRATION_KEY = "ImageExp";
 
 
     private CollectionReference getListsRootCollectionRef() {
@@ -437,7 +431,6 @@ public class FirebaseSource implements Source {
                 .addOnSuccessListener(imageURI1 -> {
                     entry.setImageURI(imageURI1.toString());
                     updateImage(listName, entry);
-                    createImageExpiration(imageURI1);
                 }))
                 .addOnFailureListener(e -> {
                             Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
@@ -445,43 +438,6 @@ public class FirebaseSource implements Source {
                         }
                 );
     }
-
-    private void createImageExpiration(Uri downloadUri) {
-        String currentData = ImageExpiration.simpleDateFormat.format(new Date());
-        String downloadUriAsString = downloadUri.toString();
-        ImageExpiration imageExpiration = new ImageExpiration(currentData, downloadUriAsString);
-        FirebaseFirestore.getInstance().collection(IMAGE_EXPIRATION_KEY).add(imageExpiration)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d(FIREBASE_TAG, "Created Image-Expiration");
-                })
-                .addOnFailureListener(e -> {
-                            Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
-                        }
-                );
-    }
-
-    @Override
-    public void updateExpirationDate(Uri downloadUri){
-        String currentData = ImageExpiration.simpleDateFormat.format(new Date());
-        Task<QuerySnapshot> query = FirebaseFirestore.getInstance().collection(IMAGE_EXPIRATION_KEY)
-                .whereEqualTo(DOWNLOAD_URI_PROPERTY, downloadUri).get();
-        query.addOnSuccessListener(documentSnapshots -> {
-                    DocumentSnapshot doc = documentSnapshots.getDocuments().get(0);
-                    String id = doc.getId();
-                    Map<String, Object> updateExpirationDate = new HashMap<>();
-                    updateExpirationDate.put(IMAGE_EXPIRATION_DATE_PROPERTY, currentData);
-                    FirebaseFirestore.getInstance().collection(IMAGE_EXPIRATION_KEY).document(id).update(updateExpirationDate)
-                            .addOnSuccessListener(aVoid -> {
-                                Log.d(FIREBASE_TAG, "Updated Image-Expiration");
-                            })
-                            .addOnFailureListener(e -> {
-                                        Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
-                                    }
-                            );
-                }
-        );
-    }
-
 
 
     @Override
