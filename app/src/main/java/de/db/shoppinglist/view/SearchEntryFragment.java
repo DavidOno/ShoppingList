@@ -47,7 +47,7 @@ public class SearchEntryFragment extends Fragment implements SearchEntryRecycler
         findViewsById();
         addEntryButton.setOnClickListener(v -> {
             NavController navController = NavHostFragment.findNavController(this);
-            NavDirections newEntry = SearchEntryFragmentDirections.actionSearchEntryFragmentToNewEntryFragment(list, null, searchView.getQuery().toString());
+            NavDirections newEntry = SearchEntryFragmentDirections.actionSearchEntryFragmentToNewEntryFragment(list, null, searchView.getQuery().toString(), null);
             navController.navigate(newEntry);
         });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -119,7 +119,7 @@ public class SearchEntryFragment extends Fragment implements SearchEntryRecycler
     public void onEntryClick(int position) {
         EntryHistoryElement entry = adapter.getHistoryEntry(position);
         NavController navController = NavHostFragment.findNavController(this);
-        NavDirections newEntry = SearchEntryFragmentDirections.actionSearchEntryFragmentToNewEntryFragment(list, entry, null);
+        NavDirections newEntry = SearchEntryFragmentDirections.actionSearchEntryFragmentToNewEntryFragment(list, entry, null, null);
         navController.navigate(newEntry);
     }
 

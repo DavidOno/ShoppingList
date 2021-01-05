@@ -28,63 +28,67 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.bumptech.glide.Glide;
 
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.ifc.TakenImageSVM;
 import de.db.shoppinglist.model.EntryHistoryElement;
+import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.NewEntryViewModel;
 
 public class NewEntryFragment extends Fragment {
 
 
+    public static final String NEW_ENTRY_SOURCE = "NewEntryFragment";
     private EditText nameOfProductEditText;
     private EditText quantityEditText;
     private EditText unitOfQuantityEditText;
     private EditText detailsEditText;
     private ImageView image;
     private ShoppingList list;
-    private EntryHistoryElement entry;
+    private EntryHistoryElement historyEntry;
     private String entryName;
     private NewEntryViewModel viewModel;
-    private TakenImageSVM takenImageSVM;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_new_entry, container, false);
         findViewsById(view);
-        if(entryName == null){
-            nameOfProductEditText.setText(entry.getName());
-            unitOfQuantityEditText.setText(entry.getUnitOfQuantity());
-            detailsEditText.setText(entry.getDetails());
-            if(hasValidImageUri()) {
-                takenImageSVM.setImage(Uri.parse(entry.getImageURI()));
+        initViews();
+        image.setOnClickListener(v -> navigateToTakeImage());
+        observeImage();
+        return view;
+    }
+
+    private void observeImage() {
+        viewModel.getImageLiveData().observe(getViewLifecycleOwner(), takenImage -> {
+            if(takenImage != null) {
                 Glide.with(getContext())
-                        .load(entry.getImageURI())
+                        .load(takenImage)
                         .skipMemoryCache(false)
                         .into(image);
             }else{
                 image.setImageResource(R.drawable.ic_shopping);
             }
+        });
+    }
+
+    private void initViews() {
+        if(historyEntry != null){
+            nameOfProductEditText.setText(historyEntry.getName());
+            unitOfQuantityEditText.setText(historyEntry.getUnitOfQuantity());
+            detailsEditText.setText(historyEntry.getDetails());
         }else{
             nameOfProductEditText.setText(entryName);
         }
-        image.setOnClickListener(v -> navigateToTakeImage());
-        takenImageSVM.getImageLiveData().observe(getViewLifecycleOwner(), takenImage -> {
-            Glide.with(getContext())
-                    .load(takenImage)
-                    .skipMemoryCache(false)
-                    .into(image);
-        });
-        return view;
     }
 
-    private boolean hasValidImageUri() {
-        return entry.getImageURI() != null && !entry.getImageURI().isEmpty();
-    }
 
     private void navigateToTakeImage() {
+        ShoppingEntry newPotentialEntry = null;
+        if(historyEntry != null){
+            newPotentialEntry = new ShoppingEntry(historyEntry);
+        }
         NavController navController = NavHostFragment.findNavController(NewEntryFragment.this);
-        NavDirections navDirections = NewEntryFragmentDirections.actionNewEntryFragmentToCameraFragmentAlt2();
+        NavDirections navDirections = NewEntryFragmentDirections.actionNewEntryFragmentToCameraFragmentAlt2(list, newPotentialEntry, entryName, NEW_ENTRY_SOURCE);
         navController.navigate(navDirections);
     }
 
@@ -93,30 +97,31 @@ public class NewEntryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         setRetainInstance(true);
-        handleNavigationArguments();
         viewModel = new ViewModelProvider(requireActivity()).get(NewEntryViewModel.class);
-        takenImageSVM = new ViewModelProvider(requireActivity()).get(TakenImageSVM.class);
+        getNavigationArguments();
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                takenImageSVM.reset();
                 NavController navController = NavHostFragment.findNavController(NewEntryFragment.this);
                 navController.navigateUp();
+                viewModel.reset();
             }
         };
         requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
 
     }
 
-    private void handleNavigationArguments() {
-        getNavigationArguments();
-    }
-
     private void getNavigationArguments() {
         NewEntryFragmentArgs newEntryFragmentArgs = NewEntryFragmentArgs.fromBundle(getArguments());
         list = newEntryFragmentArgs.getList();
-        entry = newEntryFragmentArgs.getEntry();
+        historyEntry = newEntryFragmentArgs.getEntry();
         entryName = newEntryFragmentArgs.getName();
+        String imageUri = newEntryFragmentArgs.getImage();
+        if(imageUri != null){
+            viewModel.setImageLiveData(Uri.parse(imageUri));
+        }else{
+            viewModel.setImageLiveData(null);
+        }
     }
 
     @Override
@@ -169,18 +174,10 @@ public class NewEntryFragment extends Fragment {
         String unitOfQuantity = getString(unitOfQuantityEditText);
         String nameOfProduct = getString(nameOfProductEditText);
         String details = getString(detailsEditText);
-        Uri imageUri = getImageUri();
+        Uri imageUri = viewModel.getImage();
         viewModel.addNewEntry(list, quantity, unitOfQuantity, nameOfProduct, details, imageUri, getContext());
-        takenImageSVM.reset();
+        viewModel.reset();
         closeFragment();
-    }
-
-    private Uri getImageUri() {
-        return takenImageSVM.getImageLiveData().getValue();
-    }
-
-    private boolean isNotDownloadUri(Uri image) {
-        return !image.toString().startsWith("http");
     }
 
 

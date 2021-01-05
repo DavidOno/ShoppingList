@@ -9,25 +9,23 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -40,7 +38,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.ifc.TakenImageSVM;
+import de.db.shoppinglist.model.EntryHistoryElement;
+import de.db.shoppinglist.model.ShoppingEntry;
+import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.TakenImageViewModel;
 
 /**
@@ -60,7 +60,6 @@ public class TakeImageFragment extends Fragment {
     private Button removeButton;
     private String currentPhotoPath;
     private MenuItem done;
-    private TakenImageSVM sharedViewModel;
     private TakenImageViewModel viewModel;
 
     @Nullable
@@ -68,7 +67,7 @@ public class TakeImageFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_take_image, container, false);
         findViewsById(view);
-        setImage();
+        observeImage();
         removeButton.setOnClickListener(v -> removeImage());
         removeButton.setVisibility(isDisplayed());
         cameraButton.setOnClickListener(v -> askCameraPermissions());
@@ -79,8 +78,6 @@ public class TakeImageFragment extends Fragment {
         return view;
     }
 
-
-
     public int isDisplayed(){
         return viewModel.hasImage() ? View.VISIBLE : View.INVISIBLE;
     }
@@ -89,15 +86,7 @@ public class TakeImageFragment extends Fragment {
         viewModel.setImage(null);
     }
 
-    private void setImage() {
-        Uri takenImageUri = viewModel.getImageLiveData().getValue();
-        if(takenImageUri != null) {
-            Glide.with(getContext())
-                    .load(takenImageUri)
-                    .into(selectedImage);
-        }else{
-            selectedImage.setImageResource(R.drawable.ic_launcher_background);
-        }
+    private void observeImage() {
         viewModel.getImageLiveData().observe(getViewLifecycleOwner(), uri -> {
             if(uri != null) {
                 Glide.with(getContext())
@@ -118,8 +107,15 @@ public class TakeImageFragment extends Fragment {
         setHasOptionsMenu(true);
         setRetainInstance(true);
         viewModel = new ViewModelProvider(requireActivity()).get(TakenImageViewModel.class);
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(TakenImageSVM.class);
-        viewModel.setImage(sharedViewModel.getImage());
+        getNavigationArguments();
+    }
+
+    private void getNavigationArguments() {
+        TakeImageFragmentArgs takeImageFragmentArgs = TakeImageFragmentArgs.fromBundle(getArguments());
+        viewModel.setList(takeImageFragmentArgs.getList());
+        viewModel.setEntry(takeImageFragmentArgs.getEntry());
+        viewModel.setEntryName(takeImageFragmentArgs.getEntryName());
+        viewModel.setSource(takeImageFragmentArgs.getSource());
     }
 
     private void findViewsById(View view) {
@@ -153,7 +149,7 @@ public class TakeImageFragment extends Fragment {
         inflater.inflate(R.menu.menu_done, menu);
         MenuCompat.setGroupDividerEnabled(menu, true);
         done = menu.findItem(R.id.menu_done_doneButton);
-        done.setEnabled(false); //TODO: Check if really always false
+        done.setEnabled(false);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -161,54 +157,62 @@ public class TakeImageFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_done_doneButton:
-                sharedViewModel.setImage(viewModel.getImage());
-                NavController navController = NavHostFragment.findNavController(this);
-                navController.navigateUp();
+                if(viewModel.getSource().equals(NewEntryFragment.NEW_ENTRY_SOURCE)){
+                    navigateBackToNewEntry();
+                }else if(viewModel.getSource().equals(ModifyEntryFragment.MODIFY_ENTRY_SOURCE)){
+                    navigateBackToModifyEntry();
+                }
                 break;
-
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void navigateBackToModifyEntry() {
+    }
+
+    private void navigateBackToNewEntry() {
+        NavController navController = NavHostFragment.findNavController(this);
+        ShoppingList list = viewModel.getList();
+        EntryHistoryElement historyEntry = viewModel.getEntry().extractHistoryElement();
+        String entryName = viewModel.getEntryName();
+        Uri image = viewModel.getImage();
+        NavDirections backToNewEntry = TakeImageFragmentDirections.actionCameraFragmentAlt2ToNewEntryFragment(list, historyEntry, entryName, image);
+        navController.navigate(backToNewEntry);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode == CAMERA_REQUEST_CODE){
-            if(resultCode == Activity.RESULT_OK && data !=  null){
-                File f = new File(currentPhotoPath);
-//                selectedImage.setImageURI(Uri.fromFile(f));
-                Log.d("tag", "ABsolute Url of Image is " + Uri.fromFile(f));
-
-                Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                Uri contentUri = Uri.fromFile(f);
-                mediaScanIntent.setData(contentUri);
-                viewModel.setImage(contentUri);
-                getActivity().sendBroadcast(mediaScanIntent);
-                done.setEnabled(true);
-                removeButton.setVisibility(View.VISIBLE);
-            }else{
-                done.setEnabled(false);
-            }
-        }
-        if(requestCode == GALLERY_REQUEST_CODE){
-            if(resultCode == Activity.RESULT_OK && data != null){
-                Uri contentUri = data.getData();
-                viewModel.setImage(contentUri);
-                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                String imageFileName = "JPEG_" + timeStamp +"."+getFileExt();
-                Log.d("tag", "onActivityResult: Gallery Image Uri:  " +  imageFileName);
-//                selectedImage.setImageURI(contentUri);
-                done.setEnabled(true);
-                removeButton.setVisibility(View.VISIBLE);
-            }else{
-                done.setEnabled(false);
-            }
+            getImageFromCamera(resultCode, data);
+        } else if(requestCode == GALLERY_REQUEST_CODE){
+            getImageFromGallery(resultCode, data);
         }
     }
 
-    private String getFileExt() {
-        ContentResolver c = getActivity().getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(c.getType(viewModel.getImage()));
+    private void getImageFromGallery(int resultCode, @Nullable Intent data) {
+        if(resultCode == Activity.RESULT_OK && data != null){
+            Uri contentUri = data.getData();
+            viewModel.setImage(contentUri);
+            done.setEnabled(true);
+            removeButton.setVisibility(View.VISIBLE);
+        }else{
+            done.setEnabled(false);
+        }
+    }
+
+    private void getImageFromCamera(int resultCode, @Nullable Intent data) {
+        if(resultCode == Activity.RESULT_OK && data !=  null){
+            File f = new File(currentPhotoPath);
+            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            Uri contentUri = Uri.fromFile(f);
+            mediaScanIntent.setData(contentUri);
+            viewModel.setImage(contentUri);
+            getActivity().sendBroadcast(mediaScanIntent);
+            done.setEnabled(true);
+            removeButton.setVisibility(View.VISIBLE);
+        }else{
+            done.setEnabled(false);
+        }
     }
 
 

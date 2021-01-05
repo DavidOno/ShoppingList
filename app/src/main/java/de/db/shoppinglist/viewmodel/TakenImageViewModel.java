@@ -6,9 +6,48 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import de.db.shoppinglist.model.ShoppingEntry;
+import de.db.shoppinglist.model.ShoppingList;
+
 public class TakenImageViewModel extends ViewModel {
 
     private MutableLiveData<Uri> imageLiveData = new MutableLiveData<>();
+    private ShoppingList list;
+    private ShoppingEntry entry;
+    private String entryName;
+    private String source;
+
+    public ShoppingList getList() {
+        return list;
+    }
+
+    public ShoppingEntry getEntry() {
+        return entry;
+    }
+
+    public String getEntryName() {
+        return entryName;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setList(ShoppingList list) {
+        this.list = list;
+    }
+
+    public void setEntry(ShoppingEntry entry) {
+        this.entry = entry;
+    }
+
+    public void setEntryName(String entryName) {
+        this.entryName = entryName;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
 
     public LiveData<Uri> getImageLiveData(){
         return imageLiveData;

@@ -66,6 +66,10 @@
         <action
             android:id="@+id/action_newEntryFragment_to_cameraFragmentAlt2"
             app:destination="@id/cameraFragmentAlt2" />
+        <argument
+            android:name="image"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/modifyEntryFragment"
@@ -116,7 +120,32 @@
         android:id="@+id/cameraFragmentAlt2"
         android:name="de.db.shoppinglist.view.TakeImageFragment"
         android:label="@string/ChooseImage"
-        tools:layout="@layout/fragment_take_image" />
+        tools:layout="@layout/fragment_take_image" >
+        <argument
+            android:name="list"
+            app:argType="de.db.shoppinglist.model.ShoppingList" />
+        <argument
+            android:name="entry"
+            app:argType="de.db.shoppinglist.model.ShoppingEntry"
+            app:nullable="true" />
+        <argument
+            android:name="entryName"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="source"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_cameraFragmentAlt2_to_newEntryFragment"
+            app:destination="@id/newEntryFragment"
+            app:popUpTo="@id/newEntryFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_cameraFragmentAlt2_to_modifyEntryFragment"
+            app:destination="@id/modifyEntryFragment"
+            app:popUpTo="@id/modifyEntryFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
     <fragment
         android:id="@+id/modifyTakeImageFragment"
         android:name="de.db.shoppinglist.view.ModifyTakeImageFragment"

@@ -46,6 +46,19 @@ public class ShoppingEntry implements Parcelable, PositionAware {
         imageURI = other.imageURI;
     }
 
+    public ShoppingEntry(EntryHistoryElement historyElement){
+        this.name = historyElement.getName();
+        if(historyElement.getUnitOfQuantity() != null){
+            this.unitOfQuantity = historyElement.getUnitOfQuantity();
+        }
+        if(historyElement.getDetails() != null){
+            this.details = historyElement.getDetails();
+        }
+        if(historyElement.getImageURI() != null){
+            this.imageURI = historyElement.getImageURI();
+        }
+    }
+
 
     protected ShoppingEntry(Parcel in) {
         quantity = in.readFloat();

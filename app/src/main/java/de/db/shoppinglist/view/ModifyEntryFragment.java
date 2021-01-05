@@ -31,7 +31,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.bumptech.glide.Glide;
 
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.ifc.ModifyTakenImageSVM;
 import de.db.shoppinglist.ifc.TakenImageSVM;
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
@@ -40,6 +39,7 @@ import de.db.shoppinglist.viewmodel.ModifyEntryViewModel;
 public class ModifyEntryFragment extends Fragment {
 
     public static final int MODIFY_RESOURCE = R.string.modify_;
+    public static final String MODIFY_ENTRY_SOURCE = "ModifyEntryFragment";
     private EditText nameOfProductEditText;
     private EditText quantityEditText;
     private EditText unitOfQuantityEditText;
@@ -86,7 +86,7 @@ public class ModifyEntryFragment extends Fragment {
     private void modifyImage() {
         setImageAsArgument();
         NavController navController = NavHostFragment.findNavController(this);
-        NavDirections modifyImageDirection = ModifyEntryFragmentDirections.actionModifyEntryFragmentToCameraFragmentAlt2();
+        NavDirections modifyImageDirection = ModifyEntryFragmentDirections.actionModifyEntryFragmentToCameraFragmentAlt2(list, entry, null, MODIFY_ENTRY_SOURCE);
         navController.navigate(modifyImageDirection);
     }
 
