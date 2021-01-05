@@ -1,10 +1,12 @@
 package de.db.shoppinglist.view;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
@@ -137,5 +139,17 @@ public class SearchEntryFragment extends Fragment implements SearchEntryRecycler
             String query = savedInstanceState.getString(SEARCH_QUERY_KEY);
             adapter.getFilter().filter(query);
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        closeKeyBoard();
+    }
+
+    private void closeKeyBoard() {
+        final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+
     }
 }
