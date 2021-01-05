@@ -12,22 +12,26 @@
             android:id="@+id/searchEntry_top"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.SearchView
                 android:id="@+id/search_entry_searchView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.95"
+                android:background="@drawable/border_definition"
+                android:layout_weight="0.9"
+                android:layout_marginRight="5dp"
                 />
 
             <ImageButton
                 android:id="@+id/search_entry_add"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:src="@drawable/ic_plus_black"
-                android:layout_weight="0.05"
-                android:background="?android:selectableItemBackground"
+                android:layout_weight="0.1"
+                android:background="@drawable/border_definition"
                 android:layout_gravity="center_vertical"/>
         </LinearLayout>
 
