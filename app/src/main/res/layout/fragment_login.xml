@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".view.LoginFragment">
+    tools:context=".view.LoginFragment"
+    >
 
     <TextView
         android:id="@+id/welcome"
@@ -14,6 +15,7 @@
         android:layout_marginTop="90dp"
         android:backgroundTint="@color/red"
         android:text="@string/welcome"
+        android:textStyle="bold"
         android:textSize="40dp" />
 
     <com.google.android.gms.common.SignInButton

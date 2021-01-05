@@ -31,7 +31,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.bumptech.glide.Glide;
 
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.ifc.ModifyTakenImageSVM;
 import de.db.shoppinglist.ifc.TakenImageSVM;
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
@@ -64,12 +63,15 @@ public class ModifyEntryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        getNavigationArguments();
         initFields();
-        entryId = getDocumentId();
-        setUpViewModel();
         setTitle();
         imageView.setOnClickListener(v -> modifyImage());
         deleteButton.setOnClickListener(v -> deleteEntryAndFinish());
+        customizeBackPress();
+    }
+
+    private void customizeBackPress() {
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -78,7 +80,6 @@ public class ModifyEntryFragment extends Fragment {
                 navController.navigateUp();
             }
         };
-
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
     }
 
@@ -91,9 +92,7 @@ public class ModifyEntryFragment extends Fragment {
     }
 
     private void setImageAsArgument() {
-        if(entry.getImageURI() != null && !entry.getImageURI().isEmpty()) {
-//            takenImageSVM.setImage(Uri.parse(entry.getImageURI()));
-        }
+        takenImageSVM.setImage(viewModel.getImage());
     }
 
     private String getTitlePrefix(){
@@ -102,10 +101,6 @@ public class ModifyEntryFragment extends Fragment {
 
     private void setTitle() {
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getTitlePrefix() + entry.getName());
-    }
-
-    private void setUpViewModel() {
-        viewModel = new ViewModelProvider(requireActivity()).get(ModifyEntryViewModel.class);
     }
 
     private void deleteEntryAndFinish() {
@@ -117,44 +112,28 @@ public class ModifyEntryFragment extends Fragment {
         viewModel.deleteEntry(list.getUid(), entryId);
     }
 
-    private String getDocumentId() {
-        return entry.getUid();
-    }
-
-
     private void initFields() {
         nameOfProductEditText.setText(entry.getName());
         quantityEditText.setText(String.valueOf(entry.getQuantity()));
         unitOfQuantityEditText.setText(entry.getUnitOfQuantity());
         detailsEditText.setText(entry.getDetails());
         doneCheckbox.setChecked(entry.isDone());
-        setImage();
+        entryId = entry.getUid();
+        observeImage();
         handleDoneChecked();
     }
 
-    private void setImage() {
-        if(isUriValid()){
-//            imageView.setImageURI(takenImageSVM.getImageLiveData().getValue());
-            return;
-        }
-        if(isDownloadLinkValid()) {
-            Glide.with(getContext())
-                    .load(entry.getImageURI())
-                    .skipMemoryCache(false)
-                    .into(imageView);
-            return;
-        }
-    }
-
-    private boolean isUriValid() {
-        boolean hasContent =  takenImageSVM.getImageLiveData().getValue() != null && !takenImageSVM.getImageLiveData().getValue().toString().isEmpty();
-        if(hasContent)
-            return !takenImageSVM.getImageLiveData().getValue().toString().startsWith("https");
-        return false;
-    }
-
-    private boolean isDownloadLinkValid() {
-        return entry.getImageURI() != null && !entry.getImageURI().isEmpty() && entry.getImageURI().startsWith("https");
+    private void observeImage() {
+        viewModel.getImageLiveData().observe(getViewLifecycleOwner(), takenImage -> {
+            if(takenImage != null) {
+                Glide.with(getContext())
+                        .load(takenImage)
+                        .skipMemoryCache(false)
+                        .into(imageView);
+            }else{
+                imageView.setImageResource(R.drawable.ic_shopping);
+            }
+        });
     }
 
     private void handleDoneChecked() {
@@ -167,10 +146,41 @@ public class ModifyEntryFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        takenImageSVM = new ViewModelProvider(requireActivity()).get(TakenImageSVM.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(ModifyEntryViewModel.class);
+    }
+
+    private void getNavigationArguments() {
         ModifyEntryFragmentArgs modifyEntryFragmentArgs = ModifyEntryFragmentArgs.fromBundle(getArguments());
         list = modifyEntryFragmentArgs.getList();
         entry = modifyEntryFragmentArgs.getEntry();
-        takenImageSVM = new ViewModelProvider(requireActivity()).get(TakenImageSVM.class);
+        assignImageInViewModel();
+    }
+
+    private void assignImageInViewModel() {
+        if(toModifingEntryProvidesNoImage()){
+            viewModel.setImageLiveData(takenImageSVM.getImage());
+        }else{
+            if(imageWasReseted()){
+                viewModel.setImageLiveData(null);
+            }else if(imageWasReplaced()){
+                viewModel.setImageLiveData(takenImageSVM.getImage());
+            }else{
+                viewModel.setImageLiveData(entry.getImageURI());
+            }
+        }
+    }
+
+    private boolean toModifingEntryProvidesNoImage() {
+        return entry.getImageURI() == null;
+    }
+
+    private boolean imageWasReseted() {
+        return takenImageSVM.resetedImage();
+    }
+
+    private boolean imageWasReplaced() {
+        return takenImageSVM.getImage() != null && !takenImageSVM.getImage().isEmpty();
     }
 
     @Override
@@ -236,7 +246,7 @@ public class ModifyEntryFragment extends Fragment {
     }
 
     private Uri getImageUri() {
-        Uri imageUri = viewModel.getImageLiveData().getValue();
+        Uri imageUri = viewModel.getImage();
         if(imageUri != null) {
             return imageUri;
         }
@@ -250,7 +260,11 @@ public class ModifyEntryFragment extends Fragment {
         entry.setName(nameOfProduct);
         entry.setDetails(details);
         entry.setDone(done);
-        entry.setImageURI(imageUri.toString());
+        String image = null;
+        if(imageUri != null){
+            image = imageUri.toString();
+        }
+        entry.setImageURI(image);
     }
 
     @Override

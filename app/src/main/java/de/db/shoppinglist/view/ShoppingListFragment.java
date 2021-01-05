@@ -89,7 +89,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
 
     public void handleItemIsDone(){
         if(fireAdapter instanceof Checkable){
-            Checkable<ShoppingEntry> checkable = (Checkable)fireAdapter;
+            Checkable<ShoppingEntry> checkable = fireAdapter;
             checkable.getFlag().observe(getViewLifecycleOwner(),
                     aBoolean -> {
                         if(aBoolean.booleanValue()) {
@@ -170,7 +170,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
 
     @Override
     public void onEntryClick(int position) {
-        ShoppingEntry entry = (ShoppingEntry) fireAdapter.getItem(position);
+        ShoppingEntry entry = fireAdapter.getItem(position);
         NavController navController = NavHostFragment.findNavController(this);
         NavDirections openSelectedEntry = ShoppingListFragmentDirections.actionShoppingListFragmentToModifyEntryFragment(entry, list);
         navController.navigate(openSelectedEntry);
