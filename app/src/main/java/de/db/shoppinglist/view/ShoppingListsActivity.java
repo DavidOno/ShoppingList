@@ -42,7 +42,6 @@ public class ShoppingListsActivity extends AppCompatActivity{
         });
         NavigationUI.setupActionBarWithNavController(this, navController);
         displayReceivedToasts();
-
     }
 
     private void displayReceivedToasts() {
