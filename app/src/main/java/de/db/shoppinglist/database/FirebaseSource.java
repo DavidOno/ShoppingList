@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import de.db.shoppinglist.model.EntryHistoryElement;
@@ -192,16 +193,34 @@ public class FirebaseSource implements Source {
     public void deleteList(String listId) {
         Task<QuerySnapshot> query = getListsRootCollectionRef().document(listId).collection(ENTRIES_KEY).get();
         query.addOnSuccessListener(aVoid -> {
-            Objects.requireNonNull(query.getResult()).getDocuments().stream()
+            List<DocumentSnapshot> documents = Objects.requireNonNull(query.getResult()).getDocuments();
+            int docToDelete = documents.size();
+            AtomicInteger numberOfDocsDeleted = new AtomicInteger();
+            documents.stream()
                     .map(doc -> buildPathForEntryDoc(listId, doc))
-                    .forEach(DocumentReference::delete);
+                    .forEach(doc -> {
+                        deleteEntry(listId, docToDelete, numberOfDocsDeleted, doc);
+                    });
             Log.d(FIREBASE_TAG, "Success: Deleted all entries");
-            deleteListOnly(listId);
         }).addOnFailureListener(e -> {
                     Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
                     toastMaker.prepareToast("Fail: Delete List");
                 }
         );
+    }
+
+    private void deleteEntry(String listId, int docToDelete, AtomicInteger numberOfDocsDeleted, DocumentReference doc) {
+        doc.delete().addOnSuccessListener(aVoid -> {
+            int deleteEntries = numberOfDocsDeleted.incrementAndGet();
+            if(deleteEntries == docToDelete){
+                deleteListOnly(listId);
+            }
+            Log.d(FIREBASE_TAG, "Deleted entry");
+        }).addOnFailureListener(e -> {
+                    Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
+                    toastMaker.prepareToast("Fail: Delete Entry");
+                }
+        );;
     }
 
     @Override
@@ -328,7 +347,7 @@ public class FirebaseSource implements Source {
     }
 
     private DocumentReference buildPathForEntryDoc(String listId, DocumentSnapshot doc) {
-        return getHistoryRootCollectionRef().document(listId).collection(ENTRIES_KEY).document(doc.getId());
+        return getListsRootCollectionRef().document(listId).collection(ENTRIES_KEY).document(doc.getId());
     }
 
 
