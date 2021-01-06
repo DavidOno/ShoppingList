@@ -201,6 +201,9 @@ public class FirebaseSource implements Source {
                     .forEach(doc -> {
                         deleteEntry(listId, docToDelete, numberOfDocsDeleted, doc);
                     });
+            if(docToDelete == 0){
+                deleteListOnly(listId);
+            }
             Log.d(FIREBASE_TAG, "Success: Deleted all entries");
         }).addOnFailureListener(e -> {
                     Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
