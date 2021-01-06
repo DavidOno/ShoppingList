@@ -60,6 +60,7 @@ public class TakeImageFragment extends Fragment {
     private MenuItem done;
     private TakenImageSVM sharedViewModel;
     private TakenImageViewModel viewModel;
+    private boolean wasEnabled = false;
 
     @Nullable
     @Override
@@ -141,7 +142,7 @@ public class TakeImageFragment extends Fragment {
         inflater.inflate(R.menu.menu_done, menu);
         MenuCompat.setGroupDividerEnabled(menu, true);
         done = menu.findItem(R.id.menu_done_doneButton);
-        done.setEnabled(false);
+        done.setEnabled(wasEnabled);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -214,21 +215,17 @@ public class TakeImageFragment extends Fragment {
         }
     }
 
-//    @Override
-//    public void onSaveInstanceState(@NonNull Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//        if(viewModel.hasImage()) {
-//            outState.putString(CONTENT_URI_KEY, viewModel.getImage().toString());
-//        }
-//    }
-//
-//    @Override
-//    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-//        super.onViewStateRestored(savedInstanceState);
-//        if(savedInstanceState != null){
-//            String contentUriString = savedInstanceState.getString(CONTENT_URI_KEY);
-//            sharedViewModel.setImage(Uri.parse(contentUriString));
-////            selectedImage.setImageURI(contentUri);
-//        }
-//    }
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+            outState.putBoolean("done-status", done.isEnabled());
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if(savedInstanceState != null){
+            wasEnabled = savedInstanceState.getBoolean("done-status");
+        }
+    }
 }
