@@ -19,7 +19,11 @@ import de.db.shoppinglist.adapter.viewholder.JustNameViewHolder;
 import de.db.shoppinglist.adapter.viewholder.ViewHolderWithImage;
 import de.db.shoppinglist.model.ShoppingEntry;
 
-
+/**
+ * Recyclerview, for displaying entries, within a shopping-list.
+ * Since this recyclerview extends FirestoreRecyclerAdapter, it's updated immediatly after a
+ * database change occurred.
+ */
 public class ShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<ShoppingEntry, ShoppingListRecViewAdapter.ViewHolder> implements Checkable<ShoppingEntry> {
 
 
@@ -44,14 +48,20 @@ public class ShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<Shoppin
 
     }
 
+    /**
+     * This method decides, based on the non-null properties of an entry, which layout would be appropriate.
+     *
+     * @param position Position of the item.
+     * @return Returns a constant, representing a specific viewholder-layout.
+     */
     @Override
     public int getItemViewType(int position) {
         ShoppingEntry item = getItem(position);
-        if(hasItemImage(item)){
+        if (hasItemImage(item)) {
             return IMAGE_VIEW_HOLDER;
-        }else if(hasMissingUnitOfQuantity(item)){
+        } else if (hasMissingUnitOfQuantity(item)) {
             return JUST_NAME_VIEW_HOLDER;
-        }else{
+        } else {
             return DEFAULT_VIEW_HOLDER;
         }
     }
@@ -69,44 +79,50 @@ public class ShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<Shoppin
         holder.onBindViewHolder(holder, position, shoppingEntry);
     }
 
+    /**
+     * Chooses which layout should be inflates, based on the viewtype.
+     *
+     * @param parent   Parent-viewgroup.
+     * @param viewType viewtype.
+     * @return Returns the inflated viewholder.
+     */
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if(viewType == DEFAULT_VIEW_HOLDER) {
+        if (viewType == DEFAULT_VIEW_HOLDER) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_entry, parent, false);
             return new DefaultViewHolder(view, onEntryListener, this);
-        }
-        else if(viewType == IMAGE_VIEW_HOLDER) {
+        } else if (viewType == IMAGE_VIEW_HOLDER) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_entry_with_image, parent, false);
             return new ViewHolderWithImage(view, onEntryListener, this);
-        }else if(viewType == JUST_NAME_VIEW_HOLDER){
+        } else if (viewType == JUST_NAME_VIEW_HOLDER) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_entry_just_name, parent, false);
             return new JustNameViewHolder(view, onEntryListener, this);
         }
         throw new IllegalArgumentException("Found no suitable viewType");
     }
 
-    public void setPreviousExpandedPosition(int previousExpandedPosition){
+    public void setPreviousExpandedPosition(int previousExpandedPosition) {
         this.previousExpandedPosition = previousExpandedPosition;
     }
 
-    public void setExpandedPosition(int expandedPosition){
+    public void setExpandedPosition(int expandedPosition) {
         this.expandedPosition = expandedPosition;
     }
 
-    public int getPreviousExpandedPosition(){
+    public int getPreviousExpandedPosition() {
         return previousExpandedPosition;
     }
 
-    public int getExpandedPosition(){
+    public int getExpandedPosition() {
         return expandedPosition;
     }
 
-    public void setWasChecked(boolean wasCheckedBoolean){
+    public void setWasChecked(boolean wasCheckedBoolean) {
         wasChecked.setValue(wasCheckedBoolean);
     }
 
-    public void setEntryContainingCheckedBox(ShoppingEntry entry){
+    public void setEntryContainingCheckedBox(ShoppingEntry entry) {
         entryContainingCheckedBox = entry;
     }
 
@@ -130,7 +146,12 @@ public class ShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<Shoppin
         void onEntryClick(int position);
     }
 
-    public abstract static  class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    /**
+     * This abstract class is the base class for all potential viewholder.
+     * Since all properties, except the entry name, are optional, it's advised to use different
+     * layouts.
+     */
+    public abstract static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -138,13 +159,6 @@ public class ShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<Shoppin
 
         public abstract void onBindViewHolder(ViewHolder holder, int position, ShoppingEntry shoppingEntry);
     }
-
-
-
-
-
-
-
 
 
 }

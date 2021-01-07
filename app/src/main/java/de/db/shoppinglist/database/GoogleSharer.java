@@ -17,11 +17,23 @@ import de.db.shoppinglist.model.ShoppingList;
 
 import static de.db.shoppinglist.database.FirebaseSource.*;
 
+/**
+ * This class allows sharing of data between users, based on their google-mail-address.
+ */
 public class GoogleSharer implements Sharer {
 
+    /** Contant, representing the email-property of the user-metadata*/
     public static final String EMAIL_PROPERTY = "email";
     private static final String SHARER_TAG = "GoogleSharer";
 
+    /**
+     * Enables sharing between two users.
+     * All data is simply copied to the receiving user-directory.
+     * The copy is independent of the original source.
+     *
+     * @param list  List to share.
+     * @param email Email to identify the receiving party.
+     */
     @Override
     public void share(ShoppingList list, String email) {
         Task<QuerySnapshot> userIdByEmail = findUserIdByEmail(email);
@@ -37,17 +49,17 @@ public class GoogleSharer implements Sharer {
         return documentSnapshot.getId();
     }
 
-    private String getUserIdOfSender(){
+    private String getUserIdOfSender() {
         return FirebaseAuth.getInstance().getUid();
     }
 
     private void copyDocuments(ShoppingList list, String userIdOfReceiver) {
         getListsRootCollectionRef(getUserIdOfSender()).document(list.getUid()).collection(ENTRIES_KEY).get()
-        .addOnSuccessListener(documentSnapshots ->
-                documentSnapshots.getDocuments().stream()
-                        .map(doc -> doc.toObject(ShoppingEntry.class))
-                        .forEach(shoppingEntry -> addEntryToUser(list, shoppingEntry, userIdOfReceiver))
-        ).addOnFailureListener(e -> Log.d(SHARER_TAG, Objects.requireNonNull(e.getMessage())));
+                .addOnSuccessListener(documentSnapshots ->
+                        documentSnapshots.getDocuments().stream()
+                                .map(doc -> doc.toObject(ShoppingEntry.class))
+                                .forEach(shoppingEntry -> addEntryToUser(list, shoppingEntry, userIdOfReceiver))
+                ).addOnFailureListener(e -> Log.d(SHARER_TAG, Objects.requireNonNull(e.getMessage())));
     }
 
     private void addEntryToUser(ShoppingList list, ShoppingEntry shoppingEntry, String userId) {
@@ -61,7 +73,7 @@ public class GoogleSharer implements Sharer {
         return getListsRootCollectionRef(userId).document(list.getUid()).set(list);
     }
 
-    private CollectionReference getListsRootCollectionRef(String userId){
+    private CollectionReference getListsRootCollectionRef(String userId) {
         return FirebaseFirestore.getInstance().collection(USER_ROOT_KEY).document(userId).collection(LISTS_ROOT_KEY);
     }
 

@@ -10,10 +10,20 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import de.db.shoppinglist.model.UserInfo;
 
-public class GoogleLogin implements Login{
+/**
+ * This interface allows to sign-in and -out of the application, based on Google.
+ */
+public class GoogleLogin implements Login {
 
     private static final String GOOGLE_LOGIN_TAG = "GoogleLogin";
 
+    /**
+     * Complete sign-out, using the {@link GoogleSignInClient}.
+     * Afterwards the user, if he tries to resign-in, will be able to choose which account,
+     * he wants to use.
+     *
+     * @param googleSignInClient Client, which allows to sign-out.
+     */
     @Override
     public void signOut(GoogleSignInClient googleSignInClient) {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
@@ -21,6 +31,13 @@ public class GoogleLogin implements Login{
         googleSignInClient.signOut().addOnCompleteListener(task -> Log.d(GOOGLE_LOGIN_TAG, "Completely logged out"));
     }
 
+    /**
+     * Allows to sign-in.
+     *
+     * @param idToken          Token for identification.
+     * @param postSignInAction Action, running after the signIn.
+     *                         Typically used for navigation to different fragment.
+     */
     @Override
     public void signIn(String idToken, Runnable postSignInAction) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
@@ -37,7 +54,7 @@ public class GoogleLogin implements Login{
     }
 
     private void addToUsers() {
-        UserInfo userInfo =  new UserInfo(FirebaseAuth.getInstance());
+        UserInfo userInfo = new UserInfo(FirebaseAuth.getInstance());
         FirebaseFirestore.getInstance().collection(FirebaseSource.USERS_KEY).document(getUserId()).set(userInfo);
     }
 

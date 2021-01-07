@@ -34,6 +34,12 @@ import de.db.shoppinglist.utility.ToastUtility;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
+/**
+ * This class is responsible for providing basic CRUD functionalities
+ * for shopping-lists and shopping-entries. All functions use firebase.
+ * Every user has his own directory, where he can manage his shopping-lists.
+ * All functions automatically write inside the user-specific directory.
+ */
 public class FirebaseSource implements Source {
     /** Firebase-Constant, representing the user-specific directory.*/
     public static final String USER_ROOT_KEY = "Users";
@@ -274,11 +280,7 @@ public class FirebaseSource implements Source {
     }
 
     /**
-     * Build the FirestoreRecyclerOptions, used in {@link com.firebase.ui.firestore.FirestoreRecyclerAdapter}.
-     * Due to this options the FirestoreRecyclerAdapter knows which entries of a list to display.
-     *
-     * @param listId Id of the list, form which the entries are supposed to be displayed.
-     * @return Returns the options, containing a query, which data should be displayed.
+     * {@inheritDoc}
      */
     @Override
     public FirestoreRecyclerOptions<ShoppingEntry> getShoppingListRecyclerViewOptions(String listId) {
@@ -288,11 +290,9 @@ public class FirebaseSource implements Source {
                 .build();
     }
 
+
     /**
-     * Build the FirestoreRecyclerOptions, used in {@link com.firebase.ui.firestore.FirestoreRecyclerAdapter}.
-     * Due to this options the FirestoreRecyclerAdapter knows which shopping-lists to display.
-     *
-     * @return Returns the options, containing a query, which data should be displayed.
+     * {@inheritDoc}
      */
     @Override
     public FirestoreRecyclerOptions<ShoppingList> getShoppingListsRecyclerViewOptions() {
@@ -303,11 +303,7 @@ public class FirebaseSource implements Source {
     }
 
     /**
-     * Updates the position of an entry within a shopping-list.
-     *
-     * @param list     The shopping-list, were the element is part of.
-     * @param entry    The entry, where the position is supposed to be updated.
-     * @param position The new position.-
+     * {@inheritDoc}
      */
     @Override
     public void updateEntryPosition(ShoppingList list, ShoppingEntry entry, int position) {
@@ -341,9 +337,7 @@ public class FirebaseSource implements Source {
     }
 
     /**
-     * Updates the name of a list.
-     *
-     * @param list The list, containing the new name.
+     * {@inheritDoc}
      */
     @Override
     public void updateListName(ShoppingList list) {
@@ -401,11 +395,7 @@ public class FirebaseSource implements Source {
     }
 
     /**
-     * Retrieves the complete history from firebase.
-     * Since the implementation runs asynchronous, nothing is returned,
-     * but instead the caller has to provide a callback.
-     *
-     * @param callback A callback to store the retrieved history.
+     * {@inheritDoc}
      */
     @Override
     public void getHistory(Consumer<List<EntryHistoryElement>> callback) {
@@ -462,7 +452,7 @@ public class FirebaseSource implements Source {
     }
 
     /**
-     * Deletes complete history.
+     * {@inheritDoc}
      */
     @Override
     public void deleteHistory() {
@@ -479,7 +469,7 @@ public class FirebaseSource implements Source {
     }
 
     /**
-     * Deletes all lists and the corresponding entries.
+     * {@inheritDoc}
      */
     @Override
     public void deleteAllLists() {
@@ -530,7 +520,7 @@ public class FirebaseSource implements Source {
     public void uploadImage(String listName, ShoppingEntry entry, Context context) {
         Uri imageURI = Uri.parse(entry.getImageURI());
         final StorageReference image = buildStorageReference();
-        byte[] compressedImageBytes = new ImageCompressor(context).compress(imageURI, 30);
+        byte[] compressedImageBytes = new ImageCompressorToJPEG(context).compress(imageURI, 30);
         UploadTask uploadTask;
         if (isCompressed(compressedImageBytes)) {
             uploadTask = image.putBytes(compressedImageBytes);
@@ -546,8 +536,8 @@ public class FirebaseSource implements Source {
 
     private void reactToResultOfUpload(UploadTask uploadTask, StorageReference image, String listName, ShoppingEntry entry) {
         uploadTask.addOnSuccessListener(taskSnapshot -> image.getDownloadUrl()
-                .addOnSuccessListener(imageURI1 -> {
-                    entry.setImageURI(imageURI1.toString());
+                .addOnSuccessListener(downloadUri -> {
+                    entry.setImageURI(downloadUri.toString());
                     updateImage(listName, entry);
                 }))
                 .addOnFailureListener(e -> {
@@ -558,9 +548,7 @@ public class FirebaseSource implements Source {
     }
 
     /**
-     * Deletes a specific history entry.
-     *
-     * @param historyEntry The history entry, which should be deleted.
+     * {@inheritDoc}
      */
     @Override
     public void deleteHistoryEntry(EntryHistoryElement historyEntry) {

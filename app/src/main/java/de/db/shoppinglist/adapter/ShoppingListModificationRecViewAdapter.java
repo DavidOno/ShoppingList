@@ -16,6 +16,11 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.model.ShoppingList;
 
+/**
+ * Recyclerview for displaying the shopping-lists, when modifying them.
+ * Since this recyclerview extends FirestoreRecyclerAdapter, it's updated immediatly after a
+ * database change occurred.
+ */
 public class ShoppingListModificationRecViewAdapter extends FirestoreRecyclerAdapter<ShoppingList, ShoppingListModificationRecViewAdapter.ViewHolder> {
 
     private MutableLiveData<Boolean> editClicked = new MutableLiveData<>(false);
@@ -33,6 +38,13 @@ public class ShoppingListModificationRecViewAdapter extends FirestoreRecyclerAda
         super(options);
     }
 
+    /**
+     * Bind all the necessary properties/actions of the corresponding history-entry to the displayed item.
+     *
+     * @param holder       viewHolder of the current item.
+     * @param i            Not used.
+     * @param shoppingList Shopping-List, corresponding to the viewHolder.
+     */
     @Override
     protected void onBindViewHolder(@NonNull ViewHolder holder, int i, @NonNull ShoppingList shoppingList) {
         holder.nameOfShoppingList.setText(shoppingList.getName());
@@ -46,6 +58,7 @@ public class ShoppingListModificationRecViewAdapter extends FirestoreRecyclerAda
         });
     }
 
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -53,11 +66,11 @@ public class ShoppingListModificationRecViewAdapter extends FirestoreRecyclerAda
         return new ViewHolder(view);
     }
 
-    public MutableLiveData<Boolean> getEditClicked(){
+    public MutableLiveData<Boolean> getEditClicked() {
         return editClicked;
     }
 
-    public MutableLiveData<Boolean> getDeleteClicked(){
+    public MutableLiveData<Boolean> getDeleteClicked() {
         return deleteClicked;
     }
 
@@ -71,7 +84,7 @@ public class ShoppingListModificationRecViewAdapter extends FirestoreRecyclerAda
         deleteClicked.setValue(false);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView nameOfShoppingList;
         private ImageButton edit;
@@ -81,7 +94,7 @@ public class ShoppingListModificationRecViewAdapter extends FirestoreRecyclerAda
             super(itemView);
             nameOfShoppingList = itemView.findViewById(R.id.item_list_modify_name);
             edit = itemView.findViewById(R.id.item_list_modify_edit_button);
-            delete =  itemView.findViewById(R.id.item_list_modify_delete_button);
+            delete = itemView.findViewById(R.id.item_list_modify_delete_button);
         }
     }
 }

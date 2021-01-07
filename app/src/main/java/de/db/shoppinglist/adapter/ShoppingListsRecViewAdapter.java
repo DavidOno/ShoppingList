@@ -18,6 +18,11 @@ import de.db.shoppinglist.R;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.view.ShoppingListsFragmentDirections;
 
+/**
+ * Recyclerview, for displaying shoping-lists, within a specific user directory.
+ * Since this recyclerview extends FirestoreRecyclerAdapter, it's updated immediatly after a
+ * database change occurred.
+ */
 public class ShoppingListsRecViewAdapter extends FirestoreRecyclerAdapter<ShoppingList, ShoppingListsRecViewAdapter.ViewHolder> {
 
     private NavController navController;
@@ -38,7 +43,7 @@ public class ShoppingListsRecViewAdapter extends FirestoreRecyclerAdapter<Shoppi
     @Override
     protected void onBindViewHolder(@NonNull ViewHolder holder, int i, @NonNull ShoppingList shoppingList) {
         holder.nameOfShoppingList.setText(shoppingList.getName());
-        holder.relation.setText((shoppingList.getDone() +"/"+shoppingList.getTotal()));
+        holder.relation.setText((shoppingList.getDone() + "/" + shoppingList.getTotal()));
         holder.shareButton.setOnClickListener(v -> openDialog(shoppingList));
     }
 
@@ -58,7 +63,7 @@ public class ShoppingListsRecViewAdapter extends FirestoreRecyclerAdapter<Shoppi
         void onListClick(int position);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView nameOfShoppingList;
         private TextView relation;

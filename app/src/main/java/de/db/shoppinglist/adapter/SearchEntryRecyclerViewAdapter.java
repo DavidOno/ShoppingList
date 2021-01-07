@@ -19,6 +19,11 @@ import java.util.List;
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.model.EntryHistoryElement;
 
+/**
+ * Recyclerview for displaying the histories.
+ * This recyclerview is filterable, so that, combined with a searchview, user can filter the
+ * displayed results.
+ */
 public class SearchEntryRecyclerViewAdapter extends RecyclerView.Adapter<SearchEntryRecyclerViewAdapter.ViewHolder> implements Filterable {
 
     private List<EntryHistoryElement> entries;
@@ -26,12 +31,21 @@ public class SearchEntryRecyclerViewAdapter extends RecyclerView.Adapter<SearchE
     private OnEntryListener onEntryListener;
 
 
+    /**
+     * Creates an instance of the recyclerViewAdapter.
+     *
+     * @param entries         All history-entries.
+     * @param onEntryListener An onClickClickListener, which registers clicks on items.
+     */
     public SearchEntryRecyclerViewAdapter(List<EntryHistoryElement> entries, OnEntryListener onEntryListener) {
         this.entries = new ArrayList<>(entries);
         this.allEntries = new ArrayList<>(entries);
         this.onEntryListener = onEntryListener;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -39,17 +53,23 @@ public class SearchEntryRecyclerViewAdapter extends RecyclerView.Adapter<SearchE
         return new ViewHolder(view, onEntryListener);
     }
 
+    /**
+     * Bind all the necessary properties of the corresponding history-entry to the displayed item.
+     *
+     * @param holder   viewHolder of the current item.
+     * @param position Position of the item within the list.
+     */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.nameOfProduct.setText(entries.get(position).getName());
         holder.unitOfQuantity.setText(entries.get(position).getUnitOfQuantity());
         holder.details.setText(entries.get(position).getDetails());
-        if(entries.get(position).getImageURI() != null) {
+        if (entries.get(position).getImageURI() != null) {
             Glide.with(holder.itemView.getContext())
                     .load(entries.get(position).getImageURI())
                     .skipMemoryCache(false)
                     .into(holder.imageView);
-        }else{
+        } else {
             Glide.with(holder.itemView.getContext()).clear(holder.imageView);
         }
     }
@@ -59,7 +79,7 @@ public class SearchEntryRecyclerViewAdapter extends RecyclerView.Adapter<SearchE
         return entries.size();
     }
 
-    public EntryHistoryElement getHistoryEntry(int position){
+    public EntryHistoryElement getHistoryEntry(int position) {
         return entries.get(position);
     }
 
@@ -72,12 +92,12 @@ public class SearchEntryRecyclerViewAdapter extends RecyclerView.Adapter<SearchE
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             List<EntryHistoryElement> filteredList = new ArrayList<>();
-            if(constraint == null || constraint.length() == 0){
+            if (constraint == null || constraint.length() == 0) {
                 filteredList.addAll(allEntries);
-            }else{
+            } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
-                for(EntryHistoryElement entry: allEntries){
-                    if(entry.getName().toLowerCase().trim().contains(filterPattern)){
+                for (EntryHistoryElement entry : allEntries) {
+                    if (entry.getName().toLowerCase().trim().contains(filterPattern)) {
                         filteredList.add(entry);
                     }
                 }
@@ -90,7 +110,7 @@ public class SearchEntryRecyclerViewAdapter extends RecyclerView.Adapter<SearchE
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             entries.clear();
-            entries.addAll((List)results.values);
+            entries.addAll((List) results.values);
             notifyDataSetChanged();
         }
     };
