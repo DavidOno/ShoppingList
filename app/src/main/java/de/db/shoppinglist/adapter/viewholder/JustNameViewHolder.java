@@ -16,6 +16,9 @@ import de.db.shoppinglist.model.ShoppingEntry;
 
 import static de.db.shoppinglist.adapter.viewholder.DefaultViewHolder.*;
 
+/**
+ * The JustNameViewHolder is used to display just the name of a shopping-entry within a shopping list({@link ShoppingListRecViewAdapter}.
+ */
 public class JustNameViewHolder extends ShoppingListRecViewAdapter.ViewHolder {
     private TextView nameOfEntry;
     private TextView quantity;
@@ -25,6 +28,13 @@ public class JustNameViewHolder extends ShoppingListRecViewAdapter.ViewHolder {
     private ShoppingListRecViewAdapter.OnEntryListener onEntryListener;
     private ShoppingListRecViewAdapter adapter;
 
+    /**
+     * Instantiates the JustNameViewHolder.
+     *
+     * @param itemView        View representing the layout.
+     * @param onEntryListener Listener for clicks for each entry.
+     * @param adapter         The RecyclerViewAdapter, which uses this view holder.
+     */
     public JustNameViewHolder(@NonNull View itemView, ShoppingListRecViewAdapter.OnEntryListener onEntryListener, ShoppingListRecViewAdapter adapter) {
         super(itemView);
         findViewsById(itemView);
@@ -46,6 +56,14 @@ public class JustNameViewHolder extends ShoppingListRecViewAdapter.ViewHolder {
         onEntryListener.onEntryClick(getAdapterPosition());
     }
 
+    /**
+     * Should not be called by client.
+     * Binds action/properties to the selected item.
+     *
+     * @param holder        The viewHolder, to which action should be binded. Not used.
+     * @param position      The position of the item within the recyclerview.
+     * @param shoppingEntry The shopping-entry represented by the current item.
+     */
     @Override
     public void onBindViewHolder(ShoppingListRecViewAdapter.ViewHolder holder, int position, ShoppingEntry shoppingEntry) {
         initHolderProperties(shoppingEntry);
@@ -65,7 +83,7 @@ public class JustNameViewHolder extends ShoppingListRecViewAdapter.ViewHolder {
     }
 
 
-    private void onCheckedChangeListenerForDone(ShoppingEntry shoppingEntry){
+    private void onCheckedChangeListenerForDone(ShoppingEntry shoppingEntry) {
         isDone.setOnClickListener(view -> {
             adapter.setEntryContainingCheckedBox(shoppingEntry);
             adapter.setWasChecked(true);
@@ -75,14 +93,14 @@ public class JustNameViewHolder extends ShoppingListRecViewAdapter.ViewHolder {
 
     private boolean setVisibilityOfDetails(int position) {
         final boolean isExpanded = position == adapter.getExpandedPosition();
-        details.setVisibility(isExpanded? View.VISIBLE:View.GONE);
+        details.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
         return isExpanded;
     }
 
     private void strikeItemsThroughIfDone() {
-        if(isDone.isChecked()){
+        if (isDone.isChecked()) {
             strikeAllTextPropertiesThrough();
-        }else{
+        } else {
             unstrikeAllTextProperties();
         }
     }
@@ -128,21 +146,21 @@ public class JustNameViewHolder extends ShoppingListRecViewAdapter.ViewHolder {
 
     private void manageDropDownBehaviour(int position, boolean isExpanded) {
         dropDown.setActivated(isExpanded);
-        if(isExpanded){
+        if (isExpanded) {
             adapter.setPreviousExpandedPosition(position);
         }
         dropDown.setOnClickListener(v -> {
-            adapter.setExpandedPosition(isExpanded ? -1:position);
+            adapter.setExpandedPosition(isExpanded ? -1 : position);
             adapter.notifyItemChanged(adapter.getPreviousExpandedPosition());
             adapter.notifyItemChanged(position);
         });
     }
 
     private String getQuantityText(float quantity) {
-        if(isZero(quantity)){
+        if (isZero(quantity)) {
             return NO_TEXT;
-        }else{
-            if(isInteger(quantity)){
+        } else {
+            if (isInteger(quantity)) {
                 int quantityAsInt = (int) quantity;
                 return quantityAsInt + MULTIPLIER;
             }
@@ -151,7 +169,7 @@ public class JustNameViewHolder extends ShoppingListRecViewAdapter.ViewHolder {
     }
 
     private boolean isInteger(float quantity) {
-        return (int)quantity == quantity;
+        return (int) quantity == quantity;
     }
 
     private boolean isZero(float quantity) {

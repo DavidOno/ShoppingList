@@ -35,26 +35,41 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 public class FirebaseSource implements Source {
+    /** Firebase-Constant, representing the user-specific directory.*/
+    public static final String USER_ROOT_KEY = "Users";
+    /** Firebase-Constant, representing the list collection.*/
+    public static final String LISTS_ROOT_KEY = "Lists";
+    /**Firebase-Constant, representing the entries collection.*/
+    public static final String ENTRIES_KEY = "Entries";
+    /**Firebase-Constant, representing the history collection.*/
+    public static final String HISTORY_KEY = "History";
+    /**Firebase-Constant, representing the total-counter-property of a list.*/
+    public static final String TOTAL_PROPERTY = "total";
+    /**Firebase-Constant, representing the position-property of an entry.*/
+    public static final String POSITION_PROPERTY = "position";
+    /**Firebase-Constant, representing the name-property of an entry.*/
+    public static final String NAME_PROPERTY = "name";
+    /**Firebase-Constant, representing the done-property of an entry.*/
+    public static final String DONE_PROPERTY = "done";
+    /**Firebase-Constant, representing the details-property of an entry.*/
+    public static final String DETAILS_PROPERTY = "details";
+    /**Firebase-Constant, representing the quantity-property of an entry.*/
+    public static final String QUANTITY_PROPERTY = "quantity";
+    /**Firebase-Constant, representing the unit-of-quantiyt-property of an entry.*/
+    public static final String UNIT_OF_QUANTITY_PROPERTY = "unitOfQuantity";
+    /**Firebase-Constant, representing the next-free-position-property of a list.*/
+    public static final String NEXT_FREE_POSITION_PROPERTY = "nextFreePosition";
+    /**Firestore-Constant, representing the name of the folder, containing the images.*/
+    public static final String IMAGE_STORAGE_KEY = "uploads";
+    /**Firebase-Constant, representing image-uri-property of an entry.*/
+    public static final String IMAGE_URI_PROPERTY = "imageURI";
+    /**Firebase-Constant, representing the uid of an history-entry.*/
+    public static final String HIST_UID_PROPERTY = "uid";
+    /**Firebase-Constant, representing a collection, which stores all user metadata.*/
+    public static final String USERS_KEY = "User";
 
     private final ToastUtility toastMaker = ToastUtility.getInstance();
     private static final String FIREBASE_TAG = "FIREBASE";
-    public static final String USER_ROOT_KEY = "Users";
-    public static final String LISTS_ROOT_KEY = "Lists";
-    public static final String ENTRIES_KEY = "Entries";
-    public static final String HISTORY_KEY = "History";
-    public static final String TOTAL_PROPERTY = "total";
-    public static final String POSITION_PROPERTY = "position";
-    public static final String NAME_PROPERTY = "name";
-    public static final String DONE_PROPERTY = "done";
-    public static final String DETAILS_PROPERTY = "details";
-    public static final String QUANTITY_PROPERTY = "quantity";
-    public static final String UNIT_OF_QUANTITY_PROPERTY = "unitOfQuantity";
-    public static final String NEXT_FREE_POSITION_PROPERTY = "nextFreePosition";
-    public static final String IMAGE_STORAGE_KEY = "uploads";
-    public static final String IMAGE_URI_PROPERTY = "imageURI";
-    public static final String HIST_UID_PROPERTY = "uid";
-    public static final String USERS_KEY = "User";
-
 
     private CollectionReference getListsRootCollectionRef() {
         String uid = getUserId();
@@ -74,6 +89,15 @@ public class FirebaseSource implements Source {
         return FirebaseFirestore.getInstance().collection(USER_ROOT_KEY).document(uid).collection(HISTORY_KEY);
     }
 
+    /**
+     * Adds an entry to a specific list.
+     * During this process, also the counters (done & total entries) of the list will be updated and
+     * this entry will be added to history.
+     *
+     * @param listId   The list-id, to which this entry should be added.
+     * @param newEntry The new entry, which should be added.
+     * @param context  The application context.
+     */
     @Override
     public void addEntry(String listId, ShoppingEntry newEntry, Context context) {
         DocumentReference newEntryRef = getListsRootCollectionRef().document(listId).collection(ENTRIES_KEY).document(newEntry.getUid());
@@ -143,6 +167,13 @@ public class FirebaseSource implements Source {
                 .collect(toSet());
     }
 
+    /**
+     * Deletes an entry.
+     * During this process, also the counters (done & total entries) of the list will be updated.
+     *
+     * @param listId      Id of the list, containg this entry.
+     * @param documentUid Id of the entry, which should be deleted.
+     */
     @Override
     public void deleteEntry(String listId, String documentUid) {
         DocumentReference entryRef = getListsRootCollectionRef().document(listId).collection(ENTRIES_KEY).document(documentUid);
@@ -183,6 +214,11 @@ public class FirebaseSource implements Source {
         return counterVars;
     }
 
+    /**
+     * Adds a new shopping-list to firebase.
+     *
+     * @param shoppingList The new shopping-list.
+     */
     @Override
     public void addList(ShoppingList shoppingList) {
         getListsRootCollectionRef().document(shoppingList.getUid()).set(shoppingList)
@@ -196,7 +232,11 @@ public class FirebaseSource implements Source {
                 );
     }
 
-
+    /**
+     * Deletes a list from firebase.
+     *
+     * @param listId Id of the list, which is supposed to be deleted.
+     */
     @Override
     public void deleteList(String listId) {
         Task<QuerySnapshot> query = getListsRootCollectionRef().document(listId).collection(ENTRIES_KEY).get();
@@ -233,6 +273,13 @@ public class FirebaseSource implements Source {
         );
     }
 
+    /**
+     * Build the FirestoreRecyclerOptions, used in {@link com.firebase.ui.firestore.FirestoreRecyclerAdapter}.
+     * Due to this options the FirestoreRecyclerAdapter knows which entries of a list to display.
+     *
+     * @param listId Id of the list, form which the entries are supposed to be displayed.
+     * @return Returns the options, containing a query, which data should be displayed.
+     */
     @Override
     public FirestoreRecyclerOptions<ShoppingEntry> getShoppingListRecyclerViewOptions(String listId) {
         Query query = getListsRootCollectionRef().document(listId).collection(ENTRIES_KEY).orderBy(POSITION_PROPERTY);
@@ -241,6 +288,12 @@ public class FirebaseSource implements Source {
                 .build();
     }
 
+    /**
+     * Build the FirestoreRecyclerOptions, used in {@link com.firebase.ui.firestore.FirestoreRecyclerAdapter}.
+     * Due to this options the FirestoreRecyclerAdapter knows which shopping-lists to display.
+     *
+     * @return Returns the options, containing a query, which data should be displayed.
+     */
     @Override
     public FirestoreRecyclerOptions<ShoppingList> getShoppingListsRecyclerViewOptions() {
         Query lists = getListsRootCollectionRef().orderBy(NAME_PROPERTY);
@@ -249,6 +302,13 @@ public class FirebaseSource implements Source {
                 .build();
     }
 
+    /**
+     * Updates the position of an entry within a shopping-list.
+     *
+     * @param list     The shopping-list, were the element is part of.
+     * @param entry    The entry, where the position is supposed to be updated.
+     * @param position The new position.-
+     */
     @Override
     public void updateEntryPosition(ShoppingList list, ShoppingEntry entry, int position) {
         Map<String, Object> updatePosition = new HashMap<>();
@@ -256,6 +316,13 @@ public class FirebaseSource implements Source {
         getListsRootCollectionRef().document(list.getUid()).collection(ENTRIES_KEY).document(entry.getUid()).update(updatePosition);
     }
 
+    /**
+     * Updates if the entry is done or not.
+     * During this process the done counter of the corresponding list will be updated.
+     *
+     * @param listId Id of the list containing the entry.
+     * @param entry  The entry, with the new done-status.
+     */
     @Override
     public void updateStatusDone(String listId, ShoppingEntry entry) {
         Map<String, Object> updateIsDone = new HashMap<>();
@@ -273,6 +340,11 @@ public class FirebaseSource implements Source {
                 );
     }
 
+    /**
+     * Updates the name of a list.
+     *
+     * @param list The list, containing the new name.
+     */
     @Override
     public void updateListName(ShoppingList list) {
         Map<String, Object> updateName = new HashMap<>();
@@ -288,6 +360,14 @@ public class FirebaseSource implements Source {
                 );
     }
 
+    /**
+     * Updates the complete entry.
+     * During the process this entry will be added to history.
+     *
+     * @param list    List containing the entry, which is supposed to be updated.
+     * @param entry   The modified entry.
+     * @param context The application context.
+     */
     @Override
     public void modifyWholeEntry(ShoppingList list, ShoppingEntry entry, Context context) {
         Map<String, Object> updateEntryMap = buildUpdateMap(entry);
@@ -320,6 +400,13 @@ public class FirebaseSource implements Source {
         return updateEntryMap;
     }
 
+    /**
+     * Retrieves the complete history from firebase.
+     * Since the implementation runs asynchronous, nothing is returned,
+     * but instead the caller has to provide a callback.
+     *
+     * @param callback A callback to store the retrieved history.
+     */
     @Override
     public void getHistory(Consumer<List<EntryHistoryElement>> callback) {
         Task<QuerySnapshot> querySnapshotTask = getHistoryRootCollectionRef().get();
@@ -374,6 +461,9 @@ public class FirebaseSource implements Source {
         );
     }
 
+    /**
+     * Deletes complete history.
+     */
     @Override
     public void deleteHistory() {
         getHistoryRootCollectionRef().get().addOnSuccessListener(documentSnapshots -> {
@@ -388,6 +478,9 @@ public class FirebaseSource implements Source {
         );
     }
 
+    /**
+     * Deletes all lists and the corresponding entries.
+     */
     @Override
     public void deleteAllLists() {
         Task<QuerySnapshot> querySnapshotTask = getListsRootCollectionRef().get();
@@ -464,7 +557,11 @@ public class FirebaseSource implements Source {
                 );
     }
 
-
+    /**
+     * Deletes a specific history entry.
+     *
+     * @param historyEntry The history entry, which should be deleted.
+     */
     @Override
     public void deleteHistoryEntry(EntryHistoryElement historyEntry) {
         String historyId = historyEntry.getUid();

@@ -15,9 +15,22 @@ import de.db.shoppinglist.adapter.ShoppingListRecViewAdapter;
 import de.db.shoppinglist.adapter.ShoppingListRecViewAdapter.OnEntryListener;
 import de.db.shoppinglist.model.ShoppingEntry;
 
-public class DefaultViewHolder extends ShoppingListRecViewAdapter.ViewHolder{
+/**
+ * Default view holder used to display a shopping-entry within a shopping list({@link ShoppingListRecViewAdapter}.
+ * In this case the name, the quantity, the unit of quantity, the details and the status if it was bought are displayed.
+ */
+public class DefaultViewHolder extends ShoppingListRecViewAdapter.ViewHolder {
+    /**
+     * Constant if no text should be displayed for quantity.
+     */
     public static final String NO_TEXT = "";
+    /**
+     * Constant, used to separate a quantity from it the product name. E.g.: 3 x water
+     */
     public static final String MULTIPLIER = " x ";
+    /**
+     * Constant, used for double comparison.
+     */
     public static final double EPSILON = 0.0001;
     private TextView nameOfEntry;
     private TextView quantity;
@@ -28,6 +41,13 @@ public class DefaultViewHolder extends ShoppingListRecViewAdapter.ViewHolder{
     private OnEntryListener onEntryListener;
     private ShoppingListRecViewAdapter adapter;
 
+    /**
+     * Instantiates the DefaultViewHolder.
+     *
+     * @param itemView        View representing the layout.
+     * @param onEntryListener Listener for clicks for each entry.
+     * @param adapter         The RecyclerViewAdapter, which uses this view holder.
+     */
     public DefaultViewHolder(@NonNull View itemView, OnEntryListener onEntryListener, ShoppingListRecViewAdapter adapter) {
         super(itemView);
         findViewsById(itemView);
@@ -47,9 +67,17 @@ public class DefaultViewHolder extends ShoppingListRecViewAdapter.ViewHolder{
 
     @Override
     public void onClick(View v) {
-            onEntryListener.onEntryClick(getAdapterPosition());
-        }
+        onEntryListener.onEntryClick(getAdapterPosition());
+    }
 
+    /**
+     * Should not be called by client.
+     * Binds action/properties to the selected item.
+     *
+     * @param holder        The viewHolder, to which action should be binded. Not used.
+     * @param position      The position of the item within the recyclerview.
+     * @param shoppingEntry The shopping-entry represented by the current item.
+     */
     @Override
     public void onBindViewHolder(ShoppingListRecViewAdapter.ViewHolder holder, int position, ShoppingEntry shoppingEntry) {
         initHolderProperties(shoppingEntry);
@@ -70,7 +98,7 @@ public class DefaultViewHolder extends ShoppingListRecViewAdapter.ViewHolder{
     }
 
 
-    private void onCheckedChangeListenerForDone(ShoppingEntry shoppingEntry){
+    private void onCheckedChangeListenerForDone(ShoppingEntry shoppingEntry) {
         isDone.setOnClickListener(view -> {
             adapter.setEntryContainingCheckedBox(shoppingEntry);
             adapter.setWasChecked(true);
@@ -80,14 +108,14 @@ public class DefaultViewHolder extends ShoppingListRecViewAdapter.ViewHolder{
 
     private boolean setVisibilityOfDetails(int position) {
         final boolean isExpanded = position == adapter.getExpandedPosition();
-        details.setVisibility(isExpanded? View.VISIBLE:View.GONE);
+        details.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
         return isExpanded;
     }
 
     private void strikeItemsThroughIfDone() {
-        if(isDone.isChecked()){
+        if (isDone.isChecked()) {
             strikeAllTextPropertiesThrough();
-        }else{
+        } else {
             unstrikeAllTextProperties();
         }
     }
@@ -135,21 +163,21 @@ public class DefaultViewHolder extends ShoppingListRecViewAdapter.ViewHolder{
 
     private void manageDropDownBehaviour(int position, boolean isExpanded) {
         dropDown.setActivated(isExpanded);
-        if(isExpanded){
+        if (isExpanded) {
             adapter.setPreviousExpandedPosition(position);
         }
         dropDown.setOnClickListener(v -> {
-            adapter.setExpandedPosition(isExpanded ? -1:position);
+            adapter.setExpandedPosition(isExpanded ? -1 : position);
             adapter.notifyItemChanged(adapter.getPreviousExpandedPosition());
             adapter.notifyItemChanged(position);
         });
     }
 
     private String getQuantityText(float quantity) {
-        if(isZero(quantity)){
+        if (isZero(quantity)) {
             return NO_TEXT;
-        }else{
-            if(isInteger(quantity)){
+        } else {
+            if (isInteger(quantity)) {
                 int quantityAsInt = (int) quantity;
                 return quantityAsInt + MULTIPLIER;
             }
@@ -158,7 +186,7 @@ public class DefaultViewHolder extends ShoppingListRecViewAdapter.ViewHolder{
     }
 
     private boolean isInteger(float quantity) {
-        return (int)quantity == quantity;
+        return (int) quantity == quantity;
     }
 
     private boolean isZero(float quantity) {
