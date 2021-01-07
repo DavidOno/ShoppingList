@@ -36,7 +36,6 @@ import static java.util.stream.Collectors.toSet;
 
 public class FirebaseSource implements Source {
 
-
     private final ToastUtility toastMaker = ToastUtility.getInstance();
     private static final String FIREBASE_TAG = "FIREBASE";
     public static final String USER_ROOT_KEY = "Users";
@@ -206,10 +205,8 @@ public class FirebaseSource implements Source {
             AtomicInteger docsToDelete = new AtomicInteger(documents.size());
             documents.stream()
                     .map(doc -> buildPathForEntryDoc(listId, doc))
-                    .forEach(doc -> deleteEntry(docsToDelete, doc));
-            if(docsToDelete.get() == 0){
-                deleteListOnly(listId);
-            }
+                    .forEach(doc -> deleteEntry(listId, docsToDelete, doc));
+            deleteListIfAllDocWereDeleted(listId, docsToDelete);
             Log.d(FIREBASE_TAG, "Success: Deleted all entries");
         }).addOnFailureListener(e -> {
                     Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
@@ -218,9 +215,16 @@ public class FirebaseSource implements Source {
         );
     }
 
-    private void deleteEntry(AtomicInteger docsToDelete, DocumentReference doc) {
+    private void deleteListIfAllDocWereDeleted(String listId, AtomicInteger docsToDelete) {
+        if (docsToDelete.get() == 0) {
+            deleteListOnly(listId);
+        }
+    }
+
+    private void deleteEntry(String listId, AtomicInteger docsToDelete, DocumentReference doc) {
         doc.delete().addOnSuccessListener(aVoid -> {
             docsToDelete.decrementAndGet();
+            deleteListIfAllDocWereDeleted(listId, docsToDelete);
             Log.d(FIREBASE_TAG, "Deleted entry");
         }).addOnFailureListener(e -> {
                     Log.d(FIREBASE_TAG, Objects.requireNonNull(e.getMessage()));
