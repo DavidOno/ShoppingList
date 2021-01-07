@@ -27,15 +27,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.adapter.FireShoppingListsRecViewAdapter;
+import de.db.shoppinglist.adapter.ShoppingListsRecViewAdapter;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.ShoppingListsViewModel;
 
-public class ShoppingListsFragment extends Fragment implements FireShoppingListsRecViewAdapter.OnListListener{
+public class ShoppingListsFragment extends Fragment implements ShoppingListsRecViewAdapter.OnListListener{
 
     private RecyclerView listOfListsView;
     private FloatingActionButton newListButton;
-    private FireShoppingListsRecViewAdapter fireAdapter;
+    private ShoppingListsRecViewAdapter adapter;
     private ShoppingListsViewModel shoppingListsViewModel;
 
     @Nullable
@@ -61,7 +61,7 @@ public class ShoppingListsFragment extends Fragment implements FireShoppingLists
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int adapterPosition = viewHolder.getAdapterPosition();
-                shoppingListsViewModel.deleteList(fireAdapter.getItem(adapterPosition));
+                shoppingListsViewModel.deleteList(adapter.getItem(adapterPosition));
             }
         }).attachToRecyclerView(listOfListsView);
     }
@@ -69,8 +69,8 @@ public class ShoppingListsFragment extends Fragment implements FireShoppingLists
     private void setUpRecyclerView() {
         FirestoreRecyclerOptions<ShoppingList> options = shoppingListsViewModel.getRecyclerViewOptions();
         NavController navController = NavHostFragment.findNavController(this);
-        fireAdapter = new FireShoppingListsRecViewAdapter(options, this, navController);
-        listOfListsView.setAdapter(fireAdapter);
+        adapter = new ShoppingListsRecViewAdapter(options, this, navController);
+        listOfListsView.setAdapter(adapter);
     }
 
     @Override
@@ -144,7 +144,7 @@ public class ShoppingListsFragment extends Fragment implements FireShoppingLists
 
     @Override
     public void onListClick(int position) {
-        ShoppingList list = fireAdapter.getItem(position);
+        ShoppingList list = adapter.getItem(position);
         navigateToSelectedList(list);
     }
 
@@ -157,12 +157,12 @@ public class ShoppingListsFragment extends Fragment implements FireShoppingLists
     @Override
     public void onStart() {
         super.onStart();
-        fireAdapter.startListening();
+        adapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        fireAdapter.stopListening();
+        adapter.stopListening();
     }
 }

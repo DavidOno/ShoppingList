@@ -11,11 +11,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.adapter.FireShoppingListRecViewAdapter;
-import de.db.shoppinglist.adapter.FireShoppingListRecViewAdapter.OnEntryListener;
+import de.db.shoppinglist.adapter.ShoppingListRecViewAdapter;
+import de.db.shoppinglist.adapter.ShoppingListRecViewAdapter.OnEntryListener;
 import de.db.shoppinglist.model.ShoppingEntry;
 
-public class DefaultViewHolder extends FireShoppingListRecViewAdapter.ViewHolder{
+public class DefaultViewHolder extends ShoppingListRecViewAdapter.ViewHolder{
     public static final String NO_TEXT = "";
     public static final String MULTIPLIER = " x ";
     public static final double EPSILON = 0.0001;
@@ -26,9 +26,9 @@ public class DefaultViewHolder extends FireShoppingListRecViewAdapter.ViewHolder
     private ImageButton dropDown;
     private TextView details;
     private OnEntryListener onEntryListener;
-    private FireShoppingListRecViewAdapter adapter;
+    private ShoppingListRecViewAdapter adapter;
 
-    public DefaultViewHolder(@NonNull View itemView, OnEntryListener onEntryListener, FireShoppingListRecViewAdapter adapter) {
+    public DefaultViewHolder(@NonNull View itemView, OnEntryListener onEntryListener, ShoppingListRecViewAdapter adapter) {
         super(itemView);
         findViewsById(itemView);
         this.onEntryListener = onEntryListener;
@@ -51,7 +51,7 @@ public class DefaultViewHolder extends FireShoppingListRecViewAdapter.ViewHolder
         }
 
     @Override
-    public void onBindViewHolder(FireShoppingListRecViewAdapter.ViewHolder holder, int position, ShoppingEntry shoppingEntry) {
+    public void onBindViewHolder(ShoppingListRecViewAdapter.ViewHolder holder, int position, ShoppingEntry shoppingEntry) {
         initHolderProperties(shoppingEntry);
         onCheckedChangeListenerForDone(shoppingEntry);
         strikeItemsThroughIfDone();

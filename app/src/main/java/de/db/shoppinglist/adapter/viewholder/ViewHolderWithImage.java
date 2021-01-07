@@ -15,13 +15,13 @@ import androidx.annotation.NonNull;
 import com.bumptech.glide.Glide;
 
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.adapter.FireShoppingListRecViewAdapter;
-import de.db.shoppinglist.adapter.FireShoppingListRecViewAdapter.OnEntryListener;
+import de.db.shoppinglist.adapter.ShoppingListRecViewAdapter;
+import de.db.shoppinglist.adapter.ShoppingListRecViewAdapter.OnEntryListener;
 import de.db.shoppinglist.model.ShoppingEntry;
 
 import static de.db.shoppinglist.adapter.viewholder.DefaultViewHolder.*;
 
-public class ViewHolderWithImage extends FireShoppingListRecViewAdapter.ViewHolder{
+public class ViewHolderWithImage extends ShoppingListRecViewAdapter.ViewHolder{
         private TextView nameOfEntry;
         private TextView quantity;
         private TextView unitOfQuantity;
@@ -30,9 +30,9 @@ public class ViewHolderWithImage extends FireShoppingListRecViewAdapter.ViewHold
         private TextView details;
         private ImageView imageView;
         private OnEntryListener onEntryListener;
-        private FireShoppingListRecViewAdapter adapter;
+        private ShoppingListRecViewAdapter adapter;
 
-        public ViewHolderWithImage(@NonNull View itemView, OnEntryListener onEntryListener, FireShoppingListRecViewAdapter adapter) {
+        public ViewHolderWithImage(@NonNull View itemView, OnEntryListener onEntryListener, ShoppingListRecViewAdapter adapter) {
             super(itemView);
             findViewsById(itemView);
             this.onEntryListener = onEntryListener;
@@ -56,7 +56,7 @@ public class ViewHolderWithImage extends FireShoppingListRecViewAdapter.ViewHold
         }
 
     @Override
-    public void onBindViewHolder(FireShoppingListRecViewAdapter.ViewHolder holder, int position, ShoppingEntry shoppingEntry) {
+    public void onBindViewHolder(ShoppingListRecViewAdapter.ViewHolder holder, int position, ShoppingEntry shoppingEntry) {
         initHolderProperties(holder, shoppingEntry);
         onCheckedChangeListenerForDone(shoppingEntry);
         strikeItemsThroughIfDone();
@@ -66,7 +66,7 @@ public class ViewHolderWithImage extends FireShoppingListRecViewAdapter.ViewHold
         manageDropDownBehaviour(position, isExpanded);
     }
 
-    private void initHolderProperties(FireShoppingListRecViewAdapter.ViewHolder holder, ShoppingEntry shoppingEntry) {
+    private void initHolderProperties(ShoppingListRecViewAdapter.ViewHolder holder, ShoppingEntry shoppingEntry) {
         nameOfEntry.setText(shoppingEntry.getName());
         quantity.setText(getQuantityText(shoppingEntry.getQuantity()));
         unitOfQuantity.setText(shoppingEntry.getUnitOfQuantity());

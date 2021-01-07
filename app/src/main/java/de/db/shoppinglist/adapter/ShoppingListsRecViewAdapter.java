@@ -18,7 +18,7 @@ import de.db.shoppinglist.R;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.view.ShoppingListsFragmentDirections;
 
-public class FireShoppingListsRecViewAdapter extends FirestoreRecyclerAdapter<ShoppingList, FireShoppingListsRecViewAdapter.ViewHolder> {
+public class ShoppingListsRecViewAdapter extends FirestoreRecyclerAdapter<ShoppingList, ShoppingListsRecViewAdapter.ViewHolder> {
 
     private NavController navController;
     private OnListListener onListListener;
@@ -29,7 +29,7 @@ public class FireShoppingListsRecViewAdapter extends FirestoreRecyclerAdapter<Sh
      *
      * @param options
      */
-    public FireShoppingListsRecViewAdapter(@NonNull FirestoreRecyclerOptions<ShoppingList> options, OnListListener onListListener, NavController navController) {
+    public ShoppingListsRecViewAdapter(@NonNull FirestoreRecyclerOptions<ShoppingList> options, OnListListener onListListener, NavController navController) {
         super(options);
         this.onListListener = onListListener;
         this.navController = navController;

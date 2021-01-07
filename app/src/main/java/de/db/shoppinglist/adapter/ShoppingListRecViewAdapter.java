@@ -20,7 +20,7 @@ import de.db.shoppinglist.adapter.viewholder.ViewHolderWithImage;
 import de.db.shoppinglist.model.ShoppingEntry;
 
 
-public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<ShoppingEntry, FireShoppingListRecViewAdapter.ViewHolder> implements Checkable<ShoppingEntry> {
+public class ShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<ShoppingEntry, ShoppingListRecViewAdapter.ViewHolder> implements Checkable<ShoppingEntry> {
 
 
     private static final int DEFAULT_VIEW_HOLDER = 0;
@@ -38,7 +38,7 @@ public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<Sho
      *
      * @param options Options on how to query the underlying data.
      */
-    public FireShoppingListRecViewAdapter(@NonNull FirestoreRecyclerOptions<ShoppingEntry> options, OnEntryListener onEntryListener) {
+    public ShoppingListRecViewAdapter(@NonNull FirestoreRecyclerOptions<ShoppingEntry> options, OnEntryListener onEntryListener) {
         super(options);
         this.onEntryListener = onEntryListener;
 

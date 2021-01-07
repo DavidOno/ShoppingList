@@ -11,21 +11,21 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.adapter.FireShoppingListRecViewAdapter;
+import de.db.shoppinglist.adapter.ShoppingListRecViewAdapter;
 import de.db.shoppinglist.model.ShoppingEntry;
 
 import static de.db.shoppinglist.adapter.viewholder.DefaultViewHolder.*;
 
-public class JustNameViewHolder extends FireShoppingListRecViewAdapter.ViewHolder {
+public class JustNameViewHolder extends ShoppingListRecViewAdapter.ViewHolder {
     private TextView nameOfEntry;
     private TextView quantity;
     private CheckBox isDone;
     private ImageButton dropDown;
     private TextView details;
-    private FireShoppingListRecViewAdapter.OnEntryListener onEntryListener;
-    private FireShoppingListRecViewAdapter adapter;
+    private ShoppingListRecViewAdapter.OnEntryListener onEntryListener;
+    private ShoppingListRecViewAdapter adapter;
 
-    public JustNameViewHolder(@NonNull View itemView, FireShoppingListRecViewAdapter.OnEntryListener onEntryListener, FireShoppingListRecViewAdapter adapter) {
+    public JustNameViewHolder(@NonNull View itemView, ShoppingListRecViewAdapter.OnEntryListener onEntryListener, ShoppingListRecViewAdapter adapter) {
         super(itemView);
         findViewsById(itemView);
         this.onEntryListener = onEntryListener;
@@ -47,7 +47,7 @@ public class JustNameViewHolder extends FireShoppingListRecViewAdapter.ViewHolde
     }
 
     @Override
-    public void onBindViewHolder(FireShoppingListRecViewAdapter.ViewHolder holder, int position, ShoppingEntry shoppingEntry) {
+    public void onBindViewHolder(ShoppingListRecViewAdapter.ViewHolder holder, int position, ShoppingEntry shoppingEntry) {
         initHolderProperties(shoppingEntry);
         onCheckedChangeListenerForDone(shoppingEntry);
         strikeItemsThroughIfDone();

@@ -25,19 +25,18 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.adapter.Checkable;
-import de.db.shoppinglist.adapter.FireShoppingListRecViewAdapter;
+import de.db.shoppinglist.adapter.ShoppingListRecViewAdapter;
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.ShoppingListViewModel;
 
-public class ShoppingListFragment extends Fragment implements FireShoppingListRecViewAdapter.OnEntryListener{
+public class ShoppingListFragment extends Fragment implements ShoppingListRecViewAdapter.OnEntryListener{
 
     private RecyclerView entriesView;
     private FloatingActionButton newEntryButton;
     private ShoppingListViewModel shoppingListViewModel;
     private ShoppingList list;
-    private FireShoppingListRecViewAdapter adapter;
+    private ShoppingListRecViewAdapter adapter;
     private static final String EXPANDED_POSITION_KEY = "Exp_key";
     private static final String PREV_EXPANDED_POSITION_KEY = "Prev_exp_key";
 
@@ -98,7 +97,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
     private void setUpRecyclerView() {
         entriesView.setLayoutManager(new LinearLayoutManager(getContext()));
         FirestoreRecyclerOptions<ShoppingEntry> options = shoppingListViewModel.getRecylerViewOptions(list);
-        adapter = new FireShoppingListRecViewAdapter(options, this);
+        adapter = new ShoppingListRecViewAdapter(options, this);
         entriesView.setAdapter(adapter);
     }
 

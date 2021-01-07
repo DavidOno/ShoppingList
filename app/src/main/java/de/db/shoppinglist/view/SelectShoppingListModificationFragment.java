@@ -22,14 +22,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.adapter.FireSelectShoppingListModificationViewAdapter;
+import de.db.shoppinglist.adapter.ShoppingListModificationRecViewAdapter;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.SelectListModificationViewModel;
 
 public class SelectShoppingListModificationFragment extends Fragment{
 
     private RecyclerView listOfListsView;
-    private FireSelectShoppingListModificationViewAdapter adapter;
+    private ShoppingListModificationRecViewAdapter adapter;
     private SelectListModificationViewModel shoppingListsViewModel;
 
     @Nullable
@@ -70,7 +70,7 @@ public class SelectShoppingListModificationFragment extends Fragment{
 
     private void setUpRecyclerView() {
         FirestoreRecyclerOptions<ShoppingList> options = shoppingListsViewModel.getRecyclerViewOptions();
-        adapter = new FireSelectShoppingListModificationViewAdapter(options);
+        adapter = new ShoppingListModificationRecViewAdapter(options);
         listOfListsView.setAdapter(adapter);
     }
 

@@ -16,7 +16,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.model.ShoppingList;
 
-public class FireSelectShoppingListModificationViewAdapter extends FirestoreRecyclerAdapter<ShoppingList, FireSelectShoppingListModificationViewAdapter.ViewHolder> {
+public class ShoppingListModificationRecViewAdapter extends FirestoreRecyclerAdapter<ShoppingList, ShoppingListModificationRecViewAdapter.ViewHolder> {
 
     private MutableLiveData<Boolean> editClicked = new MutableLiveData<>(false);
     private MutableLiveData<Boolean> deleteClicked = new MutableLiveData<>(false);
@@ -29,7 +29,7 @@ public class FireSelectShoppingListModificationViewAdapter extends FirestoreRecy
      *
      * @param options
      */
-    public FireSelectShoppingListModificationViewAdapter(@NonNull FirestoreRecyclerOptions<ShoppingList> options) {
+    public ShoppingListModificationRecViewAdapter(@NonNull FirestoreRecyclerOptions<ShoppingList> options) {
         super(options);
     }
 
