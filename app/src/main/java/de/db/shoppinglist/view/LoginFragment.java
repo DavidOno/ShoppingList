@@ -32,7 +32,7 @@ import de.db.shoppinglist.viewmodel.LoginViewModel;
  */
 public class LoginFragment extends Fragment {
 
-    private static final int RC_SIGN_IN = 120;
+    private static final int SIGN_IN_RESULT_KEY = 120;
     private static final String LOGIN_TAG = "Login";
     private GoogleSignInClient googleSignInClient;
     private SignInButton signInButton;
@@ -69,18 +69,17 @@ public class LoginFragment extends Fragment {
 
     private void signIn() {
         Intent signInIntent = googleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+        startActivityForResult(signInIntent, SIGN_IN_RESULT_KEY);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
+        if (requestCode == SIGN_IN_RESULT_KEY) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             if(task.isSuccessful()){
                 try {
                     GoogleSignInAccount account = task.getResult(ApiException.class);
-                    Log.d(LOGIN_TAG, "firebaseAuthWithGoogle:" + account.getId());
                     firebaseAuthWithGoogle(account.getIdToken());
                 } catch (ApiException e) {
                     Log.w(LOGIN_TAG, "Google sign in failed", e);

@@ -10,6 +10,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.Objects;
+
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 
@@ -26,12 +28,8 @@ public class GoogleSharer implements Sharer {
         userIdByEmail.addOnSuccessListener(documentSnapshots -> {
             String userIdOfReceiver = getUserId(documentSnapshots);
             Task<Void> addList = addListToUser(list, userIdOfReceiver);
-            addList.addOnSuccessListener(aVoid -> {
-               copyDocuments(list, userIdOfReceiver);
-            });
-        }).addOnFailureListener(e -> {
-            Log.d(SHARER_TAG, e.getMessage());
-        });
+            addList.addOnSuccessListener(aVoid -> copyDocuments(list, userIdOfReceiver));
+        }).addOnFailureListener(e -> Log.d(SHARER_TAG, Objects.requireNonNull(e.getMessage())));
     }
 
     private String getUserId(QuerySnapshot documentSnapshots) {
@@ -49,9 +47,7 @@ public class GoogleSharer implements Sharer {
                 documentSnapshots.getDocuments().stream()
                         .map(doc -> doc.toObject(ShoppingEntry.class))
                         .forEach(shoppingEntry -> addEntryToUser(list, shoppingEntry, userIdOfReceiver))
-        ).addOnFailureListener(e -> {
-            Log.d(SHARER_TAG, e.getMessage());
-        });
+        ).addOnFailureListener(e -> Log.d(SHARER_TAG, Objects.requireNonNull(e.getMessage())));
     }
 
     private void addEntryToUser(ShoppingList list, ShoppingEntry shoppingEntry, String userId) {

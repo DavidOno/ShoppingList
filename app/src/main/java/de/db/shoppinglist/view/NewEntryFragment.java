@@ -97,17 +97,21 @@ public class NewEntryFragment extends Fragment {
         viewModel = new ViewModelProvider(requireActivity()).get(NewEntryViewModel.class);
         takenImageSVM = new ViewModelProvider(requireActivity()).get(TakenImageSVM.class);
         getNavigationArguments();
-        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                takenImageSVM.reset();
-                viewModel.reset();
-                NavController navController = NavHostFragment.findNavController(NewEntryFragment.this);
-                navController.navigateUp();
-            }
-        };
+        OnBackPressedCallback callback = customizeBackPress();
         requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
 
+    }
+
+    private OnBackPressedCallback customizeBackPress() {
+        return new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    takenImageSVM.reset();
+                    viewModel.reset();
+                    NavController navController = NavHostFragment.findNavController(NewEntryFragment.this);
+                    navController.navigateUp();
+                }
+            };
     }
 
     private void getNavigationArguments() {
@@ -149,7 +153,7 @@ public class NewEntryFragment extends Fragment {
 
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_done, menu);
         MenuCompat.setGroupDividerEnabled(menu, true);
         MenuItem done = getDoneMenuItem(menu);
@@ -174,7 +178,7 @@ public class NewEntryFragment extends Fragment {
         return new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                //not required
             }
 
             @Override
@@ -188,7 +192,7 @@ public class NewEntryFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                //not required
             }
         };
     }
@@ -198,19 +202,11 @@ public class NewEntryFragment extends Fragment {
         String unitOfQuantity = getString(unitOfQuantityEditText);
         String nameOfProduct = getString(nameOfProductEditText);
         String details = getString(detailsEditText);
-        Uri imageUri = getImageUri();
+        Uri imageUri = viewModel.getImage();
         viewModel.addNewEntry(list, quantity, unitOfQuantity, nameOfProduct, details, imageUri, getContext());
         takenImageSVM.reset();
         viewModel.reset();
         closeFragment();
-    }
-
-    private Uri getImageUri() {
-        Uri imageUri = viewModel.getImageLiveData().getValue();
-        if(imageUri != null) {
-            return imageUri;
-        }
-        return null;
     }
 
 

@@ -23,9 +23,9 @@ import de.db.shoppinglist.model.ShoppingEntry;
 public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<ShoppingEntry, FireShoppingListRecViewAdapter.ViewHolder> implements Checkable<ShoppingEntry> {
 
 
-    private static final int DEFAULT_VIEWHOLDER = 0;
-    private static final int IMAGE_VIEWHOLDER = 1;
-    private static final int JUST_NAME_VIEWHOLDER = 2;
+    private static final int DEFAULT_VIEW_HOLDER = 0;
+    private static final int IMAGE_VIEW_HOLDER = 1;
+    private static final int JUST_NAME_VIEW_HOLDER = 2;
     private MutableLiveData<Boolean> wasChecked = new MutableLiveData<>(false);
     private ShoppingEntry entryContainingCheckedBox = null;
     private OnEntryListener onEntryListener;
@@ -48,11 +48,11 @@ public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<Sho
     public int getItemViewType(int position) {
         ShoppingEntry item = getItem(position);
         if(hasItemImage(item)){
-            return IMAGE_VIEWHOLDER;
+            return IMAGE_VIEW_HOLDER;
         }else if(hasMissingUnitOfQuantity(item)){
-            return JUST_NAME_VIEWHOLDER;
+            return JUST_NAME_VIEW_HOLDER;
         }else{
-            return DEFAULT_VIEWHOLDER;
+            return DEFAULT_VIEW_HOLDER;
         }
     }
 
@@ -72,16 +72,15 @@ public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<Sho
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = null;
-        if(viewType == DEFAULT_VIEWHOLDER) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_entry, parent, false);
+        if(viewType == DEFAULT_VIEW_HOLDER) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_entry, parent, false);
             return new DefaultViewHolder(view, onEntryListener, this);
         }
-        else if(viewType == IMAGE_VIEWHOLDER) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_entry_with_image, parent, false);
+        else if(viewType == IMAGE_VIEW_HOLDER) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_entry_with_image, parent, false);
             return new ViewHolderWithImage(view, onEntryListener, this);
-        }else if(viewType == JUST_NAME_VIEWHOLDER){
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_entry_just_name, parent, false);
+        }else if(viewType == JUST_NAME_VIEW_HOLDER){
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_entry_just_name, parent, false);
             return new JustNameViewHolder(view, onEntryListener, this);
         }
         throw new IllegalArgumentException("Found no suitable viewType");
@@ -131,7 +130,7 @@ public class FireShoppingListRecViewAdapter extends FirestoreRecyclerAdapter<Sho
         void onEntryClick(int position);
     }
 
-    public static abstract class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public abstract static  class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

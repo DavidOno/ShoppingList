@@ -1,6 +1,5 @@
 package de.db.shoppinglist.adapter;
 
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,7 +106,7 @@ public class SearchEntryRecyclerViewAdapter extends RecyclerView.Adapter<SearchE
         void onEntryClick(int position);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView nameOfProduct;
         private TextView unitOfQuantity;

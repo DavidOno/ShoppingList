@@ -9,17 +9,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
 import de.db.shoppinglist.R;
-import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
-import de.db.shoppinglist.view.ModifyEntryFragmentDirections;
 import de.db.shoppinglist.view.ShoppingListsFragmentDirections;
 
 public class FireShoppingListsRecViewAdapter extends FirestoreRecyclerAdapter<ShoppingList, FireShoppingListsRecViewAdapter.ViewHolder> {
@@ -55,14 +51,14 @@ public class FireShoppingListsRecViewAdapter extends FirestoreRecyclerAdapter<Sh
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_shoppinglist, parent, false);
-        return new FireShoppingListsRecViewAdapter.ViewHolder(view, onListListener);
+        return new ViewHolder(view, onListListener);
     }
 
     public interface OnListListener {
         void onListClick(int position);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private TextView nameOfShoppingList;
         private TextView relation;

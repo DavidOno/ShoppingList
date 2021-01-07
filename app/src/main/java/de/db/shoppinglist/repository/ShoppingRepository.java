@@ -1,8 +1,6 @@
 package de.db.shoppinglist.repository;
 
 import android.content.Context;
-import android.net.Uri;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -11,7 +9,6 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -47,30 +44,22 @@ public class ShoppingRepository {
     }
 
     public void addEntry(String listId, ShoppingEntry newEntry, Context context){
-        Runnable run = () -> {
-            db.addEntry(listId, newEntry, context);
-        };
+        Runnable run = () -> db.addEntry(listId, newEntry, context);
         startThread(run);
     }
 
     public void deleteEntry(String listUid, String documentUid){
-        Runnable run = () -> {
-            db.deleteEntry(listUid, documentUid);
-        };
+        Runnable run = () -> db.deleteEntry(listUid, documentUid);
         startThread(run);
     }
 
     public void addList(ShoppingList shoppingList){
-        Runnable run = () -> {
-            db.addList(shoppingList);
-        };
+        Runnable run = () -> db.addList(shoppingList);
         startThread(run);
     }
 
     public void deleteList(String listId){
-        Runnable run = () -> {
-            db.deleteList(listId);
-        };
+        Runnable run = () -> db.deleteList(listId);
         startThread(run);
     }
 
@@ -83,30 +72,22 @@ public class ShoppingRepository {
     }
 
     public void updateEntryPosition(ShoppingList list, ShoppingEntry entry, int position) {
-        Runnable run = () -> {
-            db.updateEntryPosition(list, entry, position);
-        };
+        Runnable run = () -> db.updateEntryPosition(list, entry, position);
         startThread(run);
     }
 
     public void updateDoneStatus(String listId, ShoppingEntry entry) {
-        Runnable run = () -> {
-            db.updateStatusDone(listId, entry);
-        };
+        Runnable run = () -> db.updateStatusDone(listId, entry);
         startThread(run);
     }
 
     public void updateListName(ShoppingList list) {
-        Runnable run = () -> {
-            db.updateListName(list);
-        };
+        Runnable run = () -> db.updateListName(list);
         startThread(run);
     }
 
     public void modifyWholeEntry(ShoppingList list, ShoppingEntry entry, Context context) {
-        Runnable run = () -> {
-            db.modifyWholeEntry(list, entry, context);
-        };
+        Runnable run = () -> db.modifyWholeEntry(list, entry, context);
         startThread(run);
     }
 
@@ -116,7 +97,6 @@ public class ShoppingRepository {
         Consumer<List<EntryHistoryElement>> history = list -> {
             result.addAll(new ArrayList<>(list));
             liveResult.setValue(result);
-            Log.d("REPOSITORY", result.toString());
         };
         db.getHistory(history);
         return liveResult;

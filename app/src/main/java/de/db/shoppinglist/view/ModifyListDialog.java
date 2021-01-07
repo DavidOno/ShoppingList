@@ -27,12 +27,12 @@ public class ModifyListDialog extends AppCompatDialogFragment {
 
     private EditText listNameEditText;
     private Button doneButton;
-    private Button backButton;
 
     private ModifyListDialogViewModel viewModel;
     private ShoppingList list;
 
     public ModifyListDialog(){
+        //empty constructor required
     }
 
     @NonNull
@@ -45,7 +45,7 @@ public class ModifyListDialog extends AppCompatDialogFragment {
         listNameEditText = view.findViewById(R.id.editText_list_name);
         doneButton = view.findViewById(R.id.new_list_dialog_doneButton);
         doneButton.setEnabled(false);
-        backButton = view.findViewById(R.id.new_list_dialog_backButton);
+        Button backButton = view.findViewById(R.id.new_list_dialog_backButton);
         listNameEditText.setText(list.getName());
         listNameEditText.requestFocus();
         doneButton.setOnClickListener(item -> finish());
@@ -73,7 +73,7 @@ public class ModifyListDialog extends AppCompatDialogFragment {
         return new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                //not required
             }
 
             @Override
@@ -87,7 +87,7 @@ public class ModifyListDialog extends AppCompatDialogFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                //not required
             }
         };
     }
@@ -97,6 +97,5 @@ public class ModifyListDialog extends AppCompatDialogFragment {
         list.setName(listName);
         viewModel.updateListName(list);
         closeDialog();
-
     }
 }

@@ -28,11 +28,10 @@ public class GoogleLogin implements Login{
         firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Log.d(GOOGLE_LOGIN_TAG, "signInWithCredential:success");
                         addToUsers();
                         postSignInAction.run();
                     } else {
-                        Log.w(GOOGLE_LOGIN_TAG, "signInWithCredential:failure", task.getException());
+                        Log.w(GOOGLE_LOGIN_TAG, "Failed to sign in via Google", task.getException());
                     }
                 });
     }

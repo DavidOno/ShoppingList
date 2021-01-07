@@ -1,10 +1,7 @@
 package de.db.shoppinglist.database;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.ImageDecoder;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -16,6 +13,9 @@ import java.io.InputStream;
 
 public class ImageCompressor {
 
+    public static final int BY_90_DEGREE = 90;
+    public static final int BY_180_DEGREE = 180;
+    public static final int BY_270_DEGREE = 270;
     private Context context;
 
     public ImageCompressor(Context context) {
@@ -25,21 +25,11 @@ public class ImageCompressor {
     public byte[] compress(Uri imageUri, int quality) {
         byte[] compressed = null;
         try {
-//            InputStream is = context.getContentResolver().openInputStream(imageUri);
-//            BitmapFactory.Options dbo = new BitmapFactory.Options();
-//            dbo.inJustDecodeBounds = true;
-//            Bitmap bitmap = BitmapFactory.decodeStream(is, null, dbo);
-//            is.close();
-//            BitmapFactory.Options options = new BitmapFactory.Options();
-//            Bitmap bitmap = BitmapFactory.decodeFile(imageUri.toString(), options);
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
-//            ContentResolver cr = context.getContentResolver();
-//            InputStream in = cr.openInputStream(imageUri);
-//            Bitmap bitmap = BitmapFactory.decodeStream(in,null,null);
             Bitmap rotatedBitmap;
             int orientation = getOrientation(imageUri);
             rotatedBitmap = rotateBitmap(bitmap, orientation);
-            compressed = compress(imageUri, quality, bitmap, rotatedBitmap);
+            compressed = compress(quality, rotatedBitmap);
             bitmap.recycle();
             rotatedBitmap.recycle();
         } catch (IOException e) {
@@ -48,13 +38,11 @@ public class ImageCompressor {
         return compressed;
     }
 
-    private byte[] compress(Uri imageUri, int quality, Bitmap bitmap, Bitmap rotatedBitmap) throws IOException {
+    private byte[] compress(int quality, Bitmap rotatedBitmap) {
         byte[] compressedImageBytes = null;
-//        if (rotatedBitmap != bitmap) {//TODO: remove???
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos);
-            compressedImageBytes = baos.toByteArray();
-//        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos);
+        compressedImageBytes = baos.toByteArray();
         return compressedImageBytes;
     }
 
@@ -62,15 +50,15 @@ public class ImageCompressor {
         Bitmap rotatedBitmap;
         switch (orientation) {
             case ExifInterface.ORIENTATION_ROTATE_90:
-                rotatedBitmap = rotateImage(bitmap, 90);
+                rotatedBitmap = rotateImage(bitmap, BY_90_DEGREE);
                 break;
 
             case ExifInterface.ORIENTATION_ROTATE_180:
-                rotatedBitmap = rotateImage(bitmap, 180);
+                rotatedBitmap = rotateImage(bitmap, BY_180_DEGREE);
                 break;
 
             case ExifInterface.ORIENTATION_ROTATE_270:
-                rotatedBitmap = rotateImage(bitmap, 270);
+                rotatedBitmap = rotateImage(bitmap, BY_270_DEGREE);
                 break;
 
             case ExifInterface.ORIENTATION_NORMAL:

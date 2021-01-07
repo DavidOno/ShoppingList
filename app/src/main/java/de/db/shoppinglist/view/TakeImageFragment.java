@@ -19,6 +19,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,17 +41,12 @@ import de.db.shoppinglist.R;
 import de.db.shoppinglist.ifc.TakenImageSVM;
 import de.db.shoppinglist.viewmodel.TakenImageViewModel;
 
-/**
- * Important parts taken from
- * https://github.com/bikashthapa01/basic-camera-app-android/blob/master/app/src/main/java/net/smallacademy/cameraandgallery/MainActivity.java
- * and adapted.
- */
+
 public class TakeImageFragment extends Fragment {
 
     public static final int CAMERA_PERM_CODE = 101;
     public static final int CAMERA_REQUEST_CODE = 102;
     public static final int GALLERY_REQUEST_CODE = 105;
-    private static final String CONTENT_URI_KEY = "Content_uri_key";
     private static final String WAS_REPLACED = "";
     private ImageView selectedImage;
     private Button cameraButton;
@@ -154,7 +150,6 @@ public class TakeImageFragment extends Fragment {
                 NavController navController = NavHostFragment.findNavController(this);
                 navController.navigateUp();
                 break;
-
         }
         return super.onOptionsItemSelected(item);
     }
@@ -163,12 +158,8 @@ public class TakeImageFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode == CAMERA_REQUEST_CODE){
             if(resultCode == Activity.RESULT_OK && data !=  null){
-                File f = new File(currentPhotoPath);
-                Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                Uri contentUri = Uri.fromFile(f);
-                mediaScanIntent.setData(contentUri);
+                Uri contentUri = addPicToGallery();
                 viewModel.setImage(contentUri);
-                getActivity().sendBroadcast(mediaScanIntent);
                 done.setEnabled(true);
                 removeButton.setVisibility(View.VISIBLE);
             }else{
@@ -185,6 +176,15 @@ public class TakeImageFragment extends Fragment {
                 done.setEnabled(false);
             }
         }
+    }
+
+    private Uri addPicToGallery() {
+        File f = new File(currentPhotoPath);
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        getActivity().sendBroadcast(mediaScanIntent);
+        return contentUri;
     }
 
 
@@ -205,7 +205,7 @@ public class TakeImageFragment extends Fragment {
             try {
                 photoFile = createImageFile();
             } catch (IOException ex) {
-
+                //TODO:
             }
             if (photoFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(getContext(), "de.db.shoppinglist.file_provider", photoFile);

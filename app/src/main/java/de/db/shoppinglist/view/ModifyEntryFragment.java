@@ -137,9 +137,7 @@ public class ModifyEntryFragment extends Fragment {
     }
 
     private void handleDoneChecked() {
-        doneCheckbox.setOnClickListener(v -> {
-            viewModel.toggleDoneStatus(list, entry);
-        });
+        doneCheckbox.setOnClickListener(v -> viewModel.toggleDoneStatus(list, entry));
     }
 
     @Override
@@ -184,7 +182,7 @@ public class ModifyEntryFragment extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_done, menu);
         MenuCompat.setGroupDividerEnabled(menu, true);
         MenuItem done = getDoneMenuItem(menu);
@@ -210,7 +208,7 @@ public class ModifyEntryFragment extends Fragment {
         return new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                //not required
             }
 
             @Override
@@ -227,7 +225,7 @@ public class ModifyEntryFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                //not required
             }
         };
     }
@@ -238,19 +236,11 @@ public class ModifyEntryFragment extends Fragment {
         String nameOfProduct = nameOfProductEditText.getText().toString();
         String details = detailsEditText.getText().toString();
         boolean done = doneCheckbox.isChecked();
-        Uri imageUri = getImageUri();
+        Uri imageUri = viewModel.getImage();
         setValues(quantity, unitOfQuantity, nameOfProduct, details, done, imageUri);
         viewModel.modifyEntry(list, entry, getContext());
         takenImageSVM.reset();
         closeFragment();
-    }
-
-    private Uri getImageUri() {
-        Uri imageUri = viewModel.getImage();
-        if(imageUri != null) {
-            return imageUri;
-        }
-        return null;
     }
 
 

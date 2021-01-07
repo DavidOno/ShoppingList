@@ -37,6 +37,7 @@ public class NewListDialog extends AppCompatDialogFragment {
     private NewListDialogViewModel viewModel;
 
     public NewListDialog(){
+        //empty constructor is required
     }
 
     @NonNull
@@ -71,7 +72,7 @@ public class NewListDialog extends AppCompatDialogFragment {
         return new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                //not required
             }
 
             @Override
@@ -85,7 +86,7 @@ public class NewListDialog extends AppCompatDialogFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                //not required
             }
         };
     }

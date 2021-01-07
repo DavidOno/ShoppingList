@@ -71,7 +71,7 @@ public class FireSelectShoppingListModificationViewAdapter extends FirestoreRecy
         deleteClicked.setValue(false);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder{
 
         private TextView nameOfShoppingList;
         private ImageButton edit;

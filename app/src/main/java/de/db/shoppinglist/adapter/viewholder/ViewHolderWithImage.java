@@ -13,12 +13,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.adapter.FireShoppingListRecViewAdapter;
 import de.db.shoppinglist.adapter.FireShoppingListRecViewAdapter.OnEntryListener;
 import de.db.shoppinglist.model.ShoppingEntry;
+
+import static de.db.shoppinglist.adapter.viewholder.DefaultViewHolder.*;
 
 public class ViewHolderWithImage extends FireShoppingListRecViewAdapter.ViewHolder{
         private TextView nameOfEntry;
@@ -57,12 +58,12 @@ public class ViewHolderWithImage extends FireShoppingListRecViewAdapter.ViewHold
     @Override
     public void onBindViewHolder(FireShoppingListRecViewAdapter.ViewHolder holder, int position, ShoppingEntry shoppingEntry) {
         initHolderProperties(holder, shoppingEntry);
-        onCheckedChangeListenerForDone(holder, shoppingEntry);
-        strikeItemsThroughIfDone(holder);
-        final boolean isExpanded = setVisibilityOfDetails(holder, position);
-        textChangeListenerForDetails(holder);
-        manageDropDownIconVisibility(holder);
-        manageDropDownBehaviour(holder, position, isExpanded);
+        onCheckedChangeListenerForDone(shoppingEntry);
+        strikeItemsThroughIfDone();
+        final boolean isExpanded = setVisibilityOfDetails(position);
+        textChangeListenerForDetails();
+        manageDropDownIconVisibility();
+        manageDropDownBehaviour(position, isExpanded);
     }
 
     private void initHolderProperties(FireShoppingListRecViewAdapter.ViewHolder holder, ShoppingEntry shoppingEntry) {
@@ -79,13 +80,13 @@ public class ViewHolderWithImage extends FireShoppingListRecViewAdapter.ViewHold
 
     private String getQuantityText(float quantity) {
         if(isZero(quantity)){
-            return "";
+            return NO_TEXT;
         }else{
             if(isInteger(quantity)){
                 int quantityAsInt = (int) quantity;
-                return quantityAsInt + " x ";
+                return quantityAsInt + MULTIPLIER;
             }
-            return quantity + " x ";
+            return quantity + MULTIPLIER;
         }
     }
 
@@ -94,10 +95,10 @@ public class ViewHolderWithImage extends FireShoppingListRecViewAdapter.ViewHold
     }
 
     private boolean isZero(float quantity) {
-        return quantity - 0 < 0.0001;
+        return quantity - 0 < EPSILON;
     }
 
-    private void onCheckedChangeListenerForDone(FireShoppingListRecViewAdapter.ViewHolder holder, ShoppingEntry shoppingEntry){
+    private void onCheckedChangeListenerForDone(ShoppingEntry shoppingEntry){
         isDone.setOnClickListener(view -> {
             adapter.setEntryContainingCheckedBox(shoppingEntry);
             adapter.setWasChecked(true);
@@ -105,35 +106,35 @@ public class ViewHolderWithImage extends FireShoppingListRecViewAdapter.ViewHold
     }
 
 
-    private boolean setVisibilityOfDetails(@NonNull FireShoppingListRecViewAdapter.ViewHolder holder, int position) {
+    private boolean setVisibilityOfDetails(int position) {
         final boolean isExpanded = position == adapter.getExpandedPosition();
         details.setVisibility(isExpanded? View.VISIBLE:View.GONE);
         return isExpanded;
     }
 
-    private void strikeItemsThroughIfDone(@NonNull FireShoppingListRecViewAdapter.ViewHolder holder) {
+    private void strikeItemsThroughIfDone() {
         if(isDone.isChecked()){
-            strikeAllTextPropertiesThrough(holder);
+            strikeAllTextPropertiesThrough();
         }else{
-            unstrikeAllTextProperties(holder);
+            unstrikeAllTextProperties();
         }
     }
 
-    private void unstrikeAllTextProperties(@NonNull FireShoppingListRecViewAdapter.ViewHolder holder) {
+    private void unstrikeAllTextProperties() {
         nameOfEntry.setPaintFlags(nameOfEntry.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         quantity.setPaintFlags(quantity.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         unitOfQuantity.setPaintFlags(unitOfQuantity.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         details.setPaintFlags(details.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
     }
 
-    private void strikeAllTextPropertiesThrough(@NonNull FireShoppingListRecViewAdapter.ViewHolder holder) {
+    private void strikeAllTextPropertiesThrough() {
         nameOfEntry.setPaintFlags(nameOfEntry.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         quantity.setPaintFlags(quantity.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         unitOfQuantity.setPaintFlags(unitOfQuantity.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         details.setPaintFlags(details.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
     }
 
-    private void textChangeListenerForDetails(@NonNull FireShoppingListRecViewAdapter.ViewHolder holder) {
+    private void textChangeListenerForDetails() {
         details.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -142,7 +143,7 @@ public class ViewHolderWithImage extends FireShoppingListRecViewAdapter.ViewHold
 
             @Override
             public void onTextChanged(CharSequence sequence, int start, int before, int count) {
-                manageDropDownIconVisibility(holder);
+                manageDropDownIconVisibility();
             }
 
             @Override
@@ -152,7 +153,7 @@ public class ViewHolderWithImage extends FireShoppingListRecViewAdapter.ViewHold
         });
     }
 
-    private void manageDropDownIconVisibility(@NonNull FireShoppingListRecViewAdapter.ViewHolder holder) {
+    private void manageDropDownIconVisibility() {
         if (details.getText().toString().isEmpty()) {
             dropDown.setVisibility(View.INVISIBLE);
         } else {
@@ -160,7 +161,7 @@ public class ViewHolderWithImage extends FireShoppingListRecViewAdapter.ViewHold
         }
     }
 
-    private void manageDropDownBehaviour(@NonNull FireShoppingListRecViewAdapter.ViewHolder holder, int position, boolean isExpanded) {
+    private void manageDropDownBehaviour(int position, boolean isExpanded) {
         dropDown.setActivated(isExpanded);
         if(isExpanded){
             adapter.setPreviousExpandedPosition(position);
