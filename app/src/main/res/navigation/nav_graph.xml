@@ -118,11 +118,6 @@
         android:label="@string/ChooseImage"
         tools:layout="@layout/fragment_take_image" />
     <fragment
-        android:id="@+id/modifyTakeImageFragment"
-        android:name="de.db.shoppinglist.view.ModifyTakeImageFragment"
-        android:label="@string/ModifyImage"
-        tools:layout="@layout/fragment_take_image"/>
-    <fragment
         android:id="@+id/loginFragment"
         android:name="de.db.shoppinglist.view.LoginFragment"
         android:label="@string/fragment_login"

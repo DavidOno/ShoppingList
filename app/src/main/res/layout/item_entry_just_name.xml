@@ -55,7 +55,7 @@
 
             <ImageButton
                 android:id="@+id/entry_dropDownButton"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_toLeftOf="@id/entry_isDoneCheckbox"
                 android:src="@drawable/ic_arrow_down"
@@ -65,7 +65,7 @@
 
             <CheckBox
                 android:id="@+id/entry_isDoneCheckbox"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
