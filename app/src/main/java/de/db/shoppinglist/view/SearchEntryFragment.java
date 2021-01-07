@@ -97,7 +97,6 @@ public class SearchEntryFragment extends Fragment implements SearchEntryRecycler
             adapter.setHistory(history.getValue());
             adapter.notifyDataSetChanged();
             adapter.getFilter().filter(query);
-            Log.d("SEARCH_ENTRY", "Observed change");
         });
         historyOfEntries.setAdapter(adapter);
         historyOfEntries.setLayoutManager(new LinearLayoutManager(getContext()));

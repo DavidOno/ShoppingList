@@ -25,6 +25,8 @@ import de.db.shoppinglist.viewmodel.ShareListViewModel;
 
 public class ShareDialog extends AppCompatDialogFragment {
     private static final int SHARE = R.string.share;
+    public static final String GMAIL_POSTFIX_1 = "@gmail.com";
+    public static final String GMAIL_POSTFIX_2 = "@googlemail.com";
     private EditText emailEditText;
     private Button doneButton;
     private Button backButton;
@@ -33,6 +35,7 @@ public class ShareDialog extends AppCompatDialogFragment {
     private ShoppingList list;
 
     public ShareDialog(){
+        //empty constructor required
     }
 
     @NonNull
@@ -87,7 +90,7 @@ public class ShareDialog extends AppCompatDialogFragment {
         return new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                //not required
             }
 
             @Override
@@ -101,13 +104,13 @@ public class ShareDialog extends AppCompatDialogFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                //not required
             }
         };
     }
 
     private boolean isGoogleMailAdress(String email) {
-        return email.endsWith("@gmail.com") || email.endsWith("@googlemail.com");
+        return email.endsWith(GMAIL_POSTFIX_1) || email.endsWith(GMAIL_POSTFIX_2);
     }
 
     private boolean isEmpty() {
@@ -116,7 +119,6 @@ public class ShareDialog extends AppCompatDialogFragment {
 
     private void finish() {
         String email = emailEditText.getText().toString();
-        String name = list.getName();
         viewModel.share(list, email);
         closeDialog();
     }

@@ -43,25 +43,37 @@ public class NewListDialog extends AppCompatDialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_new_list, null);
-        builder.setView(view);
-        listNameEditText = view.findViewById(R.id.editText_list_name);
-        doneButton = view.findViewById(R.id.new_list_dialog_doneButton);
-        doneButton.setEnabled(false);
-        backButton = view.findViewById(R.id.new_list_dialog_backButton);
+        View view = inflateDialogLayout();
+        Dialog dialog = buildDialog(view);
+        findViewsById(view);
         listNameEditText.addTextChangedListener(enableDoneMenuItemOnTextChange());
-
+        doneButton.setEnabled(false);
         listNameEditText.requestFocus();
         doneButton.setOnClickListener(item -> finish());
         backButton.setOnClickListener(item -> closeDialog());
-        Dialog dialog = builder.create();
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         listNameEditText.addTextChangedListener(enableDoneMenuItemOnTextChange());
         viewModel = new ViewModelProvider(requireActivity()).get(NewListDialogViewModel.class);
         return dialog;
+    }
+
+    private Dialog buildDialog(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setView(view);
+        Dialog dialog = builder.create();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        return dialog;
+    }
+
+    private View inflateDialogLayout() {
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        return inflater.inflate(R.layout.dialog_new_list, null);
+    }
+
+    private void findViewsById(View view) {
+        listNameEditText = view.findViewById(R.id.editText_list_name);
+        doneButton = view.findViewById(R.id.new_list_dialog_doneButton);
+        backButton = view.findViewById(R.id.new_list_dialog_backButton);
     }
 
     private void closeDialog() {

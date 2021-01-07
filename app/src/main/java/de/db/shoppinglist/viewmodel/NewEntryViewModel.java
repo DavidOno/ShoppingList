@@ -3,7 +3,6 @@ package de.db.shoppinglist.viewmodel;
 import android.content.Context;
 import android.net.Uri;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -40,10 +39,6 @@ public class NewEntryViewModel extends ViewModel {
         }
         ShoppingEntry shoppingEntry = new ShoppingEntry(quantity, unitOfQuantity, nameOfProduct, details, position, image);
         repo.addEntry(list.getUid(), shoppingEntry, context);
-    }
-
-    private boolean isDownLoadUri(Uri uploadImageUri) {
-        return uploadImageUri.toString().startsWith("http");
     }
 
     public void reset(){

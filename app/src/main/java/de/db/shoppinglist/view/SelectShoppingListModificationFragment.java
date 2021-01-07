@@ -15,8 +15,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
-import androidx.navigation.NavHost;
-import androidx.navigation.NavHostController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,7 +29,7 @@ import de.db.shoppinglist.viewmodel.SelectListModificationViewModel;
 public class SelectShoppingListModificationFragment extends Fragment{
 
     private RecyclerView listOfListsView;
-    private FireSelectShoppingListModificationViewAdapter fireAdapter;
+    private FireSelectShoppingListModificationViewAdapter adapter;
     private SelectListModificationViewModel shoppingListsViewModel;
 
     @Nullable
@@ -49,19 +47,19 @@ public class SelectShoppingListModificationFragment extends Fragment{
 
 
     private void handleEditRequest() {
-        fireAdapter.getEditClicked().observe(getViewLifecycleOwner(), aBoolean -> {
-            if(aBoolean.booleanValue()) {
-                ShoppingList shoppingList = fireAdapter.getClickedElement();
+        adapter.getEditClicked().observe(getViewLifecycleOwner(), aBoolean -> {
+            if(Boolean.TRUE.equals(aBoolean)) {
+                ShoppingList shoppingList = adapter.getClickedElement();
                 NavController navController = NavHostFragment.findNavController(this);
                 NavDirections openListModifyDialogDirection = SelectShoppingListModificationFragmentDirections.actionSelectShoppingListModificationFragmentToModifyListDialog(shoppingList);
                 navController.navigate(openListModifyDialogDirection);
-                fireAdapter.resetFlags();
+                adapter.resetFlags();
             }
         });
-        fireAdapter.getDeleteClicked().observe(getViewLifecycleOwner(), aBoolean -> {
-            if(aBoolean.booleanValue()) {
-                shoppingListsViewModel.deleteList(fireAdapter.getClickedElement());
-                fireAdapter.resetFlags();
+        adapter.getDeleteClicked().observe(getViewLifecycleOwner(), aBoolean -> {
+            if(Boolean.TRUE.equals(aBoolean)) {
+                shoppingListsViewModel.deleteList(adapter.getClickedElement());
+                adapter.resetFlags();
             }
         });
     }
@@ -72,12 +70,12 @@ public class SelectShoppingListModificationFragment extends Fragment{
 
     private void setUpRecyclerView() {
         FirestoreRecyclerOptions<ShoppingList> options = shoppingListsViewModel.getRecyclerViewOptions();
-        fireAdapter = new FireSelectShoppingListModificationViewAdapter(options);
-        listOfListsView.setAdapter(fireAdapter);
+        adapter = new FireSelectShoppingListModificationViewAdapter(options);
+        listOfListsView.setAdapter(adapter);
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_done, menu);
         MenuCompat.setGroupDividerEnabled(menu, true);
         super.onCreateOptionsMenu(menu, inflater);
@@ -96,13 +94,13 @@ public class SelectShoppingListModificationFragment extends Fragment{
     @Override
     public void onStart() {
         super.onStart();
-        fireAdapter.startListening();
+        adapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        fireAdapter.stopListening();
+        adapter.stopListening();
     }
 
     private void closeFragment() {

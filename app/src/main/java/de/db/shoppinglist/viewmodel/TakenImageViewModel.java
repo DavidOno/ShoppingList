@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 
 public class TakenImageViewModel extends ViewModel {
 
+    public static final String IS_EMPTY_IMAGE = "";
     private MutableLiveData<String> imageLiveData = new MutableLiveData<>();
 
     public LiveData<String> getImageLiveData(){
@@ -28,20 +29,11 @@ public class TakenImageViewModel extends ViewModel {
 
     public void setImage(String imageUri){
         if(imageUri != null && imageUri.isEmpty()){
-            imageLiveData.setValue("");
+            imageLiveData.setValue(IS_EMPTY_IMAGE);
         }else if(imageUri != null) {
             imageLiveData.setValue(imageUri);
         }else{
             imageLiveData.setValue(null);
         }
-    }
-
-    /**
-     * Resets the properties of the viewmodel.
-     * Should be called when the necessary information were extracted.
-     * It's recommended to call this method always when leaving a specific fragment.
-     */
-    public void reset(){
-        imageLiveData = new MutableLiveData<>();
     }
 }

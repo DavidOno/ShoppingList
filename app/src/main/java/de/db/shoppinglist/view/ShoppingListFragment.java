@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -38,7 +37,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
     private FloatingActionButton newEntryButton;
     private ShoppingListViewModel shoppingListViewModel;
     private ShoppingList list;
-    private FireShoppingListRecViewAdapter fireAdapter;
+    private FireShoppingListRecViewAdapter adapter;
     private static final String EXPANDED_POSITION_KEY = "Exp_key";
     private static final String PREV_EXPANDED_POSITION_KEY = "Prev_exp_key";
 
@@ -70,54 +69,49 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 int fromPosition = viewHolder.getAdapterPosition();
                 int toPosition = target.getAdapterPosition();
-                ShoppingEntry firstEntry = (ShoppingEntry) fireAdapter.getItem(fromPosition);
-                ShoppingEntry secondEntry = (ShoppingEntry) fireAdapter.getItem(toPosition);
-
+                ShoppingEntry firstEntry = adapter.getItem(fromPosition);
+                ShoppingEntry secondEntry = adapter.getItem(toPosition);
                 shoppingListViewModel.updatePosition(list, firstEntry, toPosition);
                 shoppingListViewModel.updatePosition(list, secondEntry, fromPosition);
-
                 return false;
             }
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int adapterPosition = viewHolder.getAdapterPosition();
-                shoppingListViewModel.deleteEntry(list, fireAdapter.getItem(adapterPosition));
+                shoppingListViewModel.deleteEntry(list, adapter.getItem(adapterPosition));
             }
         }).attachToRecyclerView(entriesView);
     }
 
     public void handleItemIsDone(){
-        if(fireAdapter instanceof Checkable){
-            Checkable<ShoppingEntry> checkable = fireAdapter;
-            checkable.getFlag().observe(getViewLifecycleOwner(),
-                    aBoolean -> {
-                        if(aBoolean.booleanValue()) {
-                            ShoppingEntry entry = checkable.getItem();
-                            shoppingListViewModel.toggleDoneStatus(list, entry);
-                            ((Checkable) fireAdapter).resetFlags();
-                        }
-                    });
-        }
+        adapter.getFlag().observe(getViewLifecycleOwner(),
+                aBoolean -> {
+                    if(Boolean.TRUE.equals(aBoolean)) {
+                        ShoppingEntry entry = adapter.getItem();
+                        shoppingListViewModel.toggleDoneStatus(list, entry);
+                        adapter.resetFlags();
+                    }
+                });
     }
 
     private void setUpRecyclerView() {
         entriesView.setLayoutManager(new LinearLayoutManager(getContext()));
         FirestoreRecyclerOptions<ShoppingEntry> options = shoppingListViewModel.getRecylerViewOptions(list);
-        fireAdapter = new FireShoppingListRecViewAdapter(options, this);
-        entriesView.setAdapter(fireAdapter);
+        adapter = new FireShoppingListRecViewAdapter(options, this);
+        entriesView.setAdapter(adapter);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        fireAdapter.startListening();
+        adapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        fireAdapter.stopListening();
+        adapter.stopListening();
     }
 
     private void openNewEntryFragment() {
@@ -136,7 +130,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_shoppinglist, menu);
         MenuCompat.setGroupDividerEnabled(menu, true);
         super.onCreateOptionsMenu(menu, inflater);
@@ -146,18 +140,16 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_shoppingList_check_all:
-                fireAdapter.getSnapshots().forEach(entry -> shoppingListViewModel.setStatusToDone(list, (ShoppingEntry) entry));
+                adapter.getSnapshots().forEach(entry -> shoppingListViewModel.setStatusToDone(list, entry));
                 break;
             case R.id.menu_shoppingList_delete_all_checked:
-                fireAdapter.getSnapshots().stream()
-                        .filter(ShoppingEntry.class::isInstance)
-                        .filter(shoppingEntry -> ((ShoppingEntry) shoppingEntry).isDone())
-                        .forEach(entry -> shoppingListViewModel.deleteEntry(list, (ShoppingEntry) entry));
+                adapter.getSnapshots().stream()
+                        .filter(ShoppingEntry::isDone)
+                        .forEach(entry -> shoppingListViewModel.deleteEntry(list, entry));
                 break;
             case R.id.menuItemDeleteAllEntries:
-                fireAdapter.getSnapshots().stream()
-                        .filter(ShoppingEntry.class::isInstance)
-                        .forEach(entry -> shoppingListViewModel.deleteEntry(list, (ShoppingEntry) entry));
+                adapter.getSnapshots().stream()
+                        .forEach(entry -> shoppingListViewModel.deleteEntry(list, entry));
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -170,7 +162,7 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
 
     @Override
     public void onEntryClick(int position) {
-        ShoppingEntry entry = fireAdapter.getItem(position);
+        ShoppingEntry entry = adapter.getItem(position);
         NavController navController = NavHostFragment.findNavController(this);
         NavDirections openSelectedEntry = ShoppingListFragmentDirections.actionShoppingListFragmentToModifyEntryFragment(entry, list);
         navController.navigate(openSelectedEntry);
@@ -181,17 +173,17 @@ public class ShoppingListFragment extends Fragment implements FireShoppingListRe
         super.onViewStateRestored(savedInstanceState);
         if(savedInstanceState != null){
             int expandedPosition = savedInstanceState.getInt(EXPANDED_POSITION_KEY);
-            fireAdapter.setExpandedPosition(expandedPosition);
+            adapter.setExpandedPosition(expandedPosition);
             int previousPosition = savedInstanceState.getInt(PREV_EXPANDED_POSITION_KEY);
-            fireAdapter.setExpandedPosition(previousPosition);
+            adapter.setExpandedPosition(previousPosition);
         }
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(EXPANDED_POSITION_KEY, fireAdapter.getExpandedPosition());
-        outState.putInt(PREV_EXPANDED_POSITION_KEY, fireAdapter.getPreviousExpandedPosition());
+        outState.putInt(EXPANDED_POSITION_KEY, adapter.getExpandedPosition());
+        outState.putInt(PREV_EXPANDED_POSITION_KEY, adapter.getPreviousExpandedPosition());
     }
 }
 

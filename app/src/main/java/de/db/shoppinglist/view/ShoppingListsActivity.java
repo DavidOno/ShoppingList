@@ -1,7 +1,6 @@
 package de.db.shoppinglist.view;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,7 +8,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.navigation.NavController;
 import androidx.navigation.NavGraph;
 import androidx.navigation.NavInflater;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
@@ -23,8 +21,6 @@ public class ShoppingListsActivity extends AppCompatActivity{
 
     private ToastUtility toastUtility = ToastUtility.getInstance();
     private NavController navController;
-    private FirebaseAuth firebaseAuth;
-    private FirebaseUser currentUser;
     private NavHostFragment navHostFragment;
 
     @Override
@@ -37,16 +33,14 @@ public class ShoppingListsActivity extends AppCompatActivity{
         selectStartFragment();
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(v -> {
-            getOnBackPressedDispatcher().onBackPressed();
-        });
+        toolbar.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         NavigationUI.setupActionBarWithNavController(this, navController);
         displayReceivedToasts();
     }
 
     private void displayReceivedToasts() {
         toastUtility.getNewToast().observe(this, isNew -> {
-            if(isNew){
+            if(Boolean.TRUE.equals(isNew)){
                 String message = toastUtility.getMessage();
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
             }
@@ -56,8 +50,8 @@ public class ShoppingListsActivity extends AppCompatActivity{
     private void selectStartFragment() {
         NavInflater navInflater = navController.getNavInflater();
         NavGraph graph = navInflater.inflate(R.navigation.nav_graph);
-        firebaseAuth = FirebaseAuth.getInstance();
-        currentUser = firebaseAuth.getCurrentUser();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         if (navHostFragment.getChildFragmentManager().getBackStackEntryCount() == 0) {
             if (currentUser != null) {
                 graph.setStartDestination(R.id.shoppingListsFragment);
