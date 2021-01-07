@@ -1,12 +1,15 @@
 package de.db.shoppinglist.model;
 
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * This model represents a shopping-entry.
+ * It implements PositionAware, so that the position of an entry within a list is identifiable.
+ */
 public class ShoppingEntry implements Parcelable, PositionAware {
 
     private float quantity;
@@ -14,14 +17,16 @@ public class ShoppingEntry implements Parcelable, PositionAware {
     private boolean done;
     private String name;
     private String details;
+    /** Id, which identifies this entry in the database. */
     private String uid;
+     /** Position of this entry, within a list. */
     private int position = -1;
     private String imageURI;
 
     /**
      * Empty constructor required by Firestore.
      */
-    public ShoppingEntry(){
+    public ShoppingEntry() {
     }
 
     public ShoppingEntry(float quantity, String unitOfQuantity, String name, String details, int position, String imageURI) {
@@ -87,7 +92,7 @@ public class ShoppingEntry implements Parcelable, PositionAware {
         }
     };
 
-    public void setDone(boolean done){
+    public void setDone(boolean done) {
         this.done = done;
     }
 
@@ -103,7 +108,7 @@ public class ShoppingEntry implements Parcelable, PositionAware {
         return unitOfQuantity;
     }
 
-    public String getDetails(){
+    public String getDetails() {
         return details;
     }
 
@@ -111,7 +116,7 @@ public class ShoppingEntry implements Parcelable, PositionAware {
         return done;
     }
 
-    public String getUid(){
+    public String getUid() {
         return uid;
     }
 
@@ -131,11 +136,11 @@ public class ShoppingEntry implements Parcelable, PositionAware {
         this.details = details;
     }
 
-    public void setImageURI(String imageURI){
+    public void setImageURI(String imageURI) {
         this.imageURI = imageURI;
     }
 
-    public String getImageURI(){
+    public String getImageURI() {
         return imageURI;
     }
 
@@ -145,9 +150,13 @@ public class ShoppingEntry implements Parcelable, PositionAware {
         return position;
     }
 
-
-
-    public EntryHistoryElement extractHistoryElement(){
+    /**
+     * Extract all reusable information from the current entry, to instantiate a history-entry.
+     * Currently only the quantity is not considered reusable.
+     *
+     * @return Returns a history-entry.
+     */
+    public EntryHistoryElement extractHistoryElement() {
         return new EntryHistoryElement(name, unitOfQuantity, details, imageURI);
     }
 

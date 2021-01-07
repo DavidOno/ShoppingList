@@ -2,19 +2,26 @@ package de.db.shoppinglist.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import java.util.UUID;
 
+/**
+ * This model represents a shoppinglist.
+ * It implements PositionContainer, so that the entries within this list have on order/position.
+ */
 public class ShoppingList implements Parcelable, PositionContainer {
 
     private String name;
+    /** Id, which identifies this instance in the database. */
     private String uid;
+    /** Counter, which tells how many entries in this list are considered finished.*/
     private int done;
+    /** Counter, which tells the total number of entries.*/
     private int total;
+    /** Holds the next free position, for the next entry, which could be added to the list.*/
     private int nextFreePosition;
 
-    public ShoppingList(){
+    public ShoppingList() {
 
     }
 
@@ -64,7 +71,7 @@ public class ShoppingList implements Parcelable, PositionContainer {
         return name;
     }
 
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -72,18 +79,17 @@ public class ShoppingList implements Parcelable, PositionContainer {
         return uid;
     }
 
-    public int getDone(){
+    public int getDone() {
         return done;
     }
 
-    public int getTotal(){
+    public int getTotal() {
         return total;
     }
 
     @Override
     public int getNextFreePosition() {
         nextFreePosition++;
-        Log.d("ShoppingList", ""+nextFreePosition);
         return nextFreePosition;
     }
 }

@@ -3,19 +3,29 @@ package de.db.shoppinglist.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Model for storing all the reusable information of a created {@link ShoppingEntry}.
+ * The quantity of an entry is not considered as reusable.
+ */
 public class EntryHistoryElement implements Parcelable {
     private String name;
     private String unitOfQuantity;
     private String details;
     private String imageURI;
+    /**
+     * The id which identifies this entry in the database.
+     */
     private String uid;
+
     /**
      * Firebase requires an empty constructor.
      */
-    public EntryHistoryElement(){
+    public EntryHistoryElement() {
 
     }
 
@@ -82,11 +92,11 @@ public class EntryHistoryElement implements Parcelable {
         return details;
     }
 
-    public String getImageURI(){
+    public String getImageURI() {
         return imageURI;
     }
 
-    public String getUid(){
+    public String getUid() {
         return uid;
     }
 
@@ -106,6 +116,7 @@ public class EntryHistoryElement implements Parcelable {
         return Objects.hash(name, unitOfQuantity, details, imageURI);
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "EntryHistoryElement{" +
