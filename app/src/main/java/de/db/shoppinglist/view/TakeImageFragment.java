@@ -48,6 +48,7 @@ public class TakeImageFragment extends Fragment {
     public static final int CAMERA_REQUEST_CODE = 102;
     public static final int GALLERY_REQUEST_CODE = 105;
     private static final String WAS_REPLACED = "";
+    public static final String DONE_STATUS_KEY = "done-status";
     private ImageView selectedImage;
     private Button cameraButton;
     private Button galleryButton;
@@ -205,7 +206,7 @@ public class TakeImageFragment extends Fragment {
             try {
                 photoFile = createImageFile();
             } catch (IOException ex) {
-                //TODO:
+                Log.d("TakeImageFragment", ex.getMessage());
             }
             if (photoFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(getContext(), "de.db.shoppinglist.file_provider", photoFile);
@@ -218,14 +219,14 @@ public class TakeImageFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-            outState.putBoolean("done-status", done.isEnabled());
+            outState.putBoolean(DONE_STATUS_KEY, done.isEnabled());
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if(savedInstanceState != null){
-            wasEnabled = savedInstanceState.getBoolean("done-status");
+            wasEnabled = savedInstanceState.getBoolean(DONE_STATUS_KEY);
         }
     }
 }
