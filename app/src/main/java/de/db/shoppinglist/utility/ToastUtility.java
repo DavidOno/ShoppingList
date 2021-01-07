@@ -23,12 +23,17 @@ public class ToastUtility {
     private MutableLiveData<Boolean> isToastNew = new MutableLiveData<>(false);
     private String message;
 
-    private ToastUtility(){
+    private ToastUtility() {
         //empty constructor
     }
 
-    public static ToastUtility getInstance(){
-        if(instance == null){
+    /**
+     * Ensures that only a single instance is in use.
+     *
+     * @return Returns an instance of the ToastUtility.
+     */
+    public static ToastUtility getInstance() {
+        if (instance == null) {
             instance = new ToastUtility();
         }
         return instance;
@@ -39,24 +44,26 @@ public class ToastUtility {
      * Since it's called from an asynchronous environment, it's made thread-safe.
      * Therefore at the beginning a lock is acquired.
      * This lock is only release iff {@link #getMessage()} is called.
+     *
      * @param message The message to display via Toast.
      */
-    public void prepareToast(String message){
+    public void prepareToast(String message) {
         lock.lock();
         this.message = message;
         isToastNew.setValue(true);
     }
 
-    public LiveData<Boolean> getNewToast(){
+    public LiveData<Boolean> getNewToast() {
         return isToastNew;
     }
 
     /**
      * Returns the Message.
      * Here the lock, which was acquired in {@link #prepareToast(String)}, is released.
-     * @return Returns the message, which should be displayed via Toast
+     *
+     * @return Returns the message, which should be displayed via Toast.
      */
-    public String getMessage(){
+    public String getMessage() {
         String result = message;
         isToastNew.setValue(false);
         lock.unlock();
