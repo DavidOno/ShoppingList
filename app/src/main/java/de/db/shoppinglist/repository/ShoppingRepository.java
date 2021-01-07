@@ -136,4 +136,16 @@ public class ShoppingRepository {
         Runnable run = () -> sharer.share(list, email);
         startThread(run);
     }
+
+    public void setDb(Source db) {
+        this.db = db;
+    }
+
+    public void setSharer(Sharer sharer) {
+        this.sharer = sharer;
+    }
+
+    public void setLogin(Login login) {
+        this.login = login;
+    }
 }
