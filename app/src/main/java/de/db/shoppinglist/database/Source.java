@@ -32,7 +32,7 @@ public interface Source {
     /**
      * Deletes an entry from a specific list.
      *
-     * @param listUid     Id of the list, containg this entry.
+     * @param listUid     Id of the list, containing this entry.
      * @param documentUid Id of the entry, which should be deleted.
      */
     void deleteEntry(String listUid, String documentUid);

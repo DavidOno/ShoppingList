@@ -87,7 +87,7 @@ public class SearchEntryFragment extends Fragment implements SearchEntryRecycler
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int adapterPosition = viewHolder.getAdapterPosition();
-                viewModel.deleteList(adapter.getHistoryEntry(adapterPosition));
+                viewModel.deleteHistoryEntry(adapter.getHistoryEntry(adapterPosition));
                 adapter.deleteHistoryEntry(adapterPosition);
                 adapter.notifyDataSetChanged();
             }
