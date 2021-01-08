@@ -122,6 +122,11 @@ public class SearchEntryRecyclerViewAdapter extends RecyclerView.Adapter<SearchE
         allEntries.addAll(history);
     }
 
+    public void deleteHistoryEntry(int adapterPosition) {
+        entries.remove(adapterPosition);
+        allEntries.remove(adapterPosition);
+    }
+
     public interface OnEntryListener {
         void onEntryClick(int position);
     }
