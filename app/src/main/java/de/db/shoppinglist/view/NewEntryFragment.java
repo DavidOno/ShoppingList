@@ -33,8 +33,13 @@ import de.db.shoppinglist.model.EntryHistoryElement;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.NewEntryViewModel;
 
+/**
+ * This fragment provides an input mask to create a new entry.
+ * Possible inputs are image, name, quantity, unit of quantity and details.
+ * Only the name is non-optional.
+ * The communication with the {@link TakeImageFragment} works with help of a shared viewmodel.
+ */
 public class NewEntryFragment extends Fragment {
-
 
     private EditText nameOfProductEditText;
     private EditText quantityEditText;
@@ -60,23 +65,23 @@ public class NewEntryFragment extends Fragment {
 
     private void observeImage() {
         viewModel.getImageLiveData().observe(getViewLifecycleOwner(), takenImage -> {
-            if(takenImage != null) {
+            if (takenImage != null) {
                 Glide.with(getContext())
                         .load(takenImage)
                         .skipMemoryCache(false)
                         .into(image);
-            }else{
+            } else {
                 image.setImageResource(R.drawable.ic_shopping);
             }
         });
     }
 
     private void initViews() {
-        if(entryName == null){
+        if (entryName == null) {
             nameOfProductEditText.setText(historyEntry.getName());
             unitOfQuantityEditText.setText(historyEntry.getUnitOfQuantity());
             detailsEditText.setText(historyEntry.getDetails());
-        }else{
+        } else {
             nameOfProductEditText.setText(entryName);
         }
         assignImageInViewModel();
@@ -104,14 +109,14 @@ public class NewEntryFragment extends Fragment {
 
     private OnBackPressedCallback customizeBackPress() {
         return new OnBackPressedCallback(true) {
-                @Override
-                public void handleOnBackPressed() {
-                    takenImageSVM.reset();
-                    viewModel.reset();
-                    NavController navController = NavHostFragment.findNavController(NewEntryFragment.this);
-                    navController.navigateUp();
-                }
-            };
+            @Override
+            public void handleOnBackPressed() {
+                takenImageSVM.reset();
+                viewModel.reset();
+                NavController navController = NavHostFragment.findNavController(NewEntryFragment.this);
+                navController.navigateUp();
+            }
+        };
     }
 
     private void getNavigationArguments() {
@@ -122,14 +127,14 @@ public class NewEntryFragment extends Fragment {
     }
 
     private void assignImageInViewModel() {
-        if(noHistoryEntryProvided() || historyProvidesNoImage()){
+        if (noHistoryEntryProvided() || historyProvidesNoImage()) {
             viewModel.setImageLiveData(takenImageSVM.getImage());
-        }else{
-            if(imageWasReseted()){
+        } else {
+            if (imageWasReseted()) {
                 viewModel.setImageLiveData(null);
-            }else if(imageWasReplaced()){
+            } else if (imageWasReplaced()) {
                 viewModel.setImageLiveData(takenImageSVM.getImage());
-            }else{
+            } else {
                 viewModel.setImageLiveData(historyEntry.getImageURI());
             }
         }
@@ -163,12 +168,12 @@ public class NewEntryFragment extends Fragment {
     }
 
     private MenuItem getDoneMenuItem(Menu menu) {
-       return menu.findItem(R.id.menu_done_doneButton);
+        return menu.findItem(R.id.menu_done_doneButton);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId() == R.id.menu_done_doneButton){
+        if (item.getItemId() == R.id.menu_done_doneButton) {
             finishFragment();
         }
         return false;
@@ -183,9 +188,9 @@ public class NewEntryFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(nameOfProductEditText.getText().toString().isEmpty()){
+                if (nameOfProductEditText.getText().toString().isEmpty()) {
                     doneMenuItem.setEnabled(false);
-                }else{
+                } else {
                     doneMenuItem.setEnabled(true);
                 }
             }
@@ -210,16 +215,16 @@ public class NewEntryFragment extends Fragment {
     }
 
 
-    private float getQuantity(){
+    private float getQuantity() {
         String numberText = quantityEditText.getText().toString();
-        if(numberText.isEmpty()){
+        if (numberText.isEmpty()) {
             return 0f;
-        }else{
+        } else {
             return Float.parseFloat(numberText);
         }
     }
 
-    private String getString(EditText editText){
+    private String getString(EditText editText) {
         return editText.getText().toString();
     }
 

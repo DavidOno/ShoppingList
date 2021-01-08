@@ -42,6 +42,11 @@ import de.db.shoppinglist.ifc.TakenImageSVM;
 import de.db.shoppinglist.viewmodel.TakenImageViewModel;
 
 
+/**
+ * This fragments provides two options to take an image: Using the camera or selecting an image
+ * from gallery. Afterwards the image is displayed. If necessary the image also be removed.
+ * The communication with corresponding fragment uses a shared viewmodel.
+ */
 public class TakeImageFragment extends Fragment {
 
     public static final int CAMERA_PERM_CODE = 101;

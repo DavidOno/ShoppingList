@@ -21,41 +21,58 @@ import androidx.lifecycle.ViewModelProvider;
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.ModifyListDialogViewModel;
-import de.db.shoppinglist.viewmodel.NewListDialogViewModel;
 
+/**
+ * This Dialog allows to modify the properties of a shopping-list.
+ * Currently only the name of a list is editable.
+ */
 public class ModifyListDialog extends AppCompatDialogFragment {
 
     private EditText listNameEditText;
     private Button doneButton;
+    private Button backButton;
 
     private ModifyListDialogViewModel viewModel;
     private ShoppingList list;
 
-    public ModifyListDialog(){
+    public ModifyListDialog() {
         //empty constructor required
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_modify_list, null);
-        builder.setView(view);
-        listNameEditText = view.findViewById(R.id.editText_list_name);
-        doneButton = view.findViewById(R.id.new_list_dialog_doneButton);
+        View view = inflateLayout();
+        Dialog dialog = buildDialog(view);
+        findViewById(view);
         doneButton.setEnabled(false);
-        Button backButton = view.findViewById(R.id.new_list_dialog_backButton);
         listNameEditText.setText(list.getName());
         listNameEditText.requestFocus();
         doneButton.setOnClickListener(item -> finish());
         backButton.setOnClickListener(item -> closeDialog());
-        Dialog dialog = builder.create();
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         listNameEditText.addTextChangedListener(enableDoneMenuItemOnTextChange());
         viewModel = new ViewModelProvider(requireActivity()).get(ModifyListDialogViewModel.class);
         return dialog;
+    }
+
+    private void findViewById(View view) {
+        listNameEditText = view.findViewById(R.id.editText_list_name);
+        doneButton = view.findViewById(R.id.new_list_dialog_doneButton);
+        backButton = view.findViewById(R.id.new_list_dialog_backButton);
+    }
+
+    private Dialog buildDialog(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setView(view);
+        Dialog dialog = builder.create();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        return dialog;
+    }
+
+    private View inflateLayout() {
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        return inflater.inflate(R.layout.dialog_modify_list, null);
     }
 
     @Override
@@ -78,9 +95,9 @@ public class ModifyListDialog extends AppCompatDialogFragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(listNameEditText.getText().toString().isEmpty()){
+                if (listNameEditText.getText().toString().isEmpty()) {
                     doneButton.setEnabled(false);
-                }else{
+                } else {
                     doneButton.setEnabled(true);
                 }
             }

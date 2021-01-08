@@ -30,7 +30,12 @@ import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.ShoppingListViewModel;
 
-public class ShoppingListFragment extends Fragment implements ShoppingListRecViewAdapter.OnEntryListener{
+/**
+ * This fragment displays all entries of a shopping-list.
+ * From this fragment to user can navigate to {@link NewEntryFragment} to create a new entry.
+ * Also he can modify one of the displayed entries by navigating to {@link ModifyEntryFragment}.
+ */
+public class ShoppingListFragment extends Fragment implements ShoppingListRecViewAdapter.OnEntryListener {
 
     private RecyclerView entriesView;
     private FloatingActionButton newEntryButton;
@@ -59,7 +64,7 @@ public class ShoppingListFragment extends Fragment implements ShoppingListRecVie
     }
 
     private void setTitleOfFragment() {
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(list.getName());
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(list.getName());
     }
 
     private void handleItemInteraction() {
@@ -83,10 +88,10 @@ public class ShoppingListFragment extends Fragment implements ShoppingListRecVie
         }).attachToRecyclerView(entriesView);
     }
 
-    public void handleItemIsDone(){
+    public void handleItemIsDone() {
         adapter.getFlag().observe(getViewLifecycleOwner(),
                 aBoolean -> {
-                    if(Boolean.TRUE.equals(aBoolean)) {
+                    if (Boolean.TRUE.equals(aBoolean)) {
                         ShoppingEntry entry = adapter.getItem();
                         shoppingListViewModel.toggleDoneStatus(list, entry);
                         adapter.resetFlags();
@@ -137,7 +142,7 @@ public class ShoppingListFragment extends Fragment implements ShoppingListRecVie
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.menu_shoppingList_check_all:
                 adapter.getSnapshots().forEach(entry -> shoppingListViewModel.setStatusToDone(list, entry));
                 break;
@@ -170,7 +175,7 @@ public class ShoppingListFragment extends Fragment implements ShoppingListRecVie
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             int expandedPosition = savedInstanceState.getInt(EXPANDED_POSITION_KEY);
             adapter.setExpandedPosition(expandedPosition);
             int previousPosition = savedInstanceState.getInt(PREV_EXPANDED_POSITION_KEY);

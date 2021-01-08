@@ -16,18 +16,16 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.lifecycle.ViewModelProvider;
-
-import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.model.ShoppingList;
-import de.db.shoppinglist.viewmodel.ModifyEntryViewModel;
 import de.db.shoppinglist.viewmodel.NewListDialogViewModel;
 
+/**
+ * This Dialog allows to create a new list.
+ * Currently only a name has to be provided.
+ */
 public class NewListDialog extends AppCompatDialogFragment {
 
     private EditText listNameEditText;

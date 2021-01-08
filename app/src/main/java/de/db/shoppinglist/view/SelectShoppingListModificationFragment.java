@@ -26,6 +26,9 @@ import de.db.shoppinglist.adapter.ShoppingListModificationRecViewAdapter;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.SelectListModificationViewModel;
 
+/**
+ * This fragment displays all shopping-lists with additional action to edit or delete lists.
+ */
 public class SelectShoppingListModificationFragment extends Fragment{
 
     private RecyclerView listOfListsView;

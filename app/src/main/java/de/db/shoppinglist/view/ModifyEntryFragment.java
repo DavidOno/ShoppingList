@@ -36,6 +36,10 @@ import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.ModifyEntryViewModel;
 
+/**
+ * This class displays a already created entry, so that it can be modified or deleted.
+ * The communication with the {@link TakeImageFragment} works with the help of a shared viewmodel.
+ */
 public class ModifyEntryFragment extends Fragment {
 
     public static final int MODIFY_RESOURCE = R.string.modify_;
@@ -95,12 +99,12 @@ public class ModifyEntryFragment extends Fragment {
         takenImageSVM.setImage(viewModel.getImage());
     }
 
-    private String getTitlePrefix(){
-        return getResources().getString(MODIFY_RESOURCE)+" ";
+    private String getTitlePrefix() {
+        return getResources().getString(MODIFY_RESOURCE) + " ";
     }
 
     private void setTitle() {
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getTitlePrefix() + entry.getName());
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getTitlePrefix() + entry.getName());
     }
 
     private void deleteEntryAndFinish() {
@@ -125,12 +129,12 @@ public class ModifyEntryFragment extends Fragment {
 
     private void observeImage() {
         viewModel.getImageLiveData().observe(getViewLifecycleOwner(), takenImage -> {
-            if(takenImage != null) {
+            if (takenImage != null) {
                 Glide.with(getContext())
                         .load(takenImage)
                         .skipMemoryCache(false)
                         .into(imageView);
-            }else{
+            } else {
                 imageView.setImageResource(R.drawable.ic_shopping);
             }
         });
@@ -156,14 +160,14 @@ public class ModifyEntryFragment extends Fragment {
     }
 
     private void assignImageInViewModel() {
-        if(toModifingEntryProvidesNoImage()){
+        if (toModifingEntryProvidesNoImage()) {
             viewModel.setImageLiveData(takenImageSVM.getImage());
-        }else{
-            if(imageWasReseted()){
+        } else {
+            if (imageWasReseted()) {
                 viewModel.setImageLiveData(null);
-            }else if(imageWasReplaced()){
+            } else if (imageWasReplaced()) {
                 viewModel.setImageLiveData(takenImageSVM.getImage());
-            }else{
+            } else {
                 viewModel.setImageLiveData(entry.getImageURI());
             }
         }
@@ -198,7 +202,7 @@ public class ModifyEntryFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId() == R.id.menu_done_doneButton){
+        if (item.getItemId() == R.id.menu_done_doneButton) {
             finishFragment();
         }
         return false;
@@ -214,12 +218,12 @@ public class ModifyEntryFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String name = nameOfProductEditText.getText().toString();
-                if(name.isEmpty()){
+                if (name.isEmpty()) {
                     doneMenuItem.setEnabled(false);
-                    ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getTitlePrefix() + name);
-                }else{
+                    ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getTitlePrefix() + name);
+                } else {
                     doneMenuItem.setEnabled(true);
-                    ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getTitlePrefix() + name);
+                    ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getTitlePrefix() + name);
                 }
             }
 
@@ -251,7 +255,7 @@ public class ModifyEntryFragment extends Fragment {
         entry.setDetails(details);
         entry.setDone(done);
         String image = null;
-        if(imageUri != null){
+        if (imageUri != null) {
             image = imageUri.toString();
         }
         entry.setImageURI(image);

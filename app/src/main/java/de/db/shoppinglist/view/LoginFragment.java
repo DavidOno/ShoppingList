@@ -38,6 +38,7 @@ public class LoginFragment extends Fragment {
     private SignInButton signInButton;
     private LoginViewModel viewModel;
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -62,9 +63,9 @@ public class LoginFragment extends Fragment {
 
     private GoogleSignInOptions getGoogleSignInOptions() {
         return new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(getString(R.string.default_web_client_id))
-                    .requestEmail()
-                    .build();
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
     }
 
     private void signIn() {
@@ -77,14 +78,14 @@ public class LoginFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SIGN_IN_RESULT_KEY) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            if(task.isSuccessful()){
+            if (task.isSuccessful()) {
                 try {
                     GoogleSignInAccount account = task.getResult(ApiException.class);
                     firebaseAuthWithGoogle(account.getIdToken());
                 } catch (ApiException e) {
                     Log.w(LOGIN_TAG, "Google sign in failed", e);
                 }
-            }else{
+            } else {
                 Log.w(LOGIN_TAG, "Google sign in failed");
             }
         }

@@ -2,7 +2,6 @@ package de.db.shoppinglist.view;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +29,13 @@ import de.db.shoppinglist.model.EntryHistoryElement;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.SearchEntryViewModel;
 
+/**
+ * This fragment provides a recyclerview containing the history of all created and modified entries.
+ * With the help of a SearchView this recyclerview can be filtered.
+ * So the user has two options:
+ * He can choose from history or if he does not find a suitable entry he can naviagate to {@link NewEntryFragment}
+ * to create a new one.
+ */
 public class SearchEntryFragment extends Fragment implements SearchEntryRecyclerViewAdapter.OnEntryListener {
 
     private static final String SEARCH_QUERY_KEY = "Search_query_key";

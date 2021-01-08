@@ -31,6 +31,10 @@ import de.db.shoppinglist.adapter.ShoppingListsRecViewAdapter;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.ShoppingListsViewModel;
 
+/**
+ * This fragment displays all shopping-lists and the corresponding action, like sharing a list.
+ * By selecting a shoppinglist the user navigates to {@link ShoppingListFragment}.
+ */
 public class ShoppingListsFragment extends Fragment implements ShoppingListsRecViewAdapter.OnListListener{
 
     private RecyclerView listOfListsView;

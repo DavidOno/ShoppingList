@@ -17,7 +17,14 @@ import com.google.firebase.auth.FirebaseUser;
 import de.db.shoppinglist.R;
 import de.db.shoppinglist.utility.ToastUtility;
 
-public class ShoppingListsActivity extends AppCompatActivity{
+/**
+ * This is the main activity in the Single-Activity Architecture. It contains the containerFragment,
+ * which holds all the fragments and the toolbar.
+ * Also it decides which fragment is the startDestination, according to Android Jetpack Navigation.
+ * If the user is signed-In he will start at the {@link ShoppingListsFragment}, otherwise he starts
+ * at the {@link LoginFragment}.
+ */
+public class ShoppingListsActivity extends AppCompatActivity {
 
     private ToastUtility toastUtility = ToastUtility.getInstance();
     private NavController navController;
@@ -40,7 +47,7 @@ public class ShoppingListsActivity extends AppCompatActivity{
 
     private void displayReceivedToasts() {
         toastUtility.getNewToast().observe(this, isNew -> {
-            if(Boolean.TRUE.equals(isNew)){
+            if (Boolean.TRUE.equals(isNew)) {
                 String message = toastUtility.getMessage();
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
             }

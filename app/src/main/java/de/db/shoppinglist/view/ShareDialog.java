@@ -23,6 +23,10 @@ import de.db.shoppinglist.R;
 import de.db.shoppinglist.model.ShoppingList;
 import de.db.shoppinglist.viewmodel.ShareListViewModel;
 
+/**
+ * This dialog allows to share a shopping-list with a different user.
+ * Therefore the email-address of the other user has to be provided.
+ */
 public class ShareDialog extends AppCompatDialogFragment {
     private static final int SHARE = R.string.share;
     public static final String GMAIL_POSTFIX_1 = "@gmail.com";
