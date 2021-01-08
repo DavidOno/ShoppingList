@@ -14,6 +14,7 @@ import java.util.Objects;
 
 import de.db.shoppinglist.model.ShoppingEntry;
 import de.db.shoppinglist.model.ShoppingList;
+import de.db.shoppinglist.utility.ToastUtility;
 
 import static de.db.shoppinglist.database.FirebaseSource.*;
 
@@ -24,24 +25,47 @@ public class GoogleSharer implements Sharer {
 
     /** Contant, representing the email-property of the user-metadata*/
     public static final String EMAIL_PROPERTY = "email";
+    private static ToastUtility toastMaker = ToastUtility.getInstance();
     private static final String SHARER_TAG = "GoogleSharer";
 
     /**
      * Enables sharing between two users.
      * All data is simply copied to the receiving user-directory.
      * The copy is independent of the original source.
+     * It's not possible to share with yourself.
      *
      * @param list  List to share.
      * @param email Email to identify the receiving party.
      */
     @Override
     public void share(ShoppingList list, String email) {
+        boolean different = checkIfSourceAndDestinationAreDifferent(email);
+        if(!different){
+            return;
+        }
         Task<QuerySnapshot> userIdByEmail = findUserIdByEmail(email);
         userIdByEmail.addOnSuccessListener(documentSnapshots -> {
             String userIdOfReceiver = getUserId(documentSnapshots);
             Task<Void> addList = addListToUser(list, userIdOfReceiver);
             addList.addOnSuccessListener(aVoid -> copyDocuments(list, userIdOfReceiver));
         }).addOnFailureListener(e -> Log.d(SHARER_TAG, Objects.requireNonNull(e.getMessage())));
+    }
+
+    private boolean checkIfSourceAndDestinationAreDifferent(String email) {
+        String emailCurrentUser = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        if(areSameGmailAddress(emailCurrentUser, email)){
+            toastMaker.prepareToast("You cannot share with yourself.");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean areSameGmailAddress(String emailCurrentUser, String email) {
+        int endNameCurrentUser = emailCurrentUser.indexOf("@");
+        int endName = email.indexOf("@");
+        String currentUserEmailName = emailCurrentUser.substring(0, endNameCurrentUser);
+        String emailName = email.substring(0, endName);
+        return currentUserEmailName.equals(emailName);
     }
 
     private String getUserId(QuerySnapshot documentSnapshots) {

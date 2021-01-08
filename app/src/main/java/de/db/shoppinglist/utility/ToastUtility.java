@@ -1,11 +1,7 @@
 package de.db.shoppinglist.utility;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Utility to create Toasts globally.
@@ -14,15 +10,16 @@ import java.util.concurrent.locks.ReentrantLock;
  * makes the code less readable and cumbersome.
  * Since it is relevant for all database-interactions,
  * I think it's an appropriate and justified solution to make this functionality global.
- * It's considered to be thread-safe.
  */
 public class ToastUtility {
 
     private static ToastUtility instance;
-    private ReentrantLock lock = new ReentrantLock();
     private MutableLiveData<Boolean> isToastNew = new MutableLiveData<>(false);
     private String message;
 
+    /**
+     * Private constructor should enforce the singleton-pattern.
+     */
     private ToastUtility() {
         //empty constructor
     }
@@ -41,16 +38,12 @@ public class ToastUtility {
 
     /**
      * Toast is getting prepared.
-     * Since it's called from an asynchronous environment, it's made thread-safe.
-     * Therefore at the beginning a lock is acquired.
-     * This lock is only release iff {@link #getMessage()} is called.
      *
      * @param message The message to display via Toast.
      */
     public void prepareToast(String message) {
-        lock.lock();
         this.message = message;
-        isToastNew.setValue(true);
+        isToastNew.postValue(true);
     }
 
     public LiveData<Boolean> getNewToast() {
@@ -59,14 +52,12 @@ public class ToastUtility {
 
     /**
      * Returns the Message.
-     * Here the lock, which was acquired in {@link #prepareToast(String)}, is released.
      *
      * @return Returns the message, which should be displayed via Toast.
      */
     public String getMessage() {
         String result = message;
-        isToastNew.setValue(false);
-        lock.unlock();
+        isToastNew.postValue(false);
         return result;
     }
 }
