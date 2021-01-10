@@ -1,5 +1,6 @@
 package de.db.shoppinglist.view;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -49,6 +51,7 @@ public class LoginFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         GoogleSignInOptions gso = getGoogleSignInOptions();
         googleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
         signInButton.setOnClickListener(v -> signIn());
@@ -58,7 +61,9 @@ public class LoginFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
+
+
+            viewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
     }
 
     private GoogleSignInOptions getGoogleSignInOptions() {
